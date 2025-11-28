@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Economía Familiar · v5c</title>
+  <title>Economía Familiar · v5d</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <style>
     :root {
@@ -18,7 +18,13 @@
       --shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
     }
     * { box-sizing: border-box; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-    body { margin: 0; background: var(--bg); color: var(--text); }
+    html, body {
+      margin: 0;
+      padding: 0;
+      max-width: 100vw;
+      overflow-x: hidden;
+    }
+    body { background: var(--bg); color: var(--text); }
     .app { max-width: 900px; margin: 0 auto; padding: 0 1rem 4.5rem; }
     header {
       position: sticky; top: 0; z-index: 20;
@@ -28,7 +34,14 @@
       margin: 0 -1rem 0.4rem;
       border-bottom: 1px solid rgba(148,163,184,0.4);
     }
-    .header-inner { max-width: 900px; margin: 0 auto; padding: 0 1rem; display: flex; flex-direction: column; gap: 0.4rem; }
+    .header-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
     .title-row { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; }
     .title-main { display: flex; align-items: center; gap: 0.6rem; }
     .title-icon {
@@ -38,9 +51,9 @@
       box-shadow: 0 3px 8px rgba(15, 23, 42, 0.18);
     }
     .title-text { display: flex; flex-direction: column; }
-    .title-text strong { font-size: 1.05rem; }
-    .title-text span { font-size: 0.78rem; color: var(--muted); }
-    .month-picker { display: flex; flex-direction: column; gap: 0.18rem; font-size: 0.75rem; align-items: flex-end; }
+    .title-text strong { font-size: 1.02rem; }
+    .title-text span { font-size: 0.76rem; color: var(--muted); }
+    .month-picker { display: flex; flex-direction: column; gap: 0.18rem; font-size: 0.75rem; align-items: flex-end; white-space: nowrap; }
     .month-picker label { color: var(--muted); }
     .month-picker input[type="month"] {
       padding: 0.28rem 0.5rem; border-radius: 999px; border: 1px solid var(--border);
@@ -153,7 +166,7 @@
           <div class="title-icon">€</div>
           <div class="title-text">
             <strong>Economía Familiar</strong>
-            <span>Diario de gastos · v5c</span>
+            <span>Diario de gastos · v5d</span>
           </div>
         </div>
         <div class="month-picker">
@@ -461,6 +474,32 @@
         <section class="card">
           <div class="card-header">
             <div>
+              <div class="card-title">Importar movimientos desde CSV</div>
+              <div class="card-subtitle">
+                Lee el CSV de CaixaBank (Concepto, Fecha, Importe, Saldo) y crea gastos automáticamente.
+              </div>
+            </div>
+            <div class="card-tag">CSV</div>
+          </div>
+          <div class="grid-2">
+            <div>
+              <div class="field-group">
+                <label>Archivo CSV de CaixaBank</label>
+                <input type="file" id="csvFile" accept=".csv,text/csv" />
+              </div>
+            </div>
+            <div>
+              <button class="btn btn-primary" id="btnImportCsv">📤 Importar CSV como gastos</button>
+              <div class="small-text" style="margin-top:0.3rem;">
+                Solo se importan las líneas con importe negativo (cargos). El concepto del banco va en la descripción.
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <div>
               <div class="card-title">Copia de seguridad</div>
               <div class="card-subtitle">
                 Exporta e importa todos los datos con un JSON. No se envía nada a ningún servidor.
@@ -650,6 +689,9 @@
     var importJsonTextArea = document.getElementById("importJsonText");
     var btnImportJsonText = document.getElementById("btnImportJsonText");
     var btnResetAll = document.getElementById("btnResetAll");
+
+    var csvFileInput = document.getElementById("csvFile");
+    var btnImportCsv = document.getElementById("btnImportCsv");
 
     function currentMonthKey() {
       return monthSelector.value || new Date().toISOString().slice(0, 7);
@@ -1065,7 +1107,7 @@
     if (btnExportJson) {
       btnExportJson.addEventListener("click", function () {
         var payload = {
-          meta: { app: "eco-familiar-v5c", exportedAt: new Date().toISOString() },
+          meta: { app: "eco-familiar-v5d", exportedAt: new Date().toISOString() },
           baseConfig: baseConfig,
           sobres: sobres,
           huchas: huchas,
@@ -1160,6 +1202,76 @@
         saveJSON(LS_KEYS.FIJOS_GLOBALES, fijosGlobalesValor);
         refreshCategorySuggestions();
         renderAll();
+      });
+    }
+
+    if (btnImportCsv && csvFileInput) {
+      btnImportCsv.addEventListener("click", function () {
+        var file = csvFileInput.files && csvFileInput.files[0];
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function (ev) {
+          try {
+            var text = ev.target.result || "";
+            var lines = text.split(/\r?\n/);
+            if (!lines.length) return;
+            var header = lines[0].split(";");
+            var idxConcepto = header.indexOf("Concepto");
+            var idxFecha = header.indexOf("Fecha");
+            var idxImporte = header.indexOf("Importe");
+            if (idxConcepto === -1 || idxFecha === -1 || idxImporte === -1) {
+              alert("El CSV no parece tener las columnas Concepto;Fecha;Importe...");
+              return;
+            }
+            var imported = 0;
+            for (var i = 1; i < lines.length; i++) {
+              var line = lines[i];
+              if (!line || !line.trim()) continue;
+              var cols = line.split(";");
+              if (cols.length < header.length) continue;
+              var concepto = (cols[idxConcepto] || "").trim();
+              var fechaStr = (cols[idxFecha] || "").trim();
+              var impStr = (cols[idxImporte] || "").trim();
+
+              if (!fechaStr || !impStr) continue;
+
+              var parts = fechaStr.split("/");
+              var iso;
+              if (parts.length === 3) {
+                var d = parts[0]; if (d.length === 1) d = "0" + d;
+                var m = parts[1]; if (m.length === 1) m = "0" + m;
+                var y = parts[2];
+                iso = y + "-" + m + "-" + d;
+              } else {
+                iso = new Date().toISOString().slice(0,10);
+              }
+
+              var valStr = impStr.replace("EUR", "").replace(/\./g, "").replace(",", ".").replace(/\s/g, "");
+              var val = parseFloat(valStr);
+              if (!val || isNaN(val)) continue;
+
+              if (val < 0) {
+                var importe = -val;
+                gastos.push({
+                  id: Date.now().toString() + Math.random().toString(16).slice(2),
+                  fecha: iso,
+                  mes: iso.slice(0,7),
+                  categoria: "Banco",
+                  desc: concepto,
+                  importe: importe
+                });
+                imported++;
+              }
+            }
+            saveJSON(LS_KEYS.GASTOS, gastos);
+            renderAll();
+            alert("Importados " + imported + " movimientos como gastos desde el CSV.");
+          } catch (e) {
+            console.error(e);
+            alert("No se ha podido leer el CSV. Revisa que sea el archivo correcto.");
+          }
+        };
+        reader.readAsText(file, "utf-8");
       });
     }
 
