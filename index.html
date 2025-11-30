@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Economía Familiar · v6</title>
+  <title>Economía Familiar · v7</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <style>
     :root {
@@ -33,21 +33,24 @@
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
+      padding-top: 180px;
+      padding-bottom: 80px;
     }
     .app { 
       max-width: 1000px; 
       margin: 0 auto; 
-      padding: 0 1rem 5rem; 
+      padding: 0 1rem; 
     }
     
     header {
-      position: sticky; 
+      position: fixed; 
       top: 0; 
-      z-index: 20;
-      background: rgba(255, 255, 255, 0.95);
+      left: 0;
+      right: 0;
+      z-index: 50;
+      background: rgba(255, 255, 255, 0.98);
       backdrop-filter: blur(20px);
       padding: 1rem 0;
-      margin: 0 -1rem 1rem;
       border-bottom: 1px solid var(--border);
       box-shadow: var(--shadow-sm);
     }
@@ -108,6 +111,7 @@
       padding: 0.5rem;
       border-radius: 12px;
       border: 1px solid var(--border);
+      position: relative;
     }
     .month-nav-btn {
       width: 32px;
@@ -137,6 +141,77 @@
       font-weight: 600;
       font-size: 0.95rem;
       color: var(--text);
+      cursor: pointer;
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+    .month-display:hover {
+      background: rgba(102, 126, 234, 0.1);
+    }
+    .month-picker-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      margin-top: 0.5rem;
+      background: white;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      padding: 1rem;
+      display: none;
+      z-index: 100;
+      min-width: 280px;
+    }
+    .month-picker-dropdown.active {
+      display: block;
+    }
+    .month-picker-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .month-picker-year {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .year-nav-btn {
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+    .year-nav-btn:hover {
+      background: #f3f4f6;
+    }
+    .months-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+    }
+    .month-btn {
+      padding: 0.75rem;
+      border: 2px solid var(--border);
+      background: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .month-btn:hover {
+      background: #f9fafb;
+      border-color: var(--primary);
+    }
+    .month-btn.selected {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-color: var(--primary);
     }
     
     .chips-row { 
@@ -264,6 +339,9 @@
       width: 100%;
       transition: all 0.2s;
     }
+    .field-group input[type="date"] {
+      font-family: inherit;
+    }
     .field-group input:focus, 
     .field-group select:focus, 
     .field-group textarea:focus {
@@ -327,6 +405,15 @@
       box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
       transform: translateY(-2px);
     }
+    .btn-edit {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      color: white;
+      font-size: 0.8rem;
+      padding: 0.35rem 0.65rem;
+    }
+    .btn-edit:hover {
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    }
     .btn-danger-chip {
       background: transparent; 
       color: var(--danger);
@@ -380,6 +467,97 @@
       background: #f9fafb;
     }
     
+    .budget-card {
+      background: white;
+      border-radius: 16px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+      border: 2px solid var(--border);
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .budget-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    }
+    .budget-card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      transform: translateY(-2px);
+    }
+    .budget-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .budget-name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .budget-amounts {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .budget-amount-item {
+      background: #f9fafb;
+      padding: 0.75rem;
+      border-radius: 10px;
+    }
+    .budget-amount-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+    .budget-amount-value {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+    .budget-progress-bar {
+      width: 100%;
+      height: 8px;
+      background: #e5e7eb;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 0.5rem;
+    }
+    .budget-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+      transition: width 0.5s ease;
+      border-radius: 999px;
+    }
+    .budget-progress-fill.over {
+      background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
+    }
+    .budget-status {
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-align: center;
+    }
+    .budget-status.good {
+      color: #059669;
+    }
+    .budget-status.warning {
+      color: #f59e0b;
+    }
+    .budget-status.over {
+      color: #dc2626;
+    }
+    
     .pill-list { 
       display: flex; 
       flex-direction: column; 
@@ -419,6 +597,10 @@
       font-size: 0.8rem; 
       color: var(--muted); 
     }
+    .pill-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
     .expense-list { 
       max-height: 400px; 
       overflow-y: auto; 
@@ -456,6 +638,11 @@
       font-size: 0.8rem; 
       color: var(--muted); 
     }
+    .expense-actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-shrink: 0;
+    }
     .amount-neg { 
       color: var(--danger); 
       font-weight: 700; 
@@ -486,8 +673,8 @@
       bottom: 0; 
       left: 0; 
       right: 0; 
-      z-index: 30;
-      background: rgba(255, 255, 255, 0.95); 
+      z-index: 50;
+      background: rgba(255, 255, 255, 0.98); 
       backdrop-filter: blur(20px);
       padding: 0.5rem 0.5rem calc(0.5rem + env(safe-area-inset-bottom, 0));
       border-top: 1px solid var(--border);
@@ -550,7 +737,7 @@
     
     .toast {
       position: fixed; 
-      top: 100px; 
+      top: 200px; 
       left: 50%; 
       transform: translateX(-50%);
       background: rgba(17, 24, 39, 0.95); 
@@ -581,10 +768,86 @@
       margin-bottom: 1rem;
       opacity: 0.5;
     }
+    
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .modal-overlay.active {
+      display: flex;
+    }
+    .modal {
+      background: white;
+      border-radius: 16px;
+      padding: 1.5rem;
+      max-width: 500px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    .modal-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .modal-close {
+      background: #f3f4f6;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      transition: all 0.2s;
+    }
+    .modal-close:hover {
+      background: #e5e7eb;
+    }
+    .modal-footer {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+    }
+    .modal-footer .btn {
+      flex: 1;
+    }
   </style>
 </head>
 <body>
   <div class="toast" id="toast"></div>
+  
+  <div class="modal-overlay" id="editModal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title" id="modalTitle">Editar</div>
+        <button class="modal-close" id="modalClose">✕</button>
+      </div>
+      <div id="modalContent"></div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="modalCancel">Cancelar</button>
+        <button class="btn btn-primary" id="modalSave">Guardar cambios</button>
+      </div>
+    </div>
+  </div>
   
   <header>
     <div class="header-inner">
@@ -600,6 +863,14 @@
           <button class="month-nav-btn" id="btnPrevMonth">◀</button>
           <div class="month-display" id="monthDisplay">Enero 2024</div>
           <button class="month-nav-btn" id="btnNextMonth">▶</button>
+          <div class="month-picker-dropdown" id="monthPickerDropdown">
+            <div class="month-picker-header">
+              <button class="year-nav-btn" id="yearPrev">◀</button>
+              <div class="month-picker-year" id="pickerYear">2024</div>
+              <button class="year-nav-btn" id="yearNext">▶</button>
+            </div>
+            <div class="months-grid" id="monthsGrid"></div>
+          </div>
         </div>
       </div>
       <div class="chips-row">
@@ -621,8 +892,7 @@
 
   <div class="app">
     <main class="tabs-container">
-         
-<!-- INGRESOS -->
+      <!-- INGRESOS -->
       <section class="tab-section active" data-tab="ingresos">
         <section class="card">
           <div class="card-header">
@@ -632,7 +902,7 @@
                 Define los ingresos fijos que entran cada mes en tu hogar.
               </div>
             </div>
-            <div class="card-tag">Ingresos</div>
+            <div class="card-tag">Fijos</div>
           </div>
           <div class="grid-2">
             <div>
@@ -653,6 +923,50 @@
               <button class="btn btn-primary" id="btnSaveIngresos">💾 Guardar ingresos base</button>
             </div>
           </div>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">💸 Ingresos puntuales</div>
+              <div class="card-subtitle">
+                Registra ingresos únicos como pagas extras, regalos, ventas, etc.
+              </div>
+            </div>
+            <div class="card-tag">Puntuales</div>
+          </div>
+          <div class="grid-2">
+            <div>
+              <div class="field-group">
+                <label>📅 Fecha</label>
+                <input type="date" id="ingresoPuntualFecha" />
+              </div>
+              <div class="field-group">
+                <label>📝 Descripción</label>
+                <input type="text" id="ingresoPuntualDesc" placeholder="Paga extra, venta..." />
+              </div>
+            </div>
+            <div>
+              <div class="field-group">
+                <label>💰 Importe (€)</label>
+                <input type="number" id="ingresoPuntualImporte" step="0.01" inputmode="decimal" min="0.01" placeholder="0.00" />
+              </div>
+              <button class="btn btn-success" id="btnAddIngresoPuntual">➕ Registrar ingreso</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">📋 Ingresos puntuales del mes</div>
+              <div class="card-subtitle">
+                Todos los ingresos extras registrados en el mes seleccionado.
+              </div>
+            </div>
+            <div class="card-tag">Listado</div>
+          </div>
+          <div id="ingresosPuntualesLista" class="expense-list"></div>
         </section>
 
         <section class="card">
@@ -799,8 +1113,8 @@
           </div>
           <div class="grid-2">
             <div>
-              <div class="field-group">     
-        <label>Nombre del sobre</label>
+              <div class="field-group">
+                <label>Nombre del sobre</label>
                 <input type="text" id="sobreNombre" placeholder="Alimentación, Ocio, Transporte..." />
               </div>
             </div>
@@ -819,12 +1133,12 @@
             <div>
               <div class="card-title">📊 Estado de presupuestos</div>
               <div class="card-subtitle">
-                Cuánto has gastado vs cuánto tenías presupuestado.
+                Control visual del gasto vs presupuesto en cada categoría.
               </div>
             </div>
             <div class="card-tag">Estado</div>
           </div>
-          <div id="sobresLista" class="pill-list"></div>
+          <div id="sobresLista"></div>
         </section>
       </section>
 
@@ -1056,8 +1370,7 @@
   </nav>
 
   <script>
-
-       // Utilidades
+    // Utilidades
     function formatCurrency(num) {
       var n = Number(num) || 0;
       return n.toLocaleString("es-ES", {
@@ -1112,6 +1425,7 @@
       GASTOS: "eco_gastos",
       NOTAS: "eco_notas",
       FIJOS: "eco_fijos",
+      INGRESOS_PUNTUALES: "eco_ingresos_puntuales",
       CURRENT_MONTH: "eco_current_month"
     };
 
@@ -1123,12 +1437,21 @@
     var gastos = loadJSON(LS_KEYS.GASTOS, []);
     var notasByMonth = loadJSON(LS_KEYS.NOTAS, {});
     var gastosFijos = loadJSON(LS_KEYS.FIJOS, []);
+    var ingresosPuntuales = loadJSON(LS_KEYS.INGRESOS_PUNTUALES, []);
     var currentMonth = loadJSON(LS_KEYS.CURRENT_MONTH, new Date().toISOString().slice(0, 7));
+    var editingItem = null;
+    var editingType = null;
 
     // Referencias del DOM
     var monthDisplay = document.getElementById("monthDisplay");
     var btnPrevMonth = document.getElementById("btnPrevMonth");
     var btnNextMonth = document.getElementById("btnNextMonth");
+    var monthPickerDropdown = document.getElementById("monthPickerDropdown");
+    var pickerYear = document.getElementById("pickerYear");
+    var yearPrev = document.getElementById("yearPrev");
+    var yearNext = document.getElementById("yearNext");
+    var monthsGrid = document.getElementById("monthsGrid");
+    
     var chipIngresos = document.getElementById("chipIngresos");
     var chipGastos = document.getElementById("chipGastos");
     var chipBalance = document.getElementById("chipBalance");
@@ -1138,6 +1461,12 @@
     var ingSarayInput = document.getElementById("ingSaray");
     var ingOtrosInput = document.getElementById("ingOtros");
     var btnSaveIngresos = document.getElementById("btnSaveIngresos");
+
+    var ingresoPuntualFechaInput = document.getElementById("ingresoPuntualFecha");
+    var ingresoPuntualDescInput = document.getElementById("ingresoPuntualDesc");
+    var ingresoPuntualImporteInput = document.getElementById("ingresoPuntualImporte");
+    var btnAddIngresoPuntual = document.getElementById("btnAddIngresoPuntual");
+    var ingresosPuntualesListaDiv = document.getElementById("ingresosPuntualesLista");
 
     var resIngMesDiv = document.getElementById("resIngMes");
     var resFijosMesDiv = document.getElementById("resFijosMes");
@@ -1186,6 +1515,13 @@
     var csvFileInput = document.getElementById("csvFile");
     var btnImportCsv = document.getElementById("btnImportCsv");
 
+    var editModal = document.getElementById("editModal");
+    var modalTitle = document.getElementById("modalTitle");
+    var modalContent = document.getElementById("modalContent");
+    var modalClose = document.getElementById("modalClose");
+    var modalCancel = document.getElementById("modalCancel");
+    var modalSave = document.getElementById("modalSave");
+
     // Funciones auxiliares
     function currentMonthKey() {
       return currentMonth;
@@ -1199,10 +1535,28 @@
       return out;
     }
 
+    function ingresosPuntualesDelMes(mes) {
+      var out = [];
+      for (var i = 0; i < ingresosPuntuales.length; i++) {
+        if (ingresosPuntuales[i].mes === mes) out.push(ingre​​​​​​​​​​​​​​​​
+        if (ingresosPuntuales[i].mes === mes) out.push(ingresosPuntuales[i]);
+      }
+      return out;
+    }
+
     function calcularTotalFijos() {
       var total = 0;
       for (var i = 0; i < gastosFijos.length; i++) {
         total += gastosFijos[i].importe || 0;
+      }
+      return total;
+    }
+
+    function calcularIngresosPuntualesMes(mes) {
+      var lista = ingresosPuntualesDelMes(mes);
+      var total = 0;
+      for (var i = 0; i < lista.length; i++) {
+        total += lista[i].importe || 0;
       }
       return total;
     }
@@ -1222,6 +1576,210 @@
       }
     }
 
+    // Modal functions
+    function openEditModal(type, item) {
+      editingItem = item;
+      editingType = type;
+      modalContent.innerHTML = '';
+      
+      if (type === 'gasto') {
+        modalTitle.textContent = '✏️ Editar Gasto';
+        modalContent.innerHTML = `
+          <div class="field-group">
+            <label>📅 Fecha</label>
+            <input type="date" id="editFecha" value="${item.fecha}" />
+          </div>
+          <div class="field-group">
+            <label>🏷️ Categoría</label>
+            <input type="text" id="editCategoria" value="${item.categoria || ''}" />
+          </div>
+          <div class="field-group">
+            <label>📝 Descripción</label>
+            <input type="text" id="editDesc" value="${item.desc || ''}" />
+          </div>
+          <div class="field-group">
+            <label>💰 Importe (€)</label>
+            <input type="number" id="editImporte" step="0.01" value="${item.importe}" />
+          </div>
+        `;
+      } else if (type === 'ingresoPuntual') {
+        modalTitle.textContent = '✏️ Editar Ingreso Puntual';
+        modalContent.innerHTML = `
+          <div class="field-group">
+            <label>📅 Fecha</label>
+            <input type="date" id="editFecha" value="${item.fecha}" />
+          </div>
+          <div class="field-group">
+            <label>📝 Descripción</label>
+            <input type="text" id="editDesc" value="${item.desc || ''}" />
+          </div>
+          <div class="field-group">
+            <label>💰 Importe (€)</label>
+            <input type="number" id="editImporte" step="0.01" value="${item.importe}" />
+          </div>
+        `;
+      } else if (type === 'fijo') {
+        modalTitle.textContent = '✏️ Editar Gasto Fijo';
+        modalContent.innerHTML = `
+          <div class="field-group">
+            <label>Nombre del gasto</label>
+            <input type="text" id="editNombre" value="${item.nombre}" />
+          </div>
+          <div class="field-group">
+            <label>💰 Importe mensual (€)</label>
+            <input type="number" id="editImporte" step="0.01" value="${item.importe}" />
+          </div>
+        `;
+      } else if (type === 'sobre') {
+        modalTitle.textContent = '✏️ Editar Presupuesto';
+        modalContent.innerHTML = `
+          <div class="field-group">
+            <label>Nombre del presupuesto</label>
+            <input type="text" id="editNombre" value="${item.nombre}" />
+          </div>
+          <div class="field-group">
+            <label>💰 Presupuesto mensual (€)</label>
+            <input type="number" id="editImporte" step="0.01" value="${item.importe}" />
+          </div>
+        `;
+      } else if (type === 'hucha') {
+        modalTitle.textContent = '✏️ Editar Hucha';
+        modalContent.innerHTML = `
+          <div class="field-group">
+            <label>Nombre de la hucha</label>
+            <input type="text" id="editNombre" value="${item.nombre}" />
+          </div>
+          <div class="field-group">
+            <label>🎯 Objetivo (€)</label>
+            <input type="number" id="editObjetivo" step="0.01" value="${item.objetivo || 0}" />
+          </div>
+          <div class="field-group">
+            <label>💰 Saldo actual (€)</label>
+            <input type="number" id="editSaldo" step="0.01" value="${item.saldo || 0}" />
+          </div>
+        `;
+      }
+      
+      editModal.classList.add('active');
+    }
+
+    function closeEditModal() {
+      editModal.classList.remove('active');
+      editingItem = null;
+      editingType = null;
+    }
+
+    function saveEdit() {
+      if (!editingItem || !editingType) return;
+      
+      if (editingType === 'gasto') {
+        var fecha = document.getElementById('editFecha').value;
+        editingItem.fecha = fecha;
+        editingItem.mes = fecha.slice(0, 7);
+        editingItem.categoria = document.getElementById('editCategoria').value.trim() || 'Otros';
+        editingItem.desc = document.getElementById('editDesc').value.trim();
+        editingItem.importe = parseFloat(document.getElementById('editImporte').value) || 0;
+        saveJSON(LS_KEYS.GASTOS, gastos);
+        showToast('✅ Gasto actualizado');
+      } else if (editingType === 'ingresoPuntual') {
+        var fecha = document.getElementById('editFecha').value;
+        editingItem.fecha = fecha;
+        editingItem.mes = fecha.slice(0, 7);
+        editingItem.desc = document.getElementById('editDesc').value.trim();
+        editingItem.importe = parseFloat(document.getElementById('editImporte').value) || 0;
+        saveJSON(LS_KEYS.INGRESOS_PUNTUALES, ingresosPuntuales);
+        showToast('✅ Ingreso actualizado');
+      } else if (editingType === 'fijo') {
+        editingItem.nombre = document.getElementById('editNombre').value.trim();
+        editingItem.importe = parseFloat(document.getElementById('editImporte').value) || 0;
+        saveJSON(LS_KEYS.FIJOS, gastosFijos);
+        showToast('✅ Gasto fijo actualizado');
+      } else if (editingType === 'sobre') {
+        var nuevoNombre = document.getElementById('editNombre').value.trim();
+        var nuevoImporte = parseFloat(document.getElementById('editImporte').value) || 0;
+        if (nuevoNombre !== editingItem.nombre) {
+          delete sobres[editingItem.nombre];
+        }
+        sobres[nuevoNombre] = nuevoImporte;
+        saveJSON(LS_KEYS.SOBRES, sobres);
+        showToast('✅ Presupuesto actualizado');
+      } else if (editingType === 'hucha') {
+        editingItem.nombre = document.getElementById('editNombre').value.trim();
+        editingItem.objetivo = parseFloat(document.getElementById('editObjetivo').value) || 0;
+        editingItem.saldo = parseFloat(document.getElementById('editSaldo').value) || 0;
+        saveJSON(LS_KEYS.HUCHAS, huchas);
+        showToast('✅ Hucha actualizada');
+      }
+      
+      closeEditModal();
+      renderAll();
+    }
+
+    modalClose.addEventListener('click', closeEditModal);
+    modalCancel.addEventListener('click', closeEditModal);
+    modalSave.addEventListener('click', saveEdit);
+    
+    editModal.addEventListener('click', function(e) {
+      if (e.target === editModal) closeEditModal();
+    });
+
+    // Month picker functions
+    function renderMonthPicker() {
+      var months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+      var year = parseInt(pickerYear.textContent);
+      var currentParts = currentMonth.split('-');
+      var currentYear = parseInt(currentParts[0]);
+      var currentMonthNum = parseInt(currentParts[1]);
+      
+      monthsGrid.innerHTML = '';
+      for (var i = 0; i < 12; i++) {
+        var btn = document.createElement('button');
+        btn.className = 'month-btn';
+        btn.textContent = months[i];
+        btn.setAttribute('data-month', i + 1);
+        
+        if (year === currentYear && (i + 1) === currentMonthNum) {
+          btn.classList.add('selected');
+        }
+        
+        btn.addEventListener('click', function() {
+          var month = this.getAttribute('data-month');
+          if (month.length === 1) month = '0' + month;
+          currentMonth = year + '-' + month;
+          saveJSON(LS_KEYS.CURRENT_MONTH, currentMonth);
+          monthPickerDropdown.classList.remove('active');
+          renderAll();
+        });
+        
+        monthsGrid.appendChild(btn);
+      }
+    }
+
+    monthDisplay.addEventListener('click', function() {
+      var parts = currentMonth.split('-');
+      pickerYear.textContent = parts[0];
+      renderMonthPicker();
+      monthPickerDropdown.classList.toggle('active');
+    });
+
+    yearPrev.addEventListener('click', function() {
+      var year = parseInt(pickerYear.textContent);
+      pickerYear.textContent = year - 1;
+      renderMonthPicker();
+    });
+
+    yearNext.addEventListener('click', function() {
+      var year = parseInt(pickerYear.textContent);
+      pickerYear.textContent = year + 1;
+      renderMonthPicker();
+    });
+
+    document.addEventListener('click', function(e) {
+      if (!monthDisplay.contains(e.target) && !monthPickerDropdown.contains(e.target)) {
+        monthPickerDropdown.classList.remove('active');
+      }
+    });
+
     // Funciones de renderizado
     function renderMonthDisplay() {
       monthDisplay.textContent = formatMonthDisplay(currentMonth);
@@ -1231,6 +1789,69 @@
       ingJuanInput.value = baseConfig.juan || "";
       ingSarayInput.value = baseConfig.saray || "";
       ingOtrosInput.value = baseConfig.otros || "";
+    }
+
+    function renderIngresosPuntuales(mes) {
+      while (ingresosPuntualesListaDiv.firstChild) {
+        ingresosPuntualesListaDiv.removeChild(ingresosPuntualesListaDiv.firstChild);
+      }
+      var lista = ingresosPuntualesDelMes(mes);
+      if (!lista.length) {
+        var empty = document.createElement("div");
+        empty.className = "empty-state";
+        empty.innerHTML = '<div class="empty-state-icon">💵</div>No hay ingresos puntuales en este mes.';
+        ingresosPuntualesListaDiv.appendChild(empty);
+        return;
+      }
+      lista.sort(function(a, b){ return b.fecha.localeCompare(a.fecha); });
+      for (var i = 0; i < lista.length; i++) {
+        var ing = lista[i];
+        var item = document.createElement("div");
+        item.className = "expense-item";
+
+        var main = document.createElement("div");
+        main.className = "expense-main";
+
+        var l1 = document.createElement("div");
+        l1.className = "expense-line1";
+        l1.style.color = "#10b981";
+        l1.textContent = "Ingreso · ";
+        var spanAmt = document.createElement("span");
+        spanAmt.style.color = "#10b981";
+        spanAmt.style.fontWeight = "700";
+        spanAmt.textContent = formatCurrency(ing.importe);
+        l1.appendChild(spanAmt);
+
+        var l2 = document.createElement("div");
+        l2.className = "expense-line2";
+        l2.textContent = ing.fecha + " · " + (ing.desc || "Sin descripción");
+
+        main.appendChild(l1);
+        main.appendChild(l2);
+
+        var actions = document.createElement("div");
+        actions.className = "expense-actions";
+
+        var btnEdit = document.createElement("button");
+        btnEdit.className = "btn-edit";
+        btnEdit.textContent = "✏️";
+        btnEdit.onclick = function(ingreso) {
+          return function() { openEditModal('ingresoPuntual', ingreso); };
+        }(ing);
+
+        var btnDel = document.createElement("button");
+        btnDel.className = "btn-danger-chip";
+        btnDel.textContent = "✕";
+        btnDel.setAttribute("data-type", "ingresoPuntual");
+        btnDel.setAttribute("data-id", ing.id);
+
+        actions.appendChild(btnEdit);
+        actions.appendChild(btnDel);
+
+        item.appendChild(main);
+        item.appendChild(actions);
+        ingresosPuntualesListaDiv.appendChild(item);
+      }
     }
 
     function renderFijos() {
@@ -1260,9 +1881,9 @@
       th2.textContent = "Importe";
       th2.style.textAlign = "right";
       var th3 = document.createElement("th");
-      th3.textContent = "Acción";
+      th3.textContent = "Acciones";
       th3.style.textAlign = "center";
-      th3.style.width = "100px";
+      th3.style.width = "150px";
       headerRow.appendChild(th1);
       headerRow.appendChild(th2);
       headerRow.appendChild(th3);
@@ -1284,12 +1905,25 @@
 
         var td3 = document.createElement("td");
         td3.style.textAlign = "center";
-        var btn = document.createElement("button");
-        btn.className = "btn-danger-chip";
-        btn.textContent = "✕ Eliminar";
-        btn.setAttribute("data-type", "fijo");
-        btn.setAttribute("data-id", fijo.id);
-        td3.appendChild(btn);
+        td3.style.display = "flex";
+        td3.style.gap = "0.5rem";
+        td3.style.justifyContent = "center";
+        
+        var btnEdit = document.createElement("button");
+        btnEdit.className = "btn-edit";
+        btnEdit.textContent = "✏️";
+        btnEdit.onclick = function(f) {
+          return function() { openEditModal('fijo', f); };
+        }(fijo);
+        
+        var btnDel = document.createElement("button");
+        btnDel.className = "btn-danger-chip";
+        btnDel.textContent = "✕";
+        btnDel.setAttribute("data-type", "fijo");
+        btnDel.setAttribute("data-id", fijo.id);
+        
+        td3.appendChild(btnEdit);
+        td3.appendChild(btnDel);
 
         row.appendChild(td1);
         row.appendChild(td2);
@@ -1302,13 +1936,16 @@
 
     function renderResumen(mes) {
       var ingresosMes = (baseConfig.juan || 0) + (baseConfig.saray || 0) + (baseConfig.otros || 0);
+      var ingresosPuntualesMes = calcularIngresosPuntualesMes(mes);
+      var totalIngresos = ingresosMes + ingresosPuntualesMes;
+      
       var lista = gastosDelMes(mes);
       var totalVar = 0;
       for (var i = 0; i < lista.length; i++) totalVar += lista[i].importe || 0;
       var totalFijos = calcularTotalFijos();
-      var balance = ingresosMes - totalFijos - totalVar;
+      var balance = totalIngresos - totalFijos - totalVar;
 
-      chipIngresos.textContent = formatCurrency(ingresosMes);
+      chipIngresos.textContent = formatCurrency(totalIngresos);
       chipGastos.textContent = formatCurrency(totalFijos + totalVar);
       chipBalance.textContent = formatCurrency(balance);
       if (balance >= 0) {
@@ -1319,7 +1956,7 @@
         chipBalanceWrap.classList.add("balance-neg");
       }
 
-      resIngMesDiv.textContent = formatCurrency(ingresosMes);
+      resIngMesDiv.textContent = formatCurrency(totalIngresos);
       resFijosMesDiv.textContent = formatCurrency(totalFijos);
       resVarMesDiv.textContent = formatCurrency(totalVar);
       resBalMesDiv.textContent = formatCurrency(balance);
@@ -1359,14 +1996,27 @@
         main.appendChild(l1);
         main.appendChild(l2);
 
-        var btn = document.createElement("button");
-        btn.className = "btn-danger-chip";
-        btn.textContent = "✕";
-        btn.setAttribute("data-type", "gasto");
-        btn.setAttribute("data-id", g.id);
+        var actions = document.createElement("div");
+        actions.className = "expense-actions";
+
+        var btnEdit = document.createElement("button");
+        btnEdit.className = "btn-edit";
+        btnEdit.textContent = "✏️";
+        btnEdit.onclick = function(gasto) {
+          return function() { openEditModal('gasto', gasto); };
+        }(g);
+
+        var btnDel = document.createElement("button");
+        btnDel.className = "btn-danger-chip";
+        btnDel.textContent = "✕";
+        btnDel.setAttribute("data-type", "gasto");
+        btnDel.setAttribute("data-id", g.id);
+
+        actions.appendChild(btnEdit);
+        actions.appendChild(btnDel);
 
         item.appendChild(main);
-        item.appendChild(btn);
+        item.appendChild(actions);
         gastosListaDiv.appendChild(item);
       }
     }
@@ -1394,42 +2044,97 @@
         var presup = sobres[catName] || 0;
         var gast = porCat[catName] || 0;
         var restante = presup - gast;
+        var percentage = presup > 0 ? Math.min(100, (gast / presup) * 100) : 0;
 
-        var item = document.createElement("div");
-        item.className = "pill-item";
+        var card = document.createElement("div");
+        card.className = "budget-card";
 
-        var main = document.createElement("div");
-        main.className = "pill-main";
+        var header = document.createElement("div");
+        header.className = "budget-card-header";
 
-        var l1 = document.createElement("div");
-        l1.className = "pill-line1";
-        l1.textContent = catName;
+        var name = document.createElement("div");
+        name.className = "budget-name";
+        name.textContent = catName;
 
-        var l2 = document.createElement("div");
-        l2.className = "pill-line2";
-        var estado = "";
+        var actions = document.createElement("div");
+        actions.className = "pill-actions";
+
+        var btnEdit = document.createElement("button");
+        btnEdit.className = "btn-edit";
+        btnEdit.textContent = "✏️";
+        btnEdit.onclick = function(n, p) {
+          return function() { openEditModal('sobre', {nombre: n, importe: p}); };
+        }(catName, presup);
+
+        var btnDel = document.createElement("button");
+        btnDel.className = "btn-danger-chip";
+        btnDel.textContent = "✕";
+        btnDel.setAttribute("data-type", "sobre");
+        btnDel.setAttribute("data-id", catName);
+
+        actions.appendChild(btnEdit);
+        actions.appendChild(btnDel);
+
+        header.appendChild(name);
+        header.appendChild(actions);
+
+        var amounts = document.createElement("div");
+        amounts.className = "budget-amounts";
+
+        var presupItem = document.createElement("div");
+        presupItem.className = "budget-amount-item";
+        var presupLabel = document.createElement("div");
+        presupLabel.className = "budget-amount-label";
+        presupLabel.textContent = "Presupuesto";
+        var presupValue = document.createElement("div");
+        presupValue.className = "budget-amount-value";
+        presupValue.style.color = "#3b82f6";
+        presupValue.textContent = formatCurrency(presup);
+        presupItem.appendChild(presupLabel);
+        presupItem.appendChild(presupValue);
+
+        var gastItem = document.createElement("div");
+        gastItem.className = "budget-amount-item";
+        var gastLabel = document.createElement("div");
+        gastLabel.className = "budget-amount-label";
+        gastLabel.textContent = "Gastado";
+        var gastValue = document.createElement("div");
+        gastValue.className = "budget-amount-value";
+        gastValue.style.color = percentage > 100 ? "#ef4444" : "#f59e0b";
+        gastValue.textContent = formatCurrency(gast);
+        gastItem.appendChild(gastLabel);
+        gastItem.appendChild(gastValue);
+
+        amounts.appendChild(presupItem);
+        amounts.appendChild(gastItem);
+
+        var progressBar = document.createElement("div");
+        progressBar.className = "budget-progress-bar";
+        var progressFill = document.createElement("div");
+        progressFill.className = "budget-progress-fill";
+        if (percentage > 100) progressFill.classList.add("over");
+        progressFill.style.width = Math.min(100, percentage) + "%";
+        progressBar.appendChild(progressFill);
+
+        var status = document.createElement("div");
+        status.className = "budget-status";
         if (presup === 0 && gast === 0) {
-          estado = "Sin presupuesto definido";
+          status.textContent = "Sin presupuesto definido";
+          status.className += " warning";
         } else if (restante >= 0) {
-          estado = "✅ Quedan " + formatCurrency(restante);
+          status.textContent = "✅ Quedan " + formatCurrency(restante);
+          status.className += " good";
         } else {
-          estado = "⚠️ Te pasas " + formatCurrency(-restante);
+          status.textContent = "⚠️ Te pasas " + formatCurrency(-restante);
+          status.className += " over";
         }
-        l2.textContent = "Presupuesto: " + formatCurrency(presup) +
-          " · Gastado: " + formatCurrency(gast) + " · " + estado;
 
-        main.appendChild(l1);
-        main.appendChild(l2);
+        card.appendChild(header);
+        card.appendChild(amounts);
+        card.appendChild(progressBar);
+        card.appendChild(status);
 
-        var btn = document.createElement("button");
-        btn.className = "btn-danger-chip";
-        btn.textContent = "✕";
-        btn.setAttribute("data-type", "sobre");
-        btn.setAttribute("data-id", catName);
-
-        item.appendChild(main);
-        item.appendChild(btn);
-        sobresListaDiv.appendChild(item);
+        sobresListaDiv.appendChild(card);
       }
     }
 
@@ -1477,14 +2182,27 @@
         main.appendChild(l1);
         main.appendChild(l2);
 
-        var btn = document.createElement("button");
-        btn.className = "btn-danger-chip";
-        btn.textContent = "✕";
-        btn.setAttribute("data-type", "hucha");
-        btn.setAttribute("data-id", h.id);
+        var actions = document.createElement("div");
+        actions.className = "pill-actions";
+
+        var btnEdit = document.createElement("button");
+        btnEdit.className = "btn-edit";
+        btnEdit.textContent = "✏️";
+        btnEdit.onclick = function(hucha) {
+          return function() { openEditModal('hucha', hucha); };
+        }(h);
+
+        var btnDel = document.createElement("button");
+        btnDel.className = "btn-danger-chip";
+        btnDel.textContent = "✕";
+        btnDel.setAttribute("data-type", "hucha");
+        btnDel.setAttribute("data-id", h.id);
+
+        actions.appendChild(btnEdit);
+        actions.appendChild(btnDel);
 
         item.appendChild(main);
-        item.appendChild(btn);
+        item.appendChild(actions);
         huchasListaDiv.appendChild(item);
 
         var opt = document.createElement("option");
@@ -1500,9 +2218,10 @@
     }
 
     function renderAll() {
-      var mes = currentMonthKey();   
-renderMonthDisplay();
+      var mes = currentMonthKey();
+      renderMonthDisplay();
       renderIngresosForm();
+      renderIngresosPuntuales(mes);
       renderFijos();
       renderResumen(mes);
       renderGastos(mes);
@@ -1551,7 +2270,33 @@ renderMonthDisplay();
         baseConfig.saray = parseFloat(ingSarayInput.value) || 0;
         baseConfig.otros = parseFloat(ingOtrosInput.value) || 0;
         saveJSON(LS_KEYS.BASE, baseConfig);
+
         showToast("✅ Ingresos guardados correctamente");
+        renderAll();
+      });
+    }
+
+    if (btnAddIngresoPuntual) {
+      btnAddIngresoPuntual.addEventListener("click", function() {
+        var fecha = ingresoPuntualFechaInput.value || new Date().toISOString().slice(0, 10);
+        var mes = fecha.slice(0, 7);
+        var desc = (ingresoPuntualDescInput.value || "").trim();
+        var importe = parseFloat(ingresoPuntualImporteInput.value);
+        if (!importe || isNaN(importe) || importe <= 0) {
+          showToast("⚠️ Introduce un importe válido");
+          return;
+        }
+        ingresosPuntuales.push({
+          id: Date.now().toString() + Math.random().toString(16).slice(2),
+          fecha: fecha,
+          mes: mes,
+          desc: desc,
+          importe: importe
+        });
+        saveJSON(LS_KEYS.INGRESOS_PUNTUALES, ingresosPuntuales);
+        ingresoPuntualDescInput.value = "";
+        ingresoPuntualImporteInput.value = "";
+        showToast("✅ Ingreso puntual añadido: " + formatCurrency(importe));
         renderAll();
       });
     }
@@ -1717,6 +2462,10 @@ renderMonthDisplay();
         gastos = gastos.filter(function (g) { return g.id !== id; });
         saveJSON(LS_KEYS.GASTOS, gastos);
         showToast("✅ Gasto eliminado");
+      } else if (type === "ingresoPuntual") {
+        ingresosPuntuales = ingresosPuntuales.filter(function (i) { return i.id !== id; });
+        saveJSON(LS_KEYS.INGRESOS_PUNTUALES, ingresosPuntuales);
+        showToast("✅ Ingreso eliminado");
       } else if (type === "sobre") {
         delete sobres[id];
         saveJSON(LS_KEYS.SOBRES, sobres);
@@ -1759,13 +2508,14 @@ renderMonthDisplay();
     if (btnExportJson) {
       btnExportJson.addEventListener("click", function () {
         var payload = {
-          meta: { app: "eco-familiar-v6", exportedAt: new Date().toISOString() },
+          meta: { app: "eco-familiar-v7", exportedAt: new Date().toISOString() },
           baseConfig: baseConfig,
           sobres: sobres,
           huchas: huchas,
           gastos: gastos,
           notasByMonth: notasByMonth,
-          gastosFijos: gastosFijos
+          gastosFijos: gastosFijos,
+          ingresosPuntuales: ingresosPuntuales
         };
         var blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
         var url = URL.createObjectURL(blob);
@@ -1832,6 +2582,7 @@ renderMonthDisplay();
       if (Array.isArray(data.gastos)) gastos = data.gastos;
       if (data.notasByMonth) notasByMonth = data.notasByMonth;
       if (Array.isArray(data.gastosFijos)) gastosFijos = data.gastosFijos;
+      if (Array.isArray(data.ingresosPuntuales)) ingresosPuntuales = data.ingresosPuntuales;
 
       saveJSON(LS_KEYS.BASE, baseConfig);
       saveJSON(LS_KEYS.SOBRES, sobres);
@@ -1839,6 +2590,7 @@ renderMonthDisplay();
       saveJSON(LS_KEYS.GASTOS, gastos);
       saveJSON(LS_KEYS.NOTAS, notasByMonth);
       saveJSON(LS_KEYS.FIJOS, gastosFijos);
+      saveJSON(LS_KEYS.INGRESOS_PUNTUALES, ingresosPuntuales);
 
       refreshCategorySuggestions();
       renderAll();
@@ -1854,18 +2606,21 @@ renderMonthDisplay();
         gastos = [];
         notasByMonth = {};
         gastosFijos = [];
+        ingresosPuntuales = [];
         saveJSON(LS_KEYS.BASE, baseConfig);
         saveJSON(LS_KEYS.SOBRES, sobres);
         saveJSON(LS_KEYS.HUCHAS, huchas);
         saveJSON(LS_KEYS.GASTOS, gastos);
         saveJSON(LS_KEYS.NOTAS, notasByMonth);
         saveJSON(LS_KEYS.FIJOS, gastosFijos);
+        saveJSON(LS_KEYS.INGRESOS_PUNTUALES, ingresosPuntuales);
         refreshCategorySuggestions();
         renderAll();
         showToast("✅ Todos los datos han sido eliminados");
       });
-    }    
-if (btnImportCsv && csvFileInput) {
+    }
+
+    if (btnImportCsv && csvFileInput) {
       btnImportCsv.addEventListener("click", function () {
         var file = csvFileInput.files && csvFileInput.files[0];
         if (!file) {
@@ -1942,9 +2697,11 @@ if (btnImportCsv && csvFileInput) {
     (function init() {
       var todayDate = new Date().toISOString().slice(0, 10);
       if (gastoFechaInput) gastoFechaInput.value = todayDate;
+      if (ingresoPuntualFechaInput) ingresoPuntualFechaInput.value = todayDate;
       refreshCategorySuggestions();
       renderAll();
     })();
   </script>
 </body>
 </html>
+
