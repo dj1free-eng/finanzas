@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Economía Familiar · v0.6</title>
+  <title>Economía Familiar · v1.0</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <style>
     :root {
@@ -33,7 +33,7 @@
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
-      padding-top: 160px;
+      padding-top: 200px;
       padding-bottom: 80px;
     }
     .app { 
@@ -777,12 +777,14 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(0, 0, 0, 0.45);
       z-index: 999;
       display: none;
       align-items: center;
       justify-content: center;
       padding: 1rem;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
     }
     .modal-overlay.active {
       display: flex;
@@ -851,13 +853,27 @@
     </div>
   </div>
   
+  <div class="modal-overlay" id="confirmModal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Confirmar eliminación</div>
+        <button class="modal-close" id="confirmClose">✕</button>
+      </div>
+      <div id="confirmMessage">¿Seguro que quieres eliminar este elemento?</div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="confirmCancel">Cancelar</button>
+        <button class="btn btn-danger" id="confirmOk">Eliminar</button>
+      </div>
+    </div>
+  </div>
+
   <header>
     <div class="header-inner">
       <div class="title-row">
         <div class="title-main">
           <div class="title-icon">💰</div>
           <div class="title-text">
-            <strong>Economía Familiar · v0.6</strong>
+            <strong>Economía Familiar · v1.0</strong>
             <span>Control total de gastos e ingresos</span>
           </div>
         </div>
@@ -2132,9 +2148,11 @@
         var objetivo = h.objetivo || 0;
         var saldo = h.saldo || 0;
         var detalle = "💰 Saldo: " + formatCurrency(saldo);
+        var pct = null;
         if (objetivo > 0) {
-          var pct = Math.min(100, Math.round((saldo / objetivo) * 100));
-          detalle += " · 🎯 Objetivo: " + formatCurrency(objetivo) + " (" + pct + "%)";
+          pct = Math.round((saldo / objetivo) * 100);
+          var pctShown = Math.min(100, Math.max(0, pct));
+          detalle += " · 🎯 Objetivo: " + formatCurrency(objetivo) + " (" + pctShown + "%)";
         }
 
         var item = document.createElement("div");
@@ -2153,6 +2171,21 @@
 
         main.appendChild(l1);
         main.appendChild(l2);
+
+        // Barra de progreso tipo presupuestos si hay objetivo
+        if (objetivo > 0) {
+          var progressBar = document.createElement("div");
+          progressBar.className = "budget-progress-bar";
+          var progressFill = document.createElement("div");
+          progressFill.className = "budget-progress-fill";
+          var pctWidth = 0;
+          if (pct !== null) {
+            pctWidth = Math.min(100, Math.max(0, pct));
+          }
+          progressFill.style.width = pctWidth + "%";
+          progressBar.appendChild(progressFill);
+          main.appendChild(progressBar);
+        }
 
         var actions = document.createElement("div");
         actions.className = "pill-actions";
@@ -2351,12 +2384,27 @@
           showToast("⚠️ Introduce un nombre para la hucha");
           return;
         }
+        var huchaId = Date.now().toString() + Math.random().toString(16).slice(2);
         huchas.push({
-          id: Date.now().toString() + Math.random().toString(16).slice(2),
+          id: huchaId,
           nombre: nombre,
           objetivo: objetivo,
           saldo: saldoInicial
         });
+        // Si hay saldo inicial, lo registramos como gasto en la categoría "Huchas"
+        if (saldoInicial > 0) {
+          var hoy = new Date().toISOString().slice(0, 10);
+          var mes = currentMonthKey();
+          gastos.push({
+            id: Date.now().toString() + Math.random().toString(16).slice(2),
+            fecha: hoy,
+            mes: mes,
+            categoria: "Huchas",
+            desc: "Saldo inicial hucha " + nombre,
+            importe: saldoInicial
+          });
+          saveJSON(LS_KEYS.GASTOS, gastos);
+        }
         saveJSON(LS_KEYS.HUCHAS, huchas);
         huchaNombreInput.value = "";
         huchaObjetivoInput.value = "";
@@ -2673,7 +2721,81 @@
       renderAll();
     })();
   </script>
-</body>
+<script>
+// Confirm delete modal
+var deletePendingType = null;
+var deletePendingId = null;
+
+var confirmModal = document.getElementById("confirmModal");
+var confirmMessage = document.getElementById("confirmMessage");
+var confirmClose = document.getElementById("confirmClose");
+var confirmCancel = document.getElementById("confirmCancel");
+var confirmOk = document.getElementById("confirmOk");
+
+function openConfirmModal(type, id, label) {
+  deletePendingType = type;
+  deletePendingId = id;
+  if (confirmMessage) {
+    var texto = "¿Seguro que quieres eliminar " + (label || "este elemento") + "?";
+    confirmMessage.textContent = texto;
+  }
+  if (confirmModal) confirmModal.classList.add("active");
+}
+
+function closeConfirmModal() {
+  if (confirmModal) confirmModal.classList.remove("active");
+  deletePendingType = null;
+  deletePendingId = null;
+}
+
+if (confirmClose) confirmClose.addEventListener("click", closeConfirmModal);
+if (confirmCancel) confirmCancel.addEventListener("click", closeConfirmModal);
+if (confirmModal) {
+  confirmModal.addEventListener("click", function(e) {
+    if (e.target === confirmModal) closeConfirmModal();
+  });
+}
+
+if (confirmOk) {
+  confirmOk.addEventListener("click", function() {
+    if (!deletePendingType || !deletePendingId) { closeConfirmModal(); return; }
+    var id = deletePendingId;
+    var type = deletePendingType;
+
+    if (type === "hucha") {
+      huchas = huchas.filter(function(h){ return h.id != id; });
+      saveJSON(LS_KEYS.HUCHAS, huchas);
+    } else if (type === "sobre") {
+      sobres = sobres || {};
+      delete sobres[id];
+      saveJSON(LS_KEYS.SOBRES, sobres);
+    } else if (type === "gasto") {
+      gastos = gastos.filter(function(g){ return g.id != id; });
+      saveJSON(LS_KEYS.GASTOS, gastos);
+    } else if (type === "fijo") {
+      gastosFijos = gastosFijos.filter(function(f){ return f.id != id; });
+      saveJSON(LS_KEYS.FIJOS, gastosFijos);
+    } else if (type === "ingresoPuntual") {
+      ingresosPuntuales = ingresosPuntuales.filter(function(ing){ return ing.id != id; });
+      saveJSON(LS_KEYS.INGRESOS_PUNTUALES, ingresosPuntuales);
+    }
+    renderAll();
+    closeConfirmModal();
+    showToast("Elemento eliminado correctamente");
+  });
+}
+
+// Global click handler for delete buttons (X)
+document.addEventListener("click", function(e){
+  var target = e.target;
+  if (target.classList.contains("btn-danger-chip")) {
+    var type = target.getAttribute("data-type");
+    var id = target.getAttribute("data-id");
+    var label = target.getAttribute("data-label") || "";
+    openConfirmModal(type, id, label);
+  }
+});
+</script></body>
 </html>
 
 
