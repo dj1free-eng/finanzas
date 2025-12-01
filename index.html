@@ -2528,8 +2528,15 @@
       renderAll();
     });
 
-    var tabButtons = document.querySelectorAll(".tab-btn");
-    var tabSections = document.querySelectorAll(".tab-section");
+    var tabsContainer = document.querySelector(".tabs-container"); // 👈 faltaba
+var tabButtons = document.querySelectorAll(".tab-btn");
+var tabSections = document.querySelectorAll(".tab-section");
+var tabOrder = ["ingresos","fijos","gastos","sobres","huchas","config"];
+
+// Detecta la pestaña activa en vez de asumir "ingresos"
+var activeSection = document.querySelector(".tab-section.active");
+var currentTab = activeSection ? activeSection.getAttribute("data-tab") : "ingresos";
+
 
     for (var iTab = 0; iTab < tabButtons.length; iTab++) {
       (function (btn) {
