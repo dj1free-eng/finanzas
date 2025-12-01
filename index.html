@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Economía Familiar · v7</title>
+  <title>Economía Familiar · v0.6</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <style>
     :root {
@@ -33,7 +33,7 @@
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
-      padding-top: 180px;
+      padding-top: 160px;
       padding-bottom: 80px;
     }
     .app { 
@@ -50,7 +50,7 @@
       z-index: 50;
       background: rgba(255, 255, 255, 0.98);
       backdrop-filter: blur(20px);
-      padding: 1rem 0;
+      padding: 0.7rem 0;
       border-bottom: 1px solid var(--border);
       box-shadow: var(--shadow-sm);
     }
@@ -215,13 +215,14 @@
     }
     
     .chips-row { 
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      display: flex;
+      flex-wrap: nowrap;
       gap: 0.5rem;
     }
     .chip {
-      padding: 0.75rem 1rem; 
-      border-radius: 12px; 
+      flex: 1;
+      padding: 0.55rem 0.8rem; 
+      border-radius: 10px; 
       background: var(--card-bg);
       border: 2px solid var(--border);
       display: flex; 
@@ -239,8 +240,9 @@
       color: var(--muted);
       font-weight: 500;
     }
+    .chip-subline { font-size: 0.7rem; color: var(--muted); margin-top: 0.1rem; }
     .chip strong { 
-      font-size: 1.1rem; 
+      font-size: 1.0rem; 
       font-weight: 700;
     }
     .chip.in { 
@@ -855,7 +857,7 @@
         <div class="title-main">
           <div class="title-icon">💰</div>
           <div class="title-text">
-            <strong>Economía Familiar</strong>
+            <strong>Economía Familiar · v0.6</strong>
             <span>Control total de gastos e ingresos</span>
           </div>
         </div>
@@ -885,6 +887,7 @@
         <div class="chip balance-pos" id="chipBalanceWrap">
           <span>📊 Balance</span>
           <strong id="chipBalance">0 €</strong>
+        <small id="chipHuchasTotal" class="chip-subline">Huchas: 0 €</small>
         </div>
       </div>
     </div>
@@ -1414,6 +1417,7 @@
     var chipGastos = document.getElementById("chipGastos");
     var chipBalance = document.getElementById("chipBalance");
     var chipBalanceWrap = document.getElementById("chipBalanceWrap");
+    var chipHuchasTotal = document.getElementById("chipHuchasTotal");
 
     var ingJuanInput = document.getElementById("ingJuan");
     var ingSarayInput = document.getElementById("ingSaray");
@@ -1750,6 +1754,7 @@
     }
 
     function renderIngresosPuntuales(mes) {
+      if (!ingresosPuntualesListaDiv) return;
       while (ingresosPuntualesListaDiv.firstChild) {
         ingresosPuntualesListaDiv.removeChild(ingresosPuntualesListaDiv.firstChild);
       }
@@ -1902,6 +1907,15 @@
       for (var i = 0; i < lista.length; i++) totalVar += lista[i].importe || 0;
       var totalFijos = calcularTotalFijos();
       var balance = totalIngresos - totalFijos - totalVar;
+
+      // total ahorro acumulado en todas las huchas
+      var totalHuchas = 0;
+      for (var j = 0; j < huchas.length; j++) {
+        totalHuchas += huchas[j].saldo || 0;
+      }
+      if (chipHuchasTotal) {
+        chipHuchasTotal.textContent = "Huchas: " + formatCurrency(totalHuchas);
+      }
 
       chipIngresos.textContent = formatCurrency(totalIngresos);
       chipGastos.textContent = formatCurrency(totalFijos + totalVar);
