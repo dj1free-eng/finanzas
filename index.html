@@ -2847,51 +2847,58 @@ document.addEventListener("click", function(e){
   }
 });
   <script>
-  const tabsContainer = document.querySelector('.tabs-container');
-  const tabSections = document.querySelectorAll('.tab-section');
-  const tabButtons = document.querySelectorAll('.tab-btn');
+  const tabsWrapper = document.querySelector(".tabs-wrapper");
+const tabsContainerSwipe = document.querySelector(".tabs-container");
+const sections = document.querySelectorAll(".tab-section");
+const buttons = document.querySelectorAll(".tab-btn");
 
-  let startX = 0;
-  let endX = 0;
+let currentIndex = 0;
+let startX = 0;
 
-  tabsContainer.addEventListener('touchstart', e => {
-    startX = e.touches[0].clientX;
+// Detecta pestaña inicial
+sections.forEach((sec, idx) => {
+  if (sec.classList.contains("active")) currentIndex = idx;
+});
+
+// Posiciona el contenedor
+function updatePosition() {
+  tabsContainerSwipe.style.transform = `translateX(-${currentIndex * 100}%)`;
+}
+
+updatePosition();
+
+// Swipe start
+tabsWrapper.addEventListener("touchstart", e => {
+  startX = e.touches[0].clientX;
+});
+
+// Swipe end
+tabsWrapper.addEventListener("touchend", e => {
+  let endX = e.changedTouches[0].clientX;
+  let diff = endX - startX;
+
+  if (Math.abs(diff) < 50) return;
+
+  if (diff < 0 && currentIndex < sections.length - 1) currentIndex++;
+  if (diff > 0 && currentIndex > 0) currentIndex--;
+
+  // Actualiza pestañas y botones
+  sections.forEach(s => s.classList.remove("active"));
+  buttons.forEach(b => b.classList.remove("active"));
+
+  sections[currentIndex].classList.add("active");
+  buttons[currentIndex].classList.add("active");
+
+  updatePosition();
+});
+
+// Cuando pulsas un botón de abajo → sincroniza swipe
+buttons.forEach((btn, idx) => {
+  btn.addEventListener("click", () => {
+    currentIndex = idx;
+    updatePosition();
   });
-
-  tabsContainer.addEventListener('touchend', e => {
-    endX = e.changedTouches[0].clientX;
-    handleSwipe();
-  });
-
-  function handleSwipe() {
-    const diff = endX - startX;
-    if (Math.abs(diff) > 50) { // umbral mínimo
-      const activeIndex = [...tabSections].findIndex(sec => sec.classList.contains('active'));
-      let newIndex = activeIndex;
-
-      if (diff < 0 && activeIndex < tabSections.length - 1) {
-        // swipe izquierda → siguiente pestaña
-        newIndex = activeIndex + 1;
-        tabsContainer.classList.add('slide-left');
-      } else if (diff > 0 && activeIndex > 0) {
-        // swipe derecha → pestaña anterior
-        newIndex = activeIndex - 1;
-        tabsContainer.classList.add('slide-right');
-      }
-
-      if (newIndex !== activeIndex) {
-        tabSections[activeIndex].classList.remove('active');
-        tabSections[newIndex].classList.add('active');
-
-        tabButtons[activeIndex].classList.remove('active');
-        tabButtons[newIndex].classList.add('active');
-      }
-
-      setTimeout(() => {
-        tabsContainer.classList.remove('slide-left', 'slide-right');
-      }, 400);
-    }
-  }
+});
 </script>
 
 </script></body>
