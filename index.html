@@ -1,3 +1,5 @@
+Tengo el código así:
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -860,22 +862,7 @@
   padding: 0.25rem;
   cursor: pointer;
 }
-.tabs-wrapper {
-  overflow: hidden;
-  width: 100%;
-}
 
-.tabs-container {
-  display: flex;
-  flex-direction: row;
-  width: 600%; /* 6 pestañas */
-  transition: transform 0.35s cubic-bezier(.25,.8,.25,1);
-}
-
-.tab-section {
-  width: 100%;
-  flex-shrink: 0;
-}
   </style>
 </head>
 <body>
@@ -952,8 +939,7 @@
   </header>
 
   <div class="app">
-  <main class="tabs-wrapper">
-  <div class="tabs-container">
+    <main class="tabs-container">
       <!-- INGRESOS -->
       <section class="tab-section active" data-tab="ingresos">
         <section class="card">
@@ -1356,7 +1342,6 @@
           </div>
         </section>
       </section>
-     </div>
     </main>
   </div>
 
@@ -2896,4 +2881,3 @@ document.addEventListener("click", function(e){
 
 </script></body>
 </html>
-
