@@ -902,7 +902,7 @@
                 Define los ingresos fijos que entran cada mes en tu hogar.
               </div>
             </div>
-            <div class="card-tag">Fijos</div>
+            <div class="card-tag">Ingresos</div>
           </div>
           <div class="grid-2">
             <div>
@@ -923,50 +923,6 @@
               <button class="btn btn-primary" id="btnSaveIngresos">💾 Guardar ingresos base</button>
             </div>
           </div>
-        </section>
-
-        <section class="card">
-          <div class="card-header">
-            <div>
-              <div class="card-title">💸 Ingresos puntuales</div>
-              <div class="card-subtitle">
-                Registra ingresos únicos como pagas extras, regalos, ventas, etc.
-              </div>
-            </div>
-            <div class="card-tag">Puntuales</div>
-          </div>
-          <div class="grid-2">
-            <div>
-              <div class="field-group">
-                <label>📅 Fecha</label>
-                <input type="date" id="ingresoPuntualFecha" />
-              </div>
-              <div class="field-group">
-                <label>📝 Descripción</label>
-                <input type="text" id="ingresoPuntualDesc" placeholder="Paga extra, venta..." />
-              </div>
-            </div>
-            <div>
-              <div class="field-group">
-                <label>💰 Importe (€)</label>
-                <input type="number" id="ingresoPuntualImporte" step="0.01" inputmode="decimal" min="0.01" placeholder="0.00" />
-              </div>
-              <button class="btn btn-success" id="btnAddIngresoPuntual">➕ Registrar ingreso</button>
-            </div>
-          </div>
-        </section>
-
-        <section class="card">
-          <div class="card-header">
-            <div>
-              <div class="card-title">📋 Ingresos puntuales del mes</div>
-              <div class="card-subtitle">
-                Todos los ingresos extras registrados en el mes seleccionado.
-              </div>
-            </div>
-            <div class="card-tag">Listado</div>
-          </div>
-          <div id="ingresosPuntualesLista" class="expense-list"></div>
         </section>
 
         <section class="card">
@@ -1114,6 +1070,7 @@
           <div class="grid-2">
             <div>
               <div class="field-group">
+
                 <label>Nombre del sobre</label>
                 <input type="text" id="sobreNombre" placeholder="Alimentación, Ocio, Transporte..." />
               </div>
@@ -1133,12 +1090,12 @@
             <div>
               <div class="card-title">📊 Estado de presupuestos</div>
               <div class="card-subtitle">
-                Control visual del gasto vs presupuesto en cada categoría.
+                Cuánto has gastado vs cuánto tenías presupuestado.
               </div>
             </div>
             <div class="card-tag">Estado</div>
           </div>
-          <div id="sobresLista"></div>
+          <div id="sobresLista" class="pill-list"></div>
         </section>
       </section>
 
@@ -1370,6 +1327,7 @@
   </nav>
 
   <script>
+
     // Utilidades
     function formatCurrency(num) {
       var n = Number(num) || 0;
@@ -1538,7 +1496,7 @@
     function ingresosPuntualesDelMes(mes) {
       var out = [];
       for (var i = 0; i < ingresosPuntuales.length; i++) {
-        if (ingresosPuntuales[i].mes === mes) out.push(ingre​​​​​​​​​​​​​​​​
+
         if (ingresosPuntuales[i].mes === mes) out.push(ingresosPuntuales[i]);
       }
       return out;
@@ -2270,8 +2228,7 @@
         baseConfig.saray = parseFloat(ingSarayInput.value) || 0;
         baseConfig.otros = parseFloat(ingOtrosInput.value) || 0;
         saveJSON(LS_KEYS.BASE, baseConfig);
-
-        showToast("✅ Ingresos guardados correctamente");
+                showToast("✅ Ingresos guardados correctamente");
         renderAll();
       });
     }
@@ -2704,4 +2661,5 @@
   </script>
 </body>
 </html>
+
 
