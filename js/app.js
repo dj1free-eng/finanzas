@@ -267,10 +267,13 @@ function setupTabs() {
 }
 
   // ----- Cálculos por mes -----
-  function getIngresosBaseTotal() {
-    const ib = state.ingresosBase || {};
-    return (Number(ib.juan) || 0) + (Number(ib.saray) || 0) + (Number(ib.otros) || 0);
-  }
+function getIngresosBaseTotal() {
+  const ib = state.ingresosBase || {};
+  const juan = parseNumberSafe(ib.juan);
+  const saray = parseNumberSafe(ib.saray);
+  const otros = parseNumberSafe(ib.otros);
+  return juan + saray + otros;
+}
 
   function getIngresosPuntualesMes(year, month) {
     const mk = monthKey(year, month);
@@ -294,10 +297,13 @@ function setupTabs() {
 
   function updateResumenYChips() {
     const mk = getCurrentMonthKey();
-    const ingresosBase = getIngresosBaseTotal();
-    const ingresosPuntualesMes = getIngresosPuntualesMes(currentYear, currentMonth);
-    const totalIngPuntuales = ingresosPuntualesMes.reduce((s, ip) => s + (Number(ip.importe) || 0), 0);
-    const ingresosTotales = ingresosBase + totalIngPuntuales;
+const ingresosBase = getIngresosBaseTotal();
+const ingresosPuntualesMes = getIngresosPuntualesMes(currentYear, currentMonth);
+const totalIngPuntuales = ingresosPuntualesMes.reduce(
+  (s, ip) => s + parseNumberSafe(ip.importe),
+  0
+);
+const ingresosTotales = ingresosBase + totalIngPuntuales;
 
     const gastosMes = getGastosMes(currentYear, currentMonth);
     const totalGastosVar = gastosMes.reduce((s, g) => s + (Number(g.importe) || 0), 0);
@@ -324,16 +330,23 @@ function setupTabs() {
       chipHuchasTotal.textContent = 'Huchas: ' + formatCurrency(totalHuchas);
     }
 
-    // Resumen detalle
-    const resIngMes = document.getElementById('resIngMes');
-    const resFijosMes = document.getElementById('resFijosMes');
-    const resVarMes = document.getElementById('resVarMes');
-    const resBalMes = document.getElementById('resBalMes');
-    if (resIngMes) resIngMes.textContent = formatCurrency(ingresosTotales);
-    if (resFijosMes) resFijosMes.textContent = formatCurrency(totalFijos);
-    if (resVarMes) resVarMes.textContent = formatCurrency(totalGastosVar);
-    if (resBalMes) resBalMes.textContent = formatCurrency(balance);
+// Resumen detalle
+const resIngMes = document.getElementById('resIngMes');
+const resFijosMes = document.getElementById('resFijosMes');
+const resVarMes = document.getElementById('resVarMes');
+const resBalMes = document.getElementById('resBalMes');
+
+if (resIngMes) {
+  if (ingresosTotales === 0) {
+    resIngMes.textContent = 'Sin ingresos definidos';
+  } else {
+    resIngMes.textContent = formatCurrency(ingresosTotales);
   }
+}
+
+if (resFijosMes) resFijosMes.textContent = formatCurrency(totalFijos);
+if (resVarMes) resVarMes.textContent = formatCurrency(totalGastosVar);
+if (resBalMes) resBalMes.textContent = formatCurrency(balance);
 // ----- Informe de Gastos Fijos -----
 function generarInformeFijos() {
   const overlay = document.getElementById("modalInformes");
