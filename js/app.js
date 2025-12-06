@@ -31,6 +31,30 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 log(">>> app.js INICIADO <<<");
   // ----- Helpers -----
+  // Hace que el input se vea bien cuando aparece el teclado en móvil
+function ensureVisibleWhenFocused(el) {
+  if (!el) return;
+
+  el.addEventListener('focus', () => {
+    // Esperamos un poco a que aparezca el teclado
+    setTimeout(() => {
+      try {
+        var headerOffset = 120; // altura aproximada de cabecera + tarjeta
+        var rect = el.getBoundingClientRect();
+        var absoluteTop = rect.top + window.pageYOffset;
+        var targetScroll = absoluteTop - headerOffset;
+
+        window.scrollTo({
+          top: targetScroll,
+          left: 0,
+          behavior: 'smooth'
+        });
+      } catch (e) {
+        // por si acaso, que nunca rompa nada
+      }
+    }, 300);
+  });
+}
   // ---- Helpers numéricos seguros ----
 function parseNumberSafe(value) {
   if (value === null || value === undefined) return 0;
