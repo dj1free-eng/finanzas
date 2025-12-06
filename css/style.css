@@ -353,11 +353,13 @@ main {
   gap: 0.4rem; 
   margin-bottom: 0.75rem; 
 }
+
 .field-group label { 
   font-size: 0.85rem; 
   color: var(--text); 
   font-weight: 600;
 }
+
 .field-group input, 
 .field-group select, 
 .field-group textarea {
@@ -369,6 +371,8 @@ main {
   width: 100%;
   transition: all 0.2s;
 }
+
+/* estilos del date, los dejas tal cual ya los tenías */
 .field-group input[type="date"] {
   font-family: inherit;
   width: 100%;
@@ -387,19 +391,15 @@ main {
   padding: 0.25rem;
   cursor: pointer;
 }
-.field-group input, 
-.field-group select, 
-.field-group textarea {
-  padding: 0.75rem; 
-  border-radius: 10px; 
-  border: 2px solid var(--border);
-  font-size: 0.95rem; 
-  background: #f9fafb; 
-  width: 100%;
-  transition: all 0.2s;
 
-  /* Evitar que los campos queden tapados por la cabecera fija al hacer foco */
-  scroll-margin-top: 150px; /* ajusta si ves que queda muy alto/bajo */
+/* ESTO TAMBIÉN TIENE QUE ESTAR: el estilo al hacer foco */
+.field-group input:focus, 
+.field-group select:focus, 
+.field-group textarea:focus {
+  outline: none; 
+  border-color: var(--primary); 
+  background: white;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
 }
 .small-text { 
   font-size: 0.8rem; 
