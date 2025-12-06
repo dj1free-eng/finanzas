@@ -534,22 +534,27 @@ function setupIngresosPuntuales() {
         return;
       }
 
-      if (ingresoPuntualEditandoId) {
-        // EDITAR
-        state.ingresosPuntuales = state.ingresosPuntuales.map(ip =>
-          String(ip.id) === String(ingresoPuntualEditandoId)
-            ? { ...ip, fecha, desc, importe }
-            : ip
-        );
-        ingresoPuntualEditandoId = null;
-        btnAdd.textContent = '➕ Añadir ingreso puntual';
-        showToast('Ingreso puntual actualizado.');
-      } else {
-        // AÑADIR
-        const id = Date.now().toString(36) + Math.random().toString(36).slice(2);
-        state.ingresosPuntuales.push({ id, fecha, desc, importe });
-        showToast('Ingreso puntual añadido.');
-      }
+if (ingresoPuntualEditandoId) {
+  // EDITAR
+  state.ingresosPuntuales = state.ingresosPuntuales.map(ip =>
+    String(ip.id) === String(ingresoPuntualEditandoId)
+      ? {
+          id: ip.id,     // mantenemos el mismo id
+          fecha,
+          desc,
+          importe
+        }
+      : ip
+  );
+  ingresoPuntualEditandoId = null;
+  btnAdd.textContent = '➕ Añadir ingreso puntual';
+  showToast('Ingreso puntual actualizado.');
+} else {
+  // AÑADIR
+  const id = Date.now().toString(36) + Math.random().toString(36).slice(2);
+  state.ingresosPuntuales.push({ id, fecha, desc, importe });
+  showToast('Ingreso puntual añadido.');
+}
 
       saveState();
       if (descEl) descEl.value = '';
