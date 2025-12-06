@@ -416,6 +416,14 @@ function setupIngresosBase() {
   const ingOtros = document.getElementById('ingOtros');
   const btnSave = document.getElementById('btnSaveIngresos');
 
+  // NUEVO: evitar que queden ocultos bajo la cabecera en móvil
+  ensureVisibleWhenFocused(ingJuan);
+  ensureVisibleWhenFocused(ingSaray);
+  ensureVisibleWhenFocused(ingOtros);
+
+  // ... resto de la función igual que la tienes ahora
+}
+
   // Garantizar estructura en state
   if (!state.ingresosBase || typeof state.ingresosBase !== 'object') {
     state.ingresosBase = { juan: 0, saray: 0, otros: 0 };
