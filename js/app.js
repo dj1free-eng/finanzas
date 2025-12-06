@@ -267,13 +267,10 @@ function setupTabs() {
 }
 
   // ----- Cálculos por mes -----
-function getIngresosBaseTotal() {
-  const ib = state.ingresosBase || {};
-  const juan = parseNumberSafe(ib.juan);
-  const saray = parseNumberSafe(ib.saray);
-  const otros = parseNumberSafe(ib.otros);
-  return juan + saray + otros;
-}
+  function getIngresosBaseTotal() {
+    const ib = state.ingresosBase || {};
+    return (Number(ib.juan) || 0) + (Number(ib.saray) || 0) + (Number(ib.otros) || 0);
+  }
 
   function getIngresosPuntualesMes(year, month) {
     const mk = monthKey(year, month);
@@ -297,13 +294,10 @@ function getIngresosBaseTotal() {
 
   function updateResumenYChips() {
     const mk = getCurrentMonthKey();
-const ingresosBase = getIngresosBaseTotal();
-const ingresosPuntualesMes = getIngresosPuntualesMes(currentYear, currentMonth);
-const totalIngPuntuales = ingresosPuntualesMes.reduce(
-  (s, ip) => s + parseNumberSafe(ip.importe),
-  0
-);
-const ingresosTotales = ingresosBase + totalIngPuntuales;
+    const ingresosBase = getIngresosBaseTotal();
+    const ingresosPuntualesMes = getIngresosPuntualesMes(currentYear, currentMonth);
+    const totalIngPuntuales = ingresosPuntualesMes.reduce((s, ip) => s + (Number(ip.importe) || 0), 0);
+    const ingresosTotales = ingresosBase + totalIngPuntuales;
 
     const gastosMes = getGastosMes(currentYear, currentMonth);
     const totalGastosVar = gastosMes.reduce((s, g) => s + (Number(g.importe) || 0), 0);
@@ -330,23 +324,16 @@ const ingresosTotales = ingresosBase + totalIngPuntuales;
       chipHuchasTotal.textContent = 'Huchas: ' + formatCurrency(totalHuchas);
     }
 
-// Resumen detalle
-const resIngMes = document.getElementById('resIngMes');
-const resFijosMes = document.getElementById('resFijosMes');
-const resVarMes = document.getElementById('resVarMes');
-const resBalMes = document.getElementById('resBalMes');
-
-if (resIngMes) {
-  if (ingresosTotales === 0) {
-    resIngMes.textContent = 'Sin ingresos definidos';
-  } else {
-    resIngMes.textContent = formatCurrency(ingresosTotales);
+    // Resumen detalle
+    const resIngMes = document.getElementById('resIngMes');
+    const resFijosMes = document.getElementById('resFijosMes');
+    const resVarMes = document.getElementById('resVarMes');
+    const resBalMes = document.getElementById('resBalMes');
+    if (resIngMes) resIngMes.textContent = formatCurrency(ingresosTotales);
+    if (resFijosMes) resFijosMes.textContent = formatCurrency(totalFijos);
+    if (resVarMes) resVarMes.textContent = formatCurrency(totalGastosVar);
+    if (resBalMes) resBalMes.textContent = formatCurrency(balance);
   }
-}
-
-if (resFijosMes) resFijosMes.textContent = formatCurrency(totalFijos);
-if (resVarMes) resVarMes.textContent = formatCurrency(totalGastosVar);
-if (resBalMes) resBalMes.textContent = formatCurrency(balance);
 // ----- Informe de Gastos Fijos -----
 function generarInformeFijos() {
   const overlay = document.getElementById("modalInformes");
@@ -534,27 +521,27 @@ function setupIngresosPuntuales() {
         return;
       }
 
-if (ingresoPuntualEditandoId) {
-  // EDITAR
-  state.ingresosPuntuales = state.ingresosPuntuales.map(ip =>
-    String(ip.id) === String(ingresoPuntualEditandoId)
-      ? {
-          id: ip.id,     // mantenemos el mismo id
-          fecha,
-          desc,
-          importe
-        }
-      : ip
-  );
-  ingresoPuntualEditandoId = null;
-  btnAdd.textContent = '➕ Añadir ingreso puntual';
-  showToast('Ingreso puntual actualizado.');
-} else {
-  // AÑADIR
-  const id = Date.now().toString(36) + Math.random().toString(36).slice(2);
-  state.ingresosPuntuales.push({ id, fecha, desc, importe });
-  showToast('Ingreso puntual añadido.');
-}
+      if (ingresoPuntualEditandoId) {
+        // EDITAR
+        state.ingresosPuntuales = state.ingresosPuntuales.map(ip =>
+          String(ip.id) === String(ingresoPuntualEditandoId)
+            ? {
+                id: ip.id,
+                fecha: fecha,
+                desc: desc,
+                importe: importe
+              }
+            : ip
+        );
+        ingresoPuntualEditandoId = null;
+        btnAdd.textContent = '➕ Añadir ingreso puntual';
+        showToast('Ingreso puntual actualizado.');
+      } else {
+        // AÑADIR
+        const id = Date.now().toString(36) + Math.random().toString(36).slice(2);
+        state.ingresosPuntuales.push({ id, fecha, desc, importe });
+        showToast('Ingreso puntual añadido.');
+      }
 
       saveState();
       if (descEl) descEl.value = '';
@@ -1552,7 +1539,7 @@ if (type === 'fijo') {
   }
 
   // ----- Init -----
-document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', () => {
     
     log(">>> DOMContentLoaded DISPARADO <<<");  
     loadState();
@@ -1571,7 +1558,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnPrevMonth) {
       btnPrevMonth.addEventListener('click', () => changeMonth(-1));
     }
-
     const btnNextMonth = document.getElementById('btnNextMonth');
     if (btnNextMonth) {
       btnNextMonth.addEventListener('click', () => changeMonth(1));
