@@ -1547,7 +1547,7 @@ if (type === 'fijo') {
   }
 
   // ----- Init -----
-  document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
     
     log(">>> DOMContentLoaded DISPARADO <<<");  
     loadState();
@@ -1563,14 +1563,15 @@ if (type === 'fijo') {
     updateMonthDisplay();
 
     const btnPrevMonth = document.getElementById('btnPrevMonth');
-if (btnPrevMonth) {
-  btnPrevMonth.addEventListener('click', () => changeMonth(-1));
-}
+    if (btnPrevMonth) {
+      btnPrevMonth.addEventListener('click', () => changeMonth(-1));
+    }
 
-const btnNextMonth = document.getElementById('btnNextMonth');
-if (btnNextMonth) {
-  btnNextMonth.addEventListener('click', () => changeMonth(1));
-}
+    const btnNextMonth = document.getElementById('btnNextMonth');
+    if (btnNextMonth) {
+      btnNextMonth.addEventListener('click', () => changeMonth(1));
+    }
+
     setupIngresosBase();
     setupIngresosPuntuales();
     setupFijos();
