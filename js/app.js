@@ -529,6 +529,13 @@ function setupIngresosPuntuales() {
   const impEl = document.getElementById('ingresoPuntualImporte');
   const btnAdd = document.getElementById('btnAddIngresoPuntual');
 
+  // NUEVO: que los campos no se escondan
+  ensureVisibleWhenFocused(fechaEl);
+  ensureVisibleWhenFocused(descEl);
+  ensureVisibleWhenFocused(impEl);
+
+  // ... resto de la función igual
+}
   if (!Array.isArray(state.ingresosPuntuales)) {
     state.ingresosPuntuales = [];
   }
