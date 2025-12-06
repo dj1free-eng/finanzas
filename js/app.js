@@ -31,30 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 log(">>> app.js INICIADO <<<");
   // ----- Helpers -----
-  // Hace que el input se vea bien cuando aparece el teclado en móvil
-function ensureVisibleWhenFocused(el) {
-  if (!el) return;
-
-  el.addEventListener('focus', () => {
-    // Esperamos un poco a que aparezca el teclado
-    setTimeout(() => {
-      try {
-        var headerOffset = 120; // altura aproximada de cabecera + tarjeta
-        var rect = el.getBoundingClientRect();
-        var absoluteTop = rect.top + window.pageYOffset;
-        var targetScroll = absoluteTop - headerOffset;
-
-        window.scrollTo({
-          top: targetScroll,
-          left: 0,
-          behavior: 'smooth'
-        });
-      } catch (e) {
-        // por si acaso, que nunca rompa nada
-      }
-    }, 300);
-  });
-}
+  
   // ---- Helpers numéricos seguros ----
 function parseNumberSafe(value) {
   if (value === null || value === undefined) return 0;
@@ -416,22 +393,15 @@ function setupIngresosBase() {
   const ingOtros = document.getElementById('ingOtros');
   const btnSave = document.getElementById('btnSaveIngresos');
 
-  // Evitar que queden ocultos bajo la cabecera en móvil
-  ensureVisibleWhenFocused(ingJuan);
-  ensureVisibleWhenFocused(ingSaray);
-  ensureVisibleWhenFocused(ingOtros);
-
   // Garantizar estructura en state
   if (!state.ingresosBase || typeof state.ingresosBase !== 'object') {
     state.ingresosBase = { juan: 0, saray: 0, otros: 0 };
   }
 
-  // Pintar valores actuales
   if (ingJuan) ingJuan.value = state.ingresosBase.juan || '';
   if (ingSaray) ingSaray.value = state.ingresosBase.saray || '';
   if (ingOtros) ingOtros.value = state.ingresosBase.otros || '';
 
-  // Guardar
   if (btnSave) {
     btnSave.addEventListener('click', function () {
       state.ingresosBase = {
@@ -527,11 +497,6 @@ function setupIngresosPuntuales() {
   const descEl = document.getElementById('ingresoPuntualDesc');
   const impEl = document.getElementById('ingresoPuntualImporte');
   const btnAdd = document.getElementById('btnAddIngresoPuntual');
-
-  // Que los campos no se escondan al aparecer el teclado
-  ensureVisibleWhenFocused(fechaEl);
-  ensureVisibleWhenFocused(descEl);
-  ensureVisibleWhenFocused(impEl);
 
   // Garantizar array
   if (!Array.isArray(state.ingresosPuntuales)) {
