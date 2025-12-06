@@ -387,19 +387,19 @@ main {
   padding: 0.25rem;
   cursor: pointer;
 }
-.field-group input:focus, 
-.field-group select:focus, 
-.field-group textarea:focus {
-  outline: none; 
-  border-color: var(--primary); 
-  background: white;
-  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-}
-/* Evitar que los campos queden tapados por la cabecera fija al hacer foco */
-.field-group input,
-.field-group textarea,
-.field-group select {
-  scroll-margin-top: 120px; /* ajusta si ves que queda muy alto/bajo */
+.field-group input, 
+.field-group select, 
+.field-group textarea {
+  padding: 0.75rem; 
+  border-radius: 10px; 
+  border: 2px solid var(--border);
+  font-size: 0.95rem; 
+  background: #f9fafb; 
+  width: 100%;
+  transition: all 0.2s;
+
+  /* Evitar que los campos queden tapados por la cabecera fija al hacer foco */
+  scroll-margin-top: 150px; /* ajusta si ves que queda muy alto/bajo */
 }
 .small-text { 
   font-size: 0.8rem; 
