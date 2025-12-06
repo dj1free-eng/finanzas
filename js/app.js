@@ -416,25 +416,24 @@ function setupIngresosBase() {
   const ingOtros = document.getElementById('ingOtros');
   const btnSave = document.getElementById('btnSaveIngresos');
 
-  // NUEVO: evitar que queden ocultos bajo la cabecera en móvil
+  // Evitar que queden ocultos bajo la cabecera en móvil
   ensureVisibleWhenFocused(ingJuan);
   ensureVisibleWhenFocused(ingSaray);
   ensureVisibleWhenFocused(ingOtros);
-
-  // ... resto de la función igual que la tienes ahora
-}
 
   // Garantizar estructura en state
   if (!state.ingresosBase || typeof state.ingresosBase !== 'object') {
     state.ingresosBase = { juan: 0, saray: 0, otros: 0 };
   }
 
+  // Pintar valores actuales
   if (ingJuan) ingJuan.value = state.ingresosBase.juan || '';
   if (ingSaray) ingSaray.value = state.ingresosBase.saray || '';
   if (ingOtros) ingOtros.value = state.ingresosBase.otros || '';
 
+  // Guardar
   if (btnSave) {
-    btnSave.addEventListener('click', () => {
+    btnSave.addEventListener('click', function () {
       state.ingresosBase = {
         juan: parseNumberSafe(ingJuan && ingJuan.value),
         saray: parseNumberSafe(ingSaray && ingSaray.value),
@@ -529,24 +528,24 @@ function setupIngresosPuntuales() {
   const impEl = document.getElementById('ingresoPuntualImporte');
   const btnAdd = document.getElementById('btnAddIngresoPuntual');
 
-  // NUEVO: que los campos no se escondan
+  // Que los campos no se escondan al aparecer el teclado
   ensureVisibleWhenFocused(fechaEl);
   ensureVisibleWhenFocused(descEl);
   ensureVisibleWhenFocused(impEl);
 
-  // ... resto de la función igual
-}
+  // Garantizar array
   if (!Array.isArray(state.ingresosPuntuales)) {
     state.ingresosPuntuales = [];
   }
 
+  // Fecha por defecto: hoy
   if (fechaEl && !fechaEl.value) {
     const today = new Date();
     fechaEl.value = today.toISOString().slice(0, 10);
   }
 
   if (btnAdd) {
-    btnAdd.addEventListener('click', () => {
+    btnAdd.addEventListener('click', function () {
       const fecha = fechaEl && fechaEl.value;
       const desc = descEl && descEl.value.trim();
       const importe = parseNumberSafe(impEl && impEl.value);
@@ -562,23 +561,24 @@ function setupIngresosPuntuales() {
 
       if (ingresoPuntualEditandoId) {
         // EDITAR
-        state.ingresosPuntuales = state.ingresosPuntuales.map(ip =>
-          String(ip.id) === String(ingresoPuntualEditandoId)
-            ? {
-                id: ip.id,
-                fecha: fecha,
-                desc: desc,
-                importe: importe
-              }
-            : ip
-        );
+        state.ingresosPuntuales = state.ingresosPuntuales.map(function (ip) {
+          if (String(ip.id) === String(ingresoPuntualEditandoId)) {
+            return {
+              id: ip.id,
+              fecha: fecha,
+              desc: desc,
+              importe: importe
+            };
+          }
+          return ip;
+        });
         ingresoPuntualEditandoId = null;
         btnAdd.textContent = '➕ Añadir ingreso puntual';
         showToast('Ingreso puntual actualizado.');
       } else {
         // AÑADIR
         const id = Date.now().toString(36) + Math.random().toString(36).slice(2);
-        state.ingresosPuntuales.push({ id, fecha, desc, importe });
+        state.ingresosPuntuales.push({ id: id, fecha: fecha, desc: desc, importe: importe });
         showToast('Ingreso puntual añadido.');
       }
 
