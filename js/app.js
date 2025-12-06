@@ -1562,9 +1562,15 @@ if (type === 'fijo') {
     setupMonthPicker();
     updateMonthDisplay();
 
-    document.getElementById('btnPrevMonth')?.addEventListener('click', () => changeMonth(-1));
-    document.getElementById('btnNextMonth')?.addEventListener('click', () => changeMonth(1));
+    const btnPrevMonth = document.getElementById('btnPrevMonth');
+if (btnPrevMonth) {
+  btnPrevMonth.addEventListener('click', () => changeMonth(-1));
+}
 
+const btnNextMonth = document.getElementById('btnNextMonth');
+if (btnNextMonth) {
+  btnNextMonth.addEventListener('click', () => changeMonth(1));
+}
     setupIngresosBase();
     setupIngresosPuntuales();
     setupFijos();
