@@ -985,15 +985,15 @@ cont.querySelectorAll('button[data-action="del"]').forEach(btn => {
 
   function setupHuchas() {
     const nombreEl = document.getElementById('huchaNombre');
-    const objEl = document.getElementById('huchaObjetivo');
-    const saldoEl = document.getElementById('huchaSaldoInicial');
-    const btnAdd = document.getElementById('btnAddHucha');
+const objEl = document.getElementById('huchaObjetivo');
+const saldoEl = document.getElementById('huchaSaldoInicial');
+const btnAdd = document.getElementById('btnAddHucha');
 
-    const select = document.getElementById('huchaSelect');
-    const impMovEl = document.getElementById('huchaImporte');
-    const accionEl = document.getElementById('huchaAccion');
-    const btnMov = document.getElementById('btnHuchaMovimiento');
-
+const select = document.getElementById('huchaSelect');
+const impMovEl = document.getElementById('huchaImporte');
+const accionEl = document.getElementById('huchaAccion');
+const btnMov = document.getElementById('btnHuchaMovimiento');
+const regIngresoEl = document.getElementById('huchaRegistrarIngreso');
         if (btnAdd) {
       btnAdd.addEventListener('click', () => {
         const nombre = nombreEl && nombreEl.value.trim();
@@ -1064,34 +1064,72 @@ cont.querySelectorAll('button[data-action="del"]').forEach(btn => {
           return;
         }
         if (accion === 'aportar') {
-          hucha.saldo = (Number(hucha.saldo) || 0) + importe;
-          // Registrar gasto categoría "Huchas" en mes actual
-          const today = new Date();
-          const fecha = today.toISOString().slice(0,10);
-          const id = Date.now().toString(36) + Math.random().toString(36).slice(2);
-          state.gastos.push({
-            id,
-            fecha,
-            categoria: 'Huchas',
-            desc: 'Ahorro en ' + (hucha.nombre || ''),
-            importe
-          });
-          showToast('Aportación registrada en la hucha y como gasto.');
-        } else {
-          const saldoActual = Number(hucha.saldo) || 0;
-          if (importe > saldoActual) {
-            showToast('No hay saldo suficiente en la hucha.');
-            return;
-          }
-          hucha.saldo = saldoActual - importe;
-          showToast('Retirada registrada en la hucha.');
-        }
-        saveState();
-        if (impMovEl) impMovEl.value = '';
-        renderHuchas();
-        renderGastosLista();
-        renderSobresLista();
-        updateResumenYChips();
+  // APORTAR: igual que antes
+  hucha.saldo = (Number(hucha.saldo) || 0) + importe;
+
+  const today = new Date();
+  const fecha = today.toISOString().slice(0, 10);
+  const idGasto = Date.now().toString(36) + Math.random().toString(36).slice(2);
+
+  if (!Array.isArray(state.gastos)) {
+    state.gastos = [];
+  }
+
+  state.gastos.push({
+    id: idGasto,
+    fecha,
+    categoria: 'Huchas',
+    desc: 'Ahorro en ' + (hucha.nombre || ''),
+    importe
+  });
+
+  showToast('Aportación registrada en la hucha y como gasto.');
+} else {
+  // RETIRAR
+  const saldoActual = Number(hucha.saldo) || 0;
+  if (importe > saldoActual) {
+    showToast('No hay saldo suficiente en la hucha.');
+    return;
+  }
+
+  const registrarIngreso =
+    regIngresoEl && regIngresoEl.checked ? true : false;
+
+  hucha.saldo = saldoActual - importe;
+
+  // Si el usuario ha marcado la casilla, creamos un ingreso puntual
+  if (registrarIngreso) {
+    if (!Array.isArray(state.ingresosPuntuales)) {
+      state.ingresosPuntuales = [];
+    }
+
+    const today = new Date();
+    const fecha = today.toISOString().slice(0, 10);
+    const idIng = Date.now().toString(36) + Math.random().toString(36).slice(2);
+
+    state.ingresosPuntuales.push({
+      id: idIng,
+      fecha,
+      desc: 'Retiro desde hucha ' + (hucha.nombre || ''),
+      importe
+    });
+
+    showToast('Retirada registrada y devuelta al balance como ingreso puntual.');
+  } else {
+    showToast('Retirada registrada en la hucha.');
+  }
+
+  // por comodidad, desmarcamos la casilla tras el movimiento
+  if (regIngresoEl) regIngresoEl.checked = false;
+}
+
+saveState();
+if (impMovEl) impMovEl.value = '';
+renderHuchas();
+renderGastosLista();
+renderSobresLista();
+renderIngresosPuntualesLista();  // 👉 importante para ver el ingreso al momento
+updateResumenYChips();
       });
     }
   }
