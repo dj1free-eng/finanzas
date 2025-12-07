@@ -938,10 +938,11 @@ cont.querySelectorAll('button[data-action="del"]').forEach(btn => {
         card.innerHTML = `
           <div class="budget-card-header">
             <div class="budget-name">🐷 ${h.nombre || 'Sin nombre'}</div>
-            <div>
-              <button class="btn btn-edit" data-action="edit" data-id="${h.id}">✏</button>
-              <button class="btn btn-danger-chip" data-action="del" data-id="${h.id}">🗑</button>
-            </div>
+<div class="hucha-actions-single">
+  <button class="btn btn-danger-chip btn-hucha-break" data-action="del" data-id="${h.id}">
+    🔨 Romper hucha
+  </button>
+</div>
           </div>
           <div class="budget-amounts">
             <div class="budget-amount-item">
