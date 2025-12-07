@@ -416,145 +416,115 @@ function setupIngresosBase() {
   }
 }
   // ----- Ingresos puntuales -----
-  let ingresoPuntualEditandoId = null;
-function renderIngresosPuntualesLista() {
-  const cont = document.getElementById('ingresosPuntualesLista');
-  if (!cont) return;
+  function renderIngresosPuntualesLista() {
+    const cont = document.getElementById('ingresosPuntualesLista');
+    if (!cont) return;
 
-  const list = getIngresosPuntualesMes(currentYear, currentMonth);
+    // Garantizar array
+    if (!Array.isArray(state.ingresosPuntuales)) {
+      state.ingresosPuntuales = [];
+    }
 
-  if (!Array.isArray(state.ingresosPuntuales)) {
-    state.ingresosPuntuales = [];
-  }
+    const list = getIngresosPuntualesMes(currentYear, currentMonth);
 
-  if (!list.length) {
-    cont.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-state-icon">💶</div>
-        No hay ingresos puntuales este mes.
-      </div>`;
-    return;
-  }
+    if (!list.length) {
+      cont.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-icon">💶</div>
+          No hay ingresos puntuales este mes.
+        </div>`;
+      return;
+    }
 
-  cont.innerHTML = '';
-  list
-    .sort((a, b) => (a.fecha || '').localeCompare(b.fecha || ''))
-    .forEach(ip => {
-      const item = document.createElement('div');
-      item.className = 'expense-item';
-      item.innerHTML = `
-        <div class="expense-main">
-          <div class="expense-line1">+ ${formatCurrency(parseNumberSafe(ip.importe))}</div>
-          <div class="expense-line2">${ip.fecha || ''} · ${ip.desc || ''}</div>
-        </div>
-        <div class="expense-actions">
-          <button class="btn btn-secondary-chip" data-action="edit" data-id="${ip.id}">✏️</button>
-          <button class="btn btn-danger-chip" data-action="del" data-id="${ip.id}">🗑</button>
-        </div>
-      `;
-      cont.appendChild(item);
-    });
+    cont.innerHTML = '';
+    list
+      .sort((a, b) => (a.fecha || '').localeCompare(b.fecha || ''))
+      .forEach(ip => {
+        const item = document.createElement('div');
+        item.className = 'expense-item';
+        item.innerHTML = `
+          <div class="expense-main">
+            <div class="expense-line1">+ ${formatCurrency(parseNumberSafe(ip.importe))}</div>
+            <div class="expense-line2">${ip.fecha || ''} · ${ip.desc || ''}</div>
+          </div>
+          <div class="expense-actions">
+            <button class="btn btn-secondary-chip" data-action="edit" data-id="${ip.id}">✏️</button>
+            <button class="btn btn-danger-chip" data-action="del" data-id="${ip.id}">🗑</button>
+          </div>
+        `;
+        cont.appendChild(item);
+      });
 
-  // Borrar
-  cont.querySelectorAll('button[data-action="del"]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const id = btn.dataset.id;
-      openConfirm('¿Eliminar este ingreso puntual?', () => {
-        state.ingresosPuntuales = state.ingresosPuntuales.filter(
-          ip => String(ip.id) !== String(id)
-        );
-        saveState();
-        renderIngresosPuntualesLista();
-        updateResumenYChips();
-        showToast('Ingreso puntual eliminado.');
+    // Borrar
+    cont.querySelectorAll('button[data-action="del"]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+        openConfirm('¿Eliminar este ingreso puntual?', () => {
+          state.ingresosPuntuales = state.ingresosPuntuales.filter(
+            ip => String(ip.id) !== String(id)
+          );
+          saveState();
+          renderIngresosPuntualesLista();
+          updateResumenYChips();
+          showToast('Ingreso puntual eliminado.');
+        });
       });
     });
-  });
 
-  // Editar
-  cont.querySelectorAll('button[data-action="edit"]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const id = btn.dataset.id;
-      const ip = state.ingresosPuntuales.find(ip => String(ip.id) === String(id));
-      if (!ip) return;
-
-      const fechaEl = document.getElementById('ingresoPuntualFecha');
-      const descEl = document.getElementById('ingresoPuntualDesc');
-      const impEl = document.getElementById('ingresoPuntualImporte');
-      const btnAdd = document.getElementById('btnAddIngresoPuntual');
-
-      if (fechaEl) fechaEl.value = ip.fecha || '';
-      if (descEl) descEl.value = ip.desc || '';
-      if (impEl) impEl.value = parseNumberSafe(ip.importe);
-
-      ingresoPuntualEditandoId = id;
-      if (btnAdd) btnAdd.textContent = '💾 Guardar cambios';
+    // Editar → ahora abre MODAL
+    cont.querySelectorAll('button[data-action="edit"]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.id;
+        const ingreso = state.ingresosPuntuales.find(ip => String(ip.id) === String(id));
+        if (!ingreso) return;
+        openEditModal('ingresoPuntual', ingreso);
+      });
     });
-  });
-}
-function setupIngresosPuntuales() {
-  const fechaEl = document.getElementById('ingresoPuntualFecha');
-  const descEl = document.getElementById('ingresoPuntualDesc');
-  const impEl = document.getElementById('ingresoPuntualImporte');
-  const btnAdd = document.getElementById('btnAddIngresoPuntual');
-
-  // Garantizar array
-  if (!Array.isArray(state.ingresosPuntuales)) {
-    state.ingresosPuntuales = [];
   }
+  function setupIngresosPuntuales() {
+    const fechaEl = document.getElementById('ingresoPuntualFecha');
+    const descEl = document.getElementById('ingresoPuntualDesc');
+    const impEl = document.getElementById('ingresoPuntualImporte');
+    const btnAdd = document.getElementById('btnAddIngresoPuntual');
 
-  // Fecha por defecto: hoy
-  if (fechaEl && !fechaEl.value) {
-    const today = new Date();
-    fechaEl.value = today.toISOString().slice(0, 10);
-  }
+    // Garantizar array
+    if (!Array.isArray(state.ingresosPuntuales)) {
+      state.ingresosPuntuales = [];
+    }
 
-  if (btnAdd) {
-    btnAdd.addEventListener('click', function () {
-      const fecha = fechaEl && fechaEl.value;
-      const desc = descEl && descEl.value.trim();
-      const importe = parseNumberSafe(impEl && impEl.value);
+    // Fecha por defecto: hoy
+    if (fechaEl && !fechaEl.value) {
+      const today = new Date();
+      fechaEl.value = today.toISOString().slice(0, 10);
+    }
 
-      if (!fecha) {
-        showToast('Pon una fecha.');
-        return;
-      }
-      if (!(importe > 0)) {
-        showToast('El importe debe ser mayor que 0.');
-        return;
-      }
+    if (btnAdd) {
+      btnAdd.addEventListener('click', function () {
+        const fecha = fechaEl && fechaEl.value;
+        const desc = descEl && descEl.value.trim();
+        const importe = parseNumberSafe(impEl && impEl.value);
 
-      if (ingresoPuntualEditandoId) {
-        // EDITAR
-        state.ingresosPuntuales = state.ingresosPuntuales.map(function (ip) {
-          if (String(ip.id) === String(ingresoPuntualEditandoId)) {
-            return {
-              id: ip.id,
-              fecha: fecha,
-              desc: desc,
-              importe: importe
-            };
-          }
-          return ip;
-        });
-        ingresoPuntualEditandoId = null;
-        btnAdd.textContent = '➕ Añadir ingreso puntual';
-        showToast('Ingreso puntual actualizado.');
-      } else {
-        // AÑADIR
+        if (!fecha) {
+          showToast('Pon una fecha.');
+          return;
+        }
+        if (!(importe > 0)) {
+          showToast('El importe debe ser mayor que 0.');
+          return;
+        }
+
         const id = Date.now().toString(36) + Math.random().toString(36).slice(2);
         state.ingresosPuntuales.push({ id: id, fecha: fecha, desc: desc, importe: importe });
-        showToast('Ingreso puntual añadido.');
-      }
 
-      saveState();
-      if (descEl) descEl.value = '';
-      if (impEl) impEl.value = '';
-      renderIngresosPuntualesLista();
-      updateResumenYChips();
-    });
+        saveState();
+        if (descEl) descEl.value = '';
+        if (impEl) impEl.value = '';
+        renderIngresosPuntualesLista();
+        updateResumenYChips();
+        showToast('Ingreso puntual añadido.');
+      });
+    }
   }
-}
 // ----- Gastos fijos -----
 function renderFijosTable() {
   const cont = document.getElementById('fijosTableContainer');
