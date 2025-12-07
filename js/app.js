@@ -101,30 +101,39 @@ function parseNumberSafe(value) {
     return v.toLocaleString('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 2 });
   }
 
-  let toastTimeout;
+let toastTimeout;
 
 function showToast(message) {
   const t = document.getElementById("toast");
   if (!t) return;
 
   // Limpiar timeout previo
-  if (toastTimeout) clearTimeout(toastTimeout);
+  if (toastTimeout) {
+    clearTimeout(toastTimeout);
+  }
 
-  // Insertar mensaje con formato
-  t.innerHTML = `<div style="padding: 4px 0">${message}</div>`;
-
+  // Meter el mensaje (permitimos HTML simple)
+  t.innerHTML = `<div style="padding:4px 0">${message}</div>`;
   t.classList.add("show");
 
-  // Ocultar al tocar cualquier parte de la pantalla
+  // Función para ocultar el toast
   const hide = () => {
     t.classList.remove("show");
     document.removeEventListener("click", hide);
+    document.removeEventListener("touchstart", hide);
   };
-  document.addEventListener("click", hide, { once: true });
 
-  // Autocierre a los 8,5s si el usuario no toca nada
+  // IMPORTANTE:
+  // Esperamos un poquito antes de enganchar el "tap para cerrar"
+  // para NO capturar el mismo click que disparó el toast.
+  setTimeout(() => {
+    document.addEventListener("click", hide, { once: true });
+    document.addEventListener("touchstart", hide, { once: true });
+  }, 200);
+
+  // Autocierre a los 8.5 segundos
   toastTimeout = setTimeout(() => {
-    t.classList.remove("show");
+    hide();
   }, 8500);
 }
 
