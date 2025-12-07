@@ -970,15 +970,55 @@ cont.querySelectorAll('button[data-action="del"]').forEach(btn => {
         }
       });
 
-      cont.querySelectorAll('button[data-action="del"]').forEach(btn => {
+            cont.querySelectorAll('button[data-action="del"]').forEach(btn => {
         btn.addEventListener('click', () => {
           const id = btn.dataset.id;
-          openConfirm('¿Eliminar esta hucha? El saldo se perderá en el control.', () => {
+          const hucha = state.huchas.find(h => String(h.id) === String(id));
+          if (!hucha) return;
+
+          const saldoActual = Number(hucha.saldo) || 0;
+          const mensaje = saldoActual > 0
+            ? 'Esta hucha tiene saldo. Si la rompes, su saldo se registrará como un ingreso puntual del mes actual y la hucha se eliminará. ¿Quieres continuar?'
+            : 'Esta hucha no tiene saldo. Si la rompes, simplemente se eliminará del listado. ¿Quieres continuar?';
+
+          openConfirm(mensaje, () => {
+            const teniaSaldo = saldoActual > 0;
+
+            // Si tenía saldo, creamos un ingreso puntual de tipo "hucha_retiro"
+            if (teniaSaldo) {
+              if (!Array.isArray(state.ingresosPuntuales)) {
+                state.ingresosPuntuales = [];
+              }
+
+              const today = new Date();
+              const fecha = today.toISOString().slice(0, 10);
+              const ingresoId = Date.now().toString(36) + Math.random().toString(36).slice(2);
+
+              state.ingresosPuntuales.push({
+                id: ingresoId,
+                fecha: fecha,
+                desc: 'Romper hucha ' + (hucha.nombre || ''),
+                importe: saldoActual,
+                tipo: 'hucha_retiro',
+                huchaId: hucha.id
+              });
+            }
+
+            // Eliminar la hucha del estado
             state.huchas = state.huchas.filter(h => String(h.id) !== String(id));
+
+            // Guardar y refrescar interfaz
             saveState();
             renderHuchas();
+            if (typeof renderIngresosPuntualesLista === 'function') {
+              renderIngresosPuntualesLista();
+            }
             updateResumenYChips();
-            showToast('Hucha eliminada.');
+
+            const msg = teniaSaldo
+              ? 'Has roto la hucha. Su saldo se ha registrado como ingreso puntual del mes actual.'
+              : 'Has roto la hucha. No tenía saldo pendiente.';
+            showToast(msg);
           });
         });
       });
