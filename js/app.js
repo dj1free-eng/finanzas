@@ -737,13 +737,24 @@ cont.querySelectorAll('button[data-action="del"]').forEach(btn => {
 });
 
     cont.querySelectorAll('button[data-action="edit"]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const id = btn.dataset.id;
-        const gasto = state.gastos.find(g => String(g.id) === String(id));
-        if (!gasto) return;
-        openEditModal('gasto', gasto);
-      });
-    });
+  btn.addEventListener('click', () => {
+    const id = btn.dataset.id;
+    const gasto = state.gastos.find(g => String(g.id) === String(id));
+    if (!gasto) return;
+
+    // Si es la aportación inicial de una hucha, NO se permite editar
+    if (gasto.tipo === 'hucha_inicial') {
+      showToast(
+        'Este movimiento es la aportación inicial de una hucha. ' +
+        'Si necesitas cambiarla, edita la hucha o elimínala y vuelve a crearla.'
+      );
+      return;
+    }
+
+    // El resto de gastos se editan con normalidad
+    openEditModal('gasto', gasto);
+  });
+});
   }
 
   function setupGastos() {
