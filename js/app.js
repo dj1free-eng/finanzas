@@ -122,10 +122,10 @@ function showToast(message) {
   };
   document.addEventListener("click", hide, { once: true });
 
-  // Autocierre a los 5s si el usuario no toca nada
+  // Autocierre a los 8,5s si el usuario no toca nada
   toastTimeout = setTimeout(() => {
     t.classList.remove("show");
-  }, 5000);
+  }, 8500);
 }
 
   // ----- Modal confirmación -----
