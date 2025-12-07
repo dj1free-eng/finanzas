@@ -683,19 +683,30 @@ function setupFijos() {
         cont.appendChild(item);
       });
 
-    cont.querySelectorAll('button[data-action="del"]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const id = btn.dataset.id;
-        openConfirm('¿Eliminar este gasto?', () => {
-          state.gastos = state.gastos.filter(g => String(g.id) !== String(id));
-          saveState();
-          renderGastosLista();
-          renderSobresLista();
-          updateResumenYChips();
-          showToast('Gasto eliminado.');
-        });
-      });
+cont.querySelectorAll('button[data-action="del"]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const id = btn.dataset.id;
+
+    // Buscar el gasto en estado
+    const gasto = state.gastos.find(g => String(g.id) === String(id));
+
+    // Si es un gasto de tipo "hucha_inicial", NO permitimos borrarlo
+    if (gasto && gasto.tipo === 'hucha_inicial') {
+      showToast('Este gasto es la aportación inicial de una hucha. Si quieres recuperar ese dinero, registra un retiro desde la sección Huchas.');
+      return;
+    }
+
+    // Para el resto de gastos, comportamiento normal
+    openConfirm('¿Eliminar este gasto?', () => {
+      state.gastos = state.gastos.filter(g => String(g.id) !== String(id));
+      saveState();
+      renderGastosLista();
+      renderSobresLista();
+      updateResumenYChips();
+      showToast('Gasto eliminado.');
     });
+  });
+});
 
     cont.querySelectorAll('button[data-action="edit"]').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -980,14 +991,15 @@ function setupFijos() {
           const fecha = today.toISOString().slice(0, 10);
           const gastoId = Date.now().toString(36) + Math.random().toString(36).slice(2);
 
-          state.gastos.push({
-            id: gastoId,
-            fecha,
-            categoria: 'Huchas',
-            // mismo estilo que las aportaciones normales, pero marcando que es inicial
-            desc: 'Ahorro inicial en ' + (nombre || ''),
-            importe: saldoInicial
-          });
+  state.gastos.push({
+    id: gastoId,
+    fecha,
+    categoria: 'Huchas',
+    desc: 'Ahorro inicial en ' + (nombre || ''),
+    importe: saldoInicial,
+    tipo: 'hucha_inicial',   // <- flag especial
+    huchaId: id              // <- por si en el futuro quieres enlazar aún más
+  });
         }
 
         saveState();
