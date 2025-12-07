@@ -456,6 +456,16 @@ main {
   box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
   transform: translateY(-2px);
 }
+.btn-secondary {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.btn-secondary:hover {
+  background: #d1d5db;
+  box-shadow: 0 4px 12px rgba(107, 114, 128, 0.4);
+  transform: translateY(-2px);
+}
 .btn-edit {
   background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   color: white;
@@ -882,7 +892,7 @@ main {
   display: flex;
 }
 .modal {
-  background: white;
+  background: #ffffff;
   border-radius: 16px;
   padding: 1.5rem;
   max-width: 500px;
@@ -890,6 +900,20 @@ main {
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border);
+  position: relative;
+}
+
+/* Línea superior con degradado, estilo “tarjeta premium” */
+.modal::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  border-radius: 16px 16px 0 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 .modal-header {
   display: flex;
@@ -970,19 +994,38 @@ main {
 }
 /* Modal Informes */
 .informes-card {
-  max-width: 90%;
-  width: 380px;
-  background: #fff;
-  border-radius: 14px;
-  padding: 20px;
-  box-shadow: var(--shadow);
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.5rem;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border);
+  position: relative;
   text-align: left;
+}
+#modalInformes .btn-secondary {
+  width: 100%;
+  margin-top: 1rem;
+}
+.informes-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  border-radius: 16px 16px 0 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 .informes-card h2 {
-  margin-bottom: 15px;
-  font-size: 20px;
-  font-weight: 600;
+  margin: 0 0 1rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text);
 }
 
 /* Contenido de informes */
