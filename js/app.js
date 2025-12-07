@@ -101,13 +101,32 @@ function parseNumberSafe(value) {
     return v.toLocaleString('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 2 });
   }
 
-  function showToast(msg) {
-    const el = document.getElementById('toast');
-    if (!el) return;
-    el.textContent = msg;
-    el.classList.add('show');
-    setTimeout(() => el.classList.remove('show'), 2200);
-  }
+  let toastTimeout;
+
+function showToast(message) {
+  const t = document.getElementById("toast");
+  if (!t) return;
+
+  // Limpiar timeout previo
+  if (toastTimeout) clearTimeout(toastTimeout);
+
+  // Insertar mensaje con formato
+  t.innerHTML = `<div style="padding: 4px 0">${message}</div>`;
+
+  t.classList.add("show");
+
+  // Ocultar al tocar cualquier parte de la pantalla
+  const hide = () => {
+    t.classList.remove("show");
+    document.removeEventListener("click", hide);
+  };
+  document.addEventListener("click", hide, { once: true });
+
+  // Autocierre a los 5s si el usuario no toca nada
+  toastTimeout = setTimeout(() => {
+    t.classList.remove("show");
+  }, 5000);
+}
 
   // ----- Modal confirmación -----
   let pendingConfirm = null;
