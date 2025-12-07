@@ -404,21 +404,29 @@
                 <input type="number" id="huchaImporte" step="0.01" inputmode="decimal" min="0.01" placeholder="0.00" />
               </div>
             </div>
-            <div>
-              <div class="field-group">
-                <label>Acción</label>
-                <select id="huchaAccion">
-                  <option value="aportar">💵 Aportar (ahorrar dinero)</option>
-                  <option value="retirar">💸 Retirar (usar ahorros)</option>
-                </select>
-              </div>
-              <button class="btn btn-primary" id="btnHuchaMovimiento">💰 Registrar movimiento</button>
-            </div>
+<div>
+  <div class="field-group">
+    <label>Acción</label>
+    <select id="huchaAccion">
+      <option value="aportar">💵 Aportar (ahorrar dinero)</option>
+      <option value="retirar">💸 Retirar (usar ahorros)</option>
+    </select>
+  </div>
+
+  <div class="field-group">
+    <label class="small-text" style="font-weight:500;">
+      <input type="checkbox" id="huchaRegistrarIngreso" style="margin-right:0.4rem;">
+      Registrar este retiro como ingreso puntual del mes
+    </label>
+  </div>
+
+  <button class="btn btn-primary" id="btnHuchaMovimiento">💰 Registrar movimiento</button>
+</div>
           </div>
           <div class="small-text" style="margin-top:0.75rem; padding: 0.75rem; background: #f0f9ff; border-radius: 8px; border-left: 3px solid #3b82f6;">
             <strong>💡 Cómo funciona:</strong><br />
-            · <strong>Aportar:</strong> Suma al saldo de la hucha y registra un gasto en la categoría "Huchas".<br />
-            · <strong>Retirar:</strong> Resta del saldo de la hucha, sin crear ningún gasto adicional.
+· <strong>Aportar:</strong> Suma al saldo de la hucha y registra un gasto en la categoría "Huchas".<br />
+· <strong>Retirar:</strong> Resta del saldo de la hucha. Si marcas la casilla, el retiro volverá al balance como un ingreso puntual del mes.
           </div>
         </section>
 
