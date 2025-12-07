@@ -955,22 +955,50 @@ function setupFijos() {
     const accionEl = document.getElementById('huchaAccion');
     const btnMov = document.getElementById('btnHuchaMovimiento');
 
-    if (btnAdd) {
+        if (btnAdd) {
       btnAdd.addEventListener('click', () => {
         const nombre = nombreEl && nombreEl.value.trim();
         const objetivo = Number(objEl && objEl.value) || 0;
         const saldoInicial = Number(saldoEl && saldoEl.value) || 0;
+
         if (!nombre) {
           showToast('Pon un nombre a la hucha.');
           return;
         }
+
         const id = Date.now().toString(36) + Math.random().toString(36).slice(2);
+
+        // 1) Crear la hucha con el saldo inicial
         state.huchas.push({ id, nombre, objetivo, saldo: saldoInicial });
+
+        // 2) Si hay saldo inicial, registrar también un gasto tipo "aportar a hucha"
+        if (saldoInicial > 0) {
+          if (!Array.isArray(state.gastos)) {
+            state.gastos = [];
+          }
+          const today = new Date();
+          const fecha = today.toISOString().slice(0, 10);
+          const gastoId = Date.now().toString(36) + Math.random().toString(36).slice(2);
+
+          state.gastos.push({
+            id: gastoId,
+            fecha,
+            categoria: 'Huchas',
+            // mismo estilo que las aportaciones normales, pero marcando que es inicial
+            desc: 'Ahorro inicial en ' + (nombre || ''),
+            importe: saldoInicial
+          });
+        }
+
         saveState();
+
         if (nombreEl) nombreEl.value = '';
         if (objEl) objEl.value = '';
         if (saldoEl) saldoEl.value = '';
+
         renderHuchas();
+        renderGastosLista();      // ver el movimiento en la lista de gastos
+        renderSobresLista();      // por si hay un sobre "Huchas"
         updateResumenYChips();
         rebuildCategoriasSugerencias();
         showToast('Hucha creada.');
