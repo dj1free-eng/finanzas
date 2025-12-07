@@ -1077,3 +1077,22 @@ main {
   font-size: 13px;
   color: var(--muted);
 }
+.hucha-actions-single {
+  display: flex;
+  width: 100%;
+  margin-top: 6px;
+}
+
+.btn-hucha-break {
+  flex: 1;
+  padding: 10px 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  background: #d62828;
+  border-radius: 10px;
+  color: white;
+  box-shadow: var(--shadow-sm);
+}
+.btn-hucha-break:active {
+  transform: scale(0.97);
+}
