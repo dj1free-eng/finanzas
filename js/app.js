@@ -1506,9 +1506,11 @@ function openEditModal(type, data) {
           }
         }
 
-        closeEditModal();
-      });
-    }
+                closeEditModal();
+      }); // <-- cierre correcto del addEventListener del modalSave
+    }     // <-- cierre del if (modalSave)
+  }       // <-- cierre de la función setupEditModalEvents()
+
   // ----- Eventos modal confirm -----
   function setupConfirmModalEvents() {
     const overlay = document.getElementById('confirmModal');
