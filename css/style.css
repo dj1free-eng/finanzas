@@ -244,7 +244,7 @@ header {
 }
 .chips-row { 
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;    /* <- aquí está la clave */
   gap: 0.5rem;
 }
 .chip {
