@@ -1288,123 +1288,142 @@ function setupReset() {
       }
     );
   });
-}
+} 
 // genérica -----
-  function openEditModal(type, data) {
-    const overlay = document.getElementById('editModal');
-    const titleEl = document.getElementById('modalTitle');
-    const contentEl = document.getElementById('modalContent');
-    const saveBtn = document.getElementById('modalSave');
-    if (!overlay || !titleEl || !contentEl || !saveBtn) return;
+function openEditModal(type, data) {
+  const overlay = document.getElementById('editModal');
+  const titleEl = document.getElementById('modalTitle');
+  const contentEl = document.getElementById('modalContent');
+  const saveBtn = document.getElementById('modalSave');
+  if (!overlay || !titleEl || !contentEl || !saveBtn) return;
 
-    let html = '';
-if (type === 'fijo') {
-  titleEl.textContent = 'Editar gasto fijo';
-  html = `
-    <div class="field-group">
-      <label>Nombre</label>
-      <input type="text" id="editNombre" value="${data.nombre || ''}" />
-    </div>
+  let html = '';
 
-    <div class="field-group">
-      <label>Categoría</label>
-      <div class="chips-row" id="editCategoriaChips">
-        <button type="button"
-                class="chip chip-small ${data.categoria === 'Suministros' ? 'chip-selected' : ''}"
-                data-cat="Suministros">💡 Suministros</button>
-        <button type="button
-                "class="chip chip-small ${data.categoria === 'Préstamos' ? 'chip-selected' : ''}"
-                data-cat="Préstamos">💳 Préstamos</button>
-        <button type="button"
-                class="chip chip-small ${data.categoria === 'Suscripciones' ? 'chip-selected' : ''}"
-                data-cat="Suscripciones">📺 Suscripciones</button>
-        <button type="button"
-                class="chip chip-small ${data.categoria === 'Varios' ? 'chip-selected' : ''}"
-                data-cat="Varios">📦 Varios</button>
+  if (type === 'fijo') {
+    titleEl.textContent = 'Editar gasto fijo';
+    html = `
+      <div class="field-group">
+        <label>Nombre</label>
+        <input type="text" id="editNombre" value="${data.nombre || ''}" />
       </div>
-      <input type="hidden" id="editCategoria" value="${data.categoria || ''}">
-    </div>
 
-    <div class="field-group">
-      <label>Importe mensual (€)</label>
-      <input type="number" id="editImporte" step="0.01" inputmode="decimal" value="${data.importe}" />
-    </div>
-  `;
-} else if (type === 'gasto') {
-      titleEl.textContent = 'Editar gasto';
-      html = `
-        <div class="field-group">
-          <label>Fecha</label>
-          <input type="date" id="editFecha" value="${data.fecha || ''}" />
+      <div class="field-group">
+        <label>Categoría</label>
+        <div class="chips-row" id="editCategoriaChips">
+          <button type="button" class="chip chip-small ${data.categoria === 'Suministros' ? 'chip-selected' : ''}" data-cat="Suministros">💡 Suministros</button>
+          <button type="button" class="chip chip-small ${data.categoria === 'Préstamos' ? 'chip-selected' : ''}" data-cat="Préstamos">💳 Préstamos</button>
+          <button type="button" class="chip chip-small ${data.categoria === 'Suscripciones' ? 'chip-selected' : ''}" data-cat="Suscripciones">📺 Suscripciones</button>
+          <button type="button" class="chip chip-small ${data.categoria === 'Varios' ? 'chip-selected' : ''}" data-cat="Varios">📦 Varios</button>
         </div>
-        <div class="field-group">
-          <label>Categoría</label>
-          <input type="text" id="editCategoria" value="${data.categoria || ''}" />
-        </div>
-        <div class="field-group">
-          <label>Descripción</label>
-          <input type="text" id="editDesc" value="${data.desc || ''}" />
-        </div>
-        <div class="field-group">
-          <label>Importe (€)</label>
-          <input type="number" id="editImporte" step="0.01" inputmode="decimal" value="${data.importe}" />
-        </div>
-      `;
-    } else if (type === 'sobre') {
-      titleEl.textContent = 'Editar presupuesto';
-      html = `
-        <div class="field-group">
-          <label>Nombre del sobre</label>
-          <input type="text" id="editNombre" value="${data.nombre || ''}" />
-        </div>
-        <div class="field-group">
-          <label>Presupuesto mensual (€)</label>
-          <input type="number" id="editImporte" step="0.01" inputmode="decimal" value="${data.presupuesto}" />
-        </div>
-      `;
-    } else if (type === 'hucha') {
-      titleEl.textContent = 'Editar hucha';
-      html = `
-        <div class="field-group">
-          <label>Nombre</label>
-          <input type="text" id="editNombre" value="${data.nombre || ''}" />
-        </div>
-        <div class="field-group">
-          <label>Objetivo (€)</label>
-          <input type="number" id="editObjetivo" step="0.01" inputmode="decimal" value="${data.objetivo || 0}" />
-        </div>
-        <div class="field-group">
-          <label>Saldo actual (€)</label>
-          <input type="number" id="editSaldo" step="0.01" inputmode="decimal" value="${data.saldo || 0}" />
-        </div>
-      `;
-    } else {
-      titleEl.textContent = 'Editar';
-      html = '<p>No hay campos para editar.</p>';
-    }
+        <input type="hidden" id="editCategoria" value="${data.categoria || ''}">
+      </div>
 
-    contentEl.innerHTML = html;
-    saveBtn.dataset.editType = type;
-    saveBtn.dataset.editId = data.id;
-    overlay.classList.add('active');
-        // Activar chips de categoría en modal de gasto fijo
-    if (type === 'fijo') {
-      const chipsWrap = document.getElementById('editCategoriaChips');
-      const catHidden = document.getElementById('editCategoria');
-      if (chipsWrap && catHidden) {
-        chipsWrap.addEventListener('click', (ev) => {
-          const btn = ev.target.closest('.chip');
-          if (!btn) return;
-          const value = btn.dataset.cat || '';
-          catHidden.value = value;
-          chipsWrap.querySelectorAll('.chip').forEach(ch => {
-            ch.classList.toggle('chip-selected', ch === btn);
-          });
-        });
-      }
-    }
+      <div class="field-group">
+        <label>Importe mensual (€)</label>
+        <input type="number" id="editImporte" step="0.01" inputmode="decimal" value="${data.importe}" />
+      </div>
+    `;
   }
 
+  else if (type === 'gasto') {
+    titleEl.textContent = 'Editar gasto';
+    html = `
+      <div class="field-group">
+        <label>Fecha</label>
+        <input type="date" id="editFecha" value="${data.fecha || ''}" />
+      </div>
+      <div class="field-group">
+        <label>Categoría</label>
+        <input type="text" id="editCategoria" value="${data.categoria || ''}" />
+      </div>
+      <div class="field-group">
+        <label>Descripción</label>
+        <input type="text" id="editDesc" value="${data.desc || ''}" />
+      </div>
+      <div class="field-group">
+        <label>Importe (€)</label>
+        <input type="number" id="editImporte" step="0.01" inputmode="decimal" value="${data.importe}" />
+      </div>
+    `;
+  }
+
+  else if (type === 'sobre') {
+    titleEl.textContent = 'Editar presupuesto';
+    html = `
+      <div class="field-group">
+        <label>Nombre del sobre</label>
+        <input type="text" id="editNombre" value="${data.nombre || ''}" />
+      </div>
+      <div class="field-group">
+        <label>Presupuesto mensual (€)</label>
+        <input type="number" id="editImporte" step="0.01" inputmode="decimal" value="${data.presupuesto}" />
+      </div>
+    `;
+  }
+
+  else if (type === 'hucha') {
+    titleEl.textContent = 'Editar hucha';
+    html = `
+      <div class="field-group">
+        <label>Nombre</label>
+        <input type="text" id="editNombre" value="${data.nombre || ''}" />
+      </div>
+      <div class="field-group">
+        <label>Objetivo (€)</label>
+        <input type="number" id="editObjetivo" step="0.01" inputmode="decimal" value="${data.objetivo || 0}" />
+      </div>
+      <div class="field-group">
+        <label>Saldo actual (€)</label>
+        <input type="number" id="editSaldo" step="0.01" inputmode="decimal" value="${data.saldo || 0}" />
+      </div>
+    `;
+  }
+
+  else if (type === 'ingresoPuntual') {
+    titleEl.textContent = 'Editar ingreso puntual';
+    html = `
+      <div class="field-group">
+        <label>Fecha</label>
+        <input type="date" id="editFecha" value="${data.fecha || ''}" />
+      </div>
+      <div class="field-group">
+        <label>Descripción</label>
+        <input type="text" id="editDesc" value="${data.desc || ''}" />
+      </div>
+      <div class="field-group">
+        <label>Importe (€)</label>
+        <input type="number" id="editImporte" step="0.01" inputmode="decimal" value="${data.importe}" />
+      </div>
+    `;
+  }
+
+  else {
+    titleEl.textContent = 'Editar';
+    html = '<p>No hay campos para editar.</p>';
+  }
+
+  contentEl.innerHTML = html;
+  saveBtn.dataset.editType = type;
+  saveBtn.dataset.editId = data.id;
+  overlay.classList.add('active');
+
+  // chips en fijos
+  if (type === 'fijo') {
+    const chipsWrap = document.getElementById('editCategoriaChips');
+    const catHidden = document.getElementById('editCategoria');
+    if (chipsWrap && catHidden) {
+      chipsWrap.addEventListener('click', (ev) => {
+        const btn = ev.target.closest('.chip');
+        if (!btn) return;
+        const value = btn.dataset.cat || '';
+        catHidden.value = value;
+        chipsWrap.querySelectorAll('.chip').forEach(ch => {
+          ch.classList.toggle('chip-selected', ch === btn);
+        });
+      });
+    }
+  }
+}
   function closeEditModal() {
     const overlay = document.getElementById('editModal');
     const contentEl = document.getElementById('modalContent');
@@ -1438,25 +1457,25 @@ if (type === 'fijo') {
           closeEditModal();
           return;
         }
-       if (type === 'fijo') {
-  const nombreEl = document.getElementById('editNombre');
-  const catEl = document.getElementById('editCategoria');
-  const impEl = document.getElementById('editImporte');
-  const fijo = state.fijos.find(f => String(f.id) === String(id));
-  if (fijo && nombreEl && impEl && catEl) {
-    fijo.nombre = nombreEl.value.trim();
-    const nuevaCat = catEl.value.trim();
-    if (nuevaCat) {
-      fijo.categoria = nuevaCat;
-    }
-    fijo.importe = Number(impEl.value) || 0;
-    saveState();
-    renderFijosTable();
-    updateResumenYChips();
-    showToast('Gasto fijo actualizado.');
-  }
-}
-       else if (type === 'gasto') {
+
+        if (type === 'fijo') {
+          const nombreEl = document.getElementById('editNombre');
+          const catEl = document.getElementById('editCategoria');
+          const impEl = document.getElementById('editImporte');
+          const fijo = state.fijos.find(f => String(f.id) === String(id));
+          if (fijo && nombreEl && impEl && catEl) {
+            fijo.nombre = nombreEl.value.trim();
+            const nuevaCat = catEl.value.trim();
+            if (nuevaCat) {
+              fijo.categoria = nuevaCat;
+            }
+            fijo.importe = Number(impEl.value) || 0;
+            saveState();
+            renderFijosTable();
+            updateResumenYChips();
+            showToast('Gasto fijo actualizado.');
+          }
+        } else if (type === 'gasto') {
           const fechaEl = document.getElementById('editFecha');
           const catEl = document.getElementById('editCategoria');
           const descEl = document.getElementById('editDesc');
@@ -1500,12 +1519,26 @@ if (type === 'fijo') {
             updateResumenYChips();
             showToast('Hucha actualizada.');
           }
+        } else if (type === 'ingresoPuntual') {
+          // 👉 NUEVO CASE: guardar cambios del ingreso puntual
+          const fechaEl = document.getElementById('editFecha');
+          const descEl = document.getElementById('editDesc');
+          const impEl = document.getElementById('editImporte');
+          const ingreso = state.ingresosPuntuales.find(ip => String(ip.id) === String(id));
+          if (ingreso && fechaEl && descEl && impEl) {
+            ingreso.fecha = fechaEl.value || ingreso.fecha;
+            ingreso.desc = descEl.value.trim();
+            ingreso.importe = parseNumberSafe(impEl.value);
+            saveState();
+            renderIngresosPuntualesLista();
+            updateResumenYChips();
+            showToast('Ingreso puntual actualizado.');
+          }
         }
+
         closeEditModal();
       });
     }
-  }
-
   // ----- Eventos modal confirm -----
   function setupConfirmModalEvents() {
     const overlay = document.getElementById('confirmModal');
