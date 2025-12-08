@@ -718,10 +718,19 @@ cont.querySelectorAll('button[data-action="del"]').forEach(btn => {
     // Buscar el gasto en estado
     const gasto = state.gastos.find(g => String(g.id) === String(id));
 
-    // Si es un gasto de tipo "hucha_inicial", NO permitimos borrarlo
-    if (gasto && gasto.tipo === 'hucha_inicial') {
-      showToast('Este gasto es la aportación inicial de una hucha. Si quieres recuperar ese dinero, registra un retiro desde la sección Huchas.');
-      return;
+    if (gasto) {
+      // 1) Si es un gasto de tipo "hucha_inicial", NO permitimos borrarlo
+      if (gasto.tipo === 'hucha_inicial') {
+        showToast('Este gasto es la aportación inicial de una hucha. Si quieres recuperar ese dinero, registra un retiro desde la sección Huchas.');
+        return;
+      }
+
+      // 2) Si es un gasto de aportación a hucha ("Ahorro en ..."), tampoco permitimos borrarlo
+      const desc = (gasto.desc || '').trim().toLowerCase();
+      if (gasto.categoria === 'Huchas' && desc.startsWith('ahorro en')) {
+        showToast('Este gasto pertenece a una hucha. Para deshacerlo, haz un retiro desde la hucha.');
+        return;
+      }
     }
 
     // Para el resto de gastos, comportamiento normal
