@@ -694,22 +694,32 @@ function setupFijos() {
     }
     cont.innerHTML = '';
     list
-      .sort((a,b) => (a.fecha || '').localeCompare(b.fecha || ''))
-      .forEach(g => {
-        const item = document.createElement('div');
-        item.className = 'expense-item';
-        item.innerHTML = `
-          <div class="expense-main">
-            <div class="expense-line1"><span class="amount-neg">- ${formatCurrency(g.importe)}</span> · ${g.categoria || 'Sin categoría'}</div>
-            <div class="expense-line2">${g.fecha || ''} · ${g.desc || ''}</div>
-          </div>
-          <div class="expense-actions">
-            <button class="btn btn-edit" data-action="edit" data-id="${g.id}">✏</button>
-            <button class="btn btn-danger-chip" data-action="del" data-id="${g.id}">🗑</button>
-          </div>
-        `;
-        cont.appendChild(item);
-      });
+  .sort((a, b) => (a.fecha || '').localeCompare(b.fecha || ''))
+  .forEach(g => {
+    const item = document.createElement('div');
+    item.className = 'expense-item';
+
+    // Descripción segura
+    const descText = (g.desc && g.desc.trim())
+      ? g.desc.trim()
+      : 'Sin descripción';
+
+    item.innerHTML = `
+      <div class="expense-main">
+        <div class="expense-line1">
+          <span class="amount-neg">- ${formatCurrency(g.importe)}</span> · ${g.categoria || 'Sin categoría'}
+        </div>
+        <div class="expense-line2">
+          ${g.fecha || ''} · ${descText}
+        </div>
+      </div>
+      <div class="expense-actions">
+        <button class="btn btn-edit" data-action="edit" data-id="${g.id}">✏</button>
+        <button class="btn btn-danger-chip" data-action="del" data-id="${g.id}">🗑</button>
+      </div>
+    `;
+    cont.appendChild(item);
+  });
 
 cont.querySelectorAll('button[data-action="del"]').forEach(btn => {
   btn.addEventListener('click', () => {
