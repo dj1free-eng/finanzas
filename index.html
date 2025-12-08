@@ -43,12 +43,17 @@
     <div class="header-inner">
       <div class="title-row">
         <div class="title-main">
-          <div class="title-icon">💰</div>
-          <div class="title-text">
-            <strong>Economía Familiar · v1.1c</strong>
-            <span>Control total de gastos e ingresos</span>
-          </div>
-        </div>
+  <div class="user-avatar" id="userAvatar">
+    <div class="user-avatar-circle">
+      <div class="user-avatar-emoji" id="userAvatarEmoji">💰</div>
+    </div>
+    <div class="user-avatar-tag" id="userAvatarTag">EF</div>
+  </div>
+  <div class="title-text">
+    <strong>Economía Familiar · v1.1c</strong>
+    <span>Control total de gastos e ingresos</span>
+  </div>
+</div>
         <div class="month-nav-container">
           <button class="month-nav-btn" id="btnPrevMonth">◀</button>
           <div class="month-display" id="monthDisplay">Enero 2024</div>
@@ -464,7 +469,7 @@
             <input
               type="text"
               id="proCodeInput"
-              placeholder="Ej: DJ1FREE-DEV o FAMILIA-2025"
+              placeholder="Introduce tu cupon"
               autocomplete="off"
             />
             <div class="helper-text">
@@ -598,7 +603,118 @@
             </div>
           </div>
         </section>
+<div class="avatar-grid" id="avatarGrid">
+  <!-- FREE -->
+  <button type="button" class="avatar-option" data-avatar-id="classic">
+    <div class="avatar-circle">
+      <span class="avatar-emoji">💰</span>
+    </div>
+    <span class="avatar-label">Clásico</span>
+  </button>
 
+  <button type="button" class="avatar-option" data-avatar-id="minimal">
+    <div class="avatar-circle">
+      <span class="avatar-emoji">😀</span>
+    </div>
+    <span class="avatar-label">Minimal</span>
+  </button>
+
+  <button type="button" class="avatar-option" data-avatar-id="focus">
+    <div class="avatar-circle">
+      <span class="avatar-emoji">🚀</span>
+    </div>
+    <span class="avatar-label">Focus</span>
+  </button>
+
+  <!-- PRO -->
+  <button type="button" class="avatar-option avatar-pro" data-avatar-id="ocean">
+    <div class="avatar-circle">
+      <span class="avatar-emoji">🌊</span>
+      <span class="avatar-lock">PRO</span>
+    </div>
+    <span class="avatar-label">Ocean</span>
+  </button>
+
+  <button type="button" class="avatar-option avatar-pro" data-avatar-id="forest">
+    <div class="avatar-circle">
+      <span class="avatar-emoji">🌲</span>
+      <span class="avatar-lock">PRO</span>
+    </div>
+    <span class="avatar-label">Forest</span>
+  </button>
+
+  <button type="button" class="avatar-option avatar-pro" data-avatar-id="robot">
+    <div class="avatar-circle">
+      <span class="avatar-emoji">🤖</span>
+      <span class="avatar-lock">PRO</span>
+    </div>
+    <span class="avatar-label">Robot</span>
+  </button>
+
+  <button type="button" class="avatar-option avatar-pro" data-avatar-id="piggy">
+    <div class="avatar-circle">
+      <span class="avatar-emoji">🐷</span>
+      <span class="avatar-lock">PRO</span>
+    </div>
+    <span class="avatar-label">Hucha</span>
+  </button>
+
+  <button type="button" class="avatar-option avatar-pro" data-avatar-id="music">
+    <div class="avatar-circle">
+      <span class="avatar-emoji">🎧</span>
+      <span class="avatar-lock">PRO</span>
+    </div>
+    <span class="avatar-label">Música</span>
+  </button>
+
+  <button type="button" class="avatar-option avatar-pro" data-avatar-id="business">
+    <div class="avatar-circle">
+      <span class="avatar-emoji">💼</span>
+      <span class="avatar-lock">PRO</span>
+    </div>
+    <span class="avatar-label">Profesional</span>
+  </button>
+
+  <button type="button" class="avatar-option avatar-pro" data-avatar-id="gamer">
+    <div class="avatar-circle">
+      <span class="avatar-emoji">🕹️</span>
+      <span class="avatar-lock">PRO</span>
+    </div>
+    <span class="avatar-label">Gamer</span>
+  </button>
+
+  <button type="button" class="avatar-option avatar-pro" data-avatar-id="traveler">
+    <div class="avatar-circle">
+      <span class="avatar-emoji">🧭</span>
+      <span class="avatar-lock">PRO</span>
+    </div>
+    <span class="avatar-label">Traveler</span>
+  </button>
+
+  <button type="button" class="avatar-option avatar-pro" data-avatar-id="volcano">
+    <div class="avatar-circle">
+      <span class="avatar-emoji">🌋</span>
+      <span class="avatar-lock">PRO</span>
+    </div>
+    <span class="avatar-label">Volcán</span>
+  </button>
+
+  <button type="button" class="avatar-option avatar-pro" data-avatar-id="gold">
+    <div class="avatar-circle">
+      <span class="avatar-emoji">⭐</span>
+      <span class="avatar-lock">PRO</span>
+    </div>
+    <span class="avatar-label">Oro</span>
+  </button>
+
+  <button type="button" class="avatar-option avatar-pro" data-avatar-id="spectrum">
+    <div class="avatar-circle">
+      <span class="avatar-emoji">🌈</span>
+      <span class="avatar-lock">PRO</span>
+    </div>
+    <span class="avatar-label">Spectrum</span>
+  </button>
+</div>
         <section class="card">
           <div class="card-header">
             <div>
