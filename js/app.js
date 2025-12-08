@@ -42,6 +42,128 @@ function parseNumberSafe(value) {
 }
   const STORAGE_KEY = 'ecoApp_v11c_state';
 
+    // ----- PRO + cupones -----
+  const PRO_STORAGE_KEY = 'ecoApp_v11c_pro';
+
+  // Lista de cupones válidos (puedes cambiarlos cuando quieras)
+  const PRO_COUPONS = [
+    { code: 'DJ1FREE-DEV', label: 'Cupón desarrollador' },
+    { code: 'FAMILIA-2025', label: 'Cupón familiar' }
+  ];
+
+  let proState = {
+    active: false,
+    code: null,
+    activatedAt: null
+  };
+
+  function loadProState() {
+    try {
+      const raw = localStorage.getItem(PRO_STORAGE_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object') {
+        proState = Object.assign(proState, parsed);
+      }
+    } catch (e) {
+      console.error('Error leyendo estado PRO', e);
+    }
+  }
+
+  function saveProState() {
+    try {
+      localStorage.setItem(PRO_STORAGE_KEY, JSON.stringify(proState));
+    } catch (e) {
+      console.error('Error guardando estado PRO', e);
+    }
+  }
+
+  function isProActive() {
+    return !!(proState && proState.active);
+  }
+
+  function findCoupon(code) {
+    if (!code) return null;
+    const normalized = String(code).trim().toUpperCase();
+    return PRO_COUPONS.find(c => c.code.toUpperCase() === normalized) || null;
+  }
+
+  function updateProUI() {
+    const tag = document.getElementById('proStatusTag');
+    const msg = document.getElementById('proStatusMessage');
+    const input = document.getElementById('proCodeInput');
+
+    if (!tag || !msg) return;
+
+    if (isProActive()) {
+      tag.textContent = 'PRO';
+      tag.style.background = '#f59e0b'; // ámbar
+      tag.style.color = '#111827';
+
+      const code = proState.code || '—';
+      const fecha = proState.activatedAt
+        ? new Date(proState.activatedAt).toLocaleString('es-ES')
+        : 'fecha desconocida';
+
+      msg.innerHTML = `
+        Estado actual: <strong>PRO activado</strong>.<br>
+        Código: <strong>${code}</strong><br>
+        Activado el: <strong>${fecha}</strong>
+      `;
+
+      if (input) {
+        input.value = code;
+      }
+    } else {
+      tag.textContent = 'FREE';
+      tag.style.background = '#e5e7eb';
+      tag.style.color = '#374151';
+
+      msg.innerHTML = `
+        Estado actual: <strong>Versión gratuita</strong>.<br>
+        Introduce un código PRO válido para activarla en este dispositivo.
+      `;
+
+      if (input) {
+        input.value = '';
+      }
+    }
+  }
+
+  function setupProSystem() {
+    const input = document.getElementById('proCodeInput');
+    const btn = document.getElementById('btnProActivate');
+
+    // Si el HTML aún no existe (por lo que sea), salimos silenciosamente
+    if (!btn) {
+      return;
+    }
+
+    btn.addEventListener('click', () => {
+      if (!input) return;
+      const rawCode = (input.value || '').trim();
+      if (!rawCode) {
+        showToast('Introduce un código PRO.');
+        return;
+      }
+
+      const coupon = findCoupon(rawCode);
+      if (!coupon) {
+        showToast('Código PRO no válido.');
+        return;
+      }
+
+      proState.active = true;
+      proState.code = coupon.code;
+      proState.activatedAt = new Date().toISOString();
+      saveProState();
+      updateProUI();
+      showToast('Versión PRO activada en este dispositivo.');
+    });
+
+    // Pintar estado inicial
+    updateProUI();
+  }
   let state = {
     ingresosBase: { juan: 0, saray: 0, otros: 0 },
     fijos: [],              // {id, nombre, importe}
