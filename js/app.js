@@ -164,14 +164,18 @@ function parseNumberSafe(value) {
     // Pintar estado inicial
     updateProUI();
   }
-  let state = {
+    let state = {
     ingresosBase: { juan: 0, saray: 0, otros: 0 },
     fijos: [],              // {id, nombre, importe}
     sobres: [],             // {id, nombre, presupuesto}
     huchas: [],             // {id, nombre, objetivo, saldo}
     ingresosPuntuales: [],  // {id, fecha, desc, importe}
     gastos: [],             // {id, fecha, categoria, desc, importe}
-    notasPorMes: {}         // { 'YYYY-MM': 'texto' }
+    notasPorMes: {},        // { 'YYYY-MM': 'texto' }
+    personalizacion: {
+      nombreIngresoPrincipal: 'Ingreso principal',
+      tema: 'default'
+    }
   };
   const monthNames = [
     'Enero','Febrero','Marzo','Abril','Mayo','Junio',
@@ -179,7 +183,103 @@ function parseNumberSafe(value) {
   ];
 
   let currentYear, currentMonth; // month 0-11
+  // ----- Personalización: helper interno -----
+  function ensurePersonalizacion() {
+    if (!state.personalizacion || typeof state.personalizacion !== 'object') {
+      state.personalizacion = {
+        nombreIngresoPrincipal: 'Ingreso principal',
+        tema: 'default'
+      };
+    }
+  }
 
+  function getNombreIngresoPrincipal() {
+    ensurePersonalizacion();
+    return state.personalizacion.nombreIngresoPrincipal || 'Ingreso principal';
+  }
+
+  function applyIngresoPrincipalLabel() {
+    const label = document.getElementById('labelIngresoPrincipal');
+    if (!label) return;
+    const nombre = getNombreIngresoPrincipal();
+    label.textContent = nombre + ' (€ / mes)';
+  }
+
+  function applyTheme() {
+    ensurePersonalizacion();
+    const tema = state.personalizacion.tema || 'default';
+    const body = document.body;
+    if (!body) return;
+    body.setAttribute('data-theme', tema);
+  }
+
+  function marcarChipTemaActivo(tema) {
+    const container = document.getElementById('temaChips');
+    if (!container) return;
+    const chips = container.querySelectorAll('.chip-selectable');
+    chips.forEach(chip => {
+      if (chip.dataset.tema === tema) {
+        chip.classList.add('chip-active');
+      } else {
+        chip.classList.remove('chip-active');
+      }
+    });
+  }
+
+  function setupPersonalizacion() {
+    ensurePersonalizacion();
+
+    const inputNombre = document.getElementById('personalNombrePrincipal');
+    const btnGuardar = document.getElementById('btnGuardarPersonalizacion');
+    const container = document.getElementById('temaChips');
+
+    // Nombre del ingreso principal
+    if (inputNombre) {
+      inputNombre.value = state.personalizacion.nombreIngresoPrincipal || '';
+    }
+
+    // Chips de tema
+    if (container) {
+      const chips = container.querySelectorAll('.chip-selectable');
+      chips.forEach(chip => {
+        chip.addEventListener('click', () => {
+          const tema = chip.dataset.tema;
+          if (!tema) return;
+
+          // Si es tema PRO y no hay PRO activo, lo bloqueamos
+          if (chip.classList.contains('chip-pro') && typeof isProActive === 'function' && !isProActive()) {
+            showToast('Este tema es solo para usuarios PRO.');
+            return;
+          }
+
+          ensurePersonalizacion();
+          state.personalizacion.tema = tema;
+          saveState();
+          applyTheme();
+          marcarChipTemaActivo(tema);
+        });
+      });
+
+      const temaActual = state.personalizacion.tema || 'default';
+      marcarChipTemaActivo(temaActual);
+    }
+
+    // Botón guardar personalización
+    if (btnGuardar) {
+      btnGuardar.addEventListener('click', () => {
+        ensurePersonalizacion();
+        const nombre = (inputNombre && inputNombre.value.trim()) || 'Ingreso principal';
+        state.personalizacion.nombreIngresoPrincipal = nombre;
+        saveState();
+        applyIngresoPrincipalLabel();
+        showToast('Personalización guardada.');
+      });
+    }
+
+    // Aplicar al cargar
+    applyIngresoPrincipalLabel();
+    applyTheme();
+  }
   function saveState() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
