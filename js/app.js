@@ -324,7 +324,123 @@ function parseNumberSafe(value) {
   }
 
 let toastTimeout;
+// === AVATARES PERFIL ===
+const AVATAR_LOCALSTORAGE_KEY = 'economiaFamiliar_avatarId_v1';
 
+const AVATAR_CONFIGS = {
+  // FREE
+  classic:  { emoji: '💰', tag: 'EF' },
+  minimal:  { emoji: '😀', tag: '' },
+  focus:    { emoji: '🚀', tag: '' },
+
+  // PRO
+  ocean:    { emoji: '🌊', tag: '' },
+  forest:   { emoji: '🌲', tag: '' },
+  robot:    { emoji: '🤖', tag: '' },
+  piggy:    { emoji: '🐷', tag: '' },
+  music:    { emoji: '🎧', tag: '' },
+  business: { emoji: '💼', tag: '' },
+  gamer:    { emoji: '🕹️', tag: '' },
+  traveler: { emoji: '🧭', tag: '' },
+  volcano:  { emoji: '🌋', tag: '' },
+  gold:     { emoji: '⭐', tag: 'PRO' },
+  spectrum: { emoji: '🌈', tag: 'PRO' }
+};
+
+function isProEnabledForUI() {
+  try {
+    if (typeof isProActive === 'function') {
+      return isProActive();
+    }
+  } catch (e) {
+    // si no existe isProActive, consideramos que no hay PRO
+  }
+  return false;
+}
+
+function getStoredAvatarId() {
+  try {
+    const raw = localStorage.getItem(AVATAR_LOCALSTORAGE_KEY);
+    if (!raw) return 'classic';
+    if (AVATAR_CONFIGS[raw]) return raw;
+    return 'classic';
+  } catch (e) {
+    return 'classic';
+  }
+}
+
+function storeAvatarId(id) {
+  try {
+    localStorage.setItem(AVATAR_LOCALSTORAGE_KEY, id);
+  } catch (e) {
+    // ignorar errores de storage
+  }
+}
+
+function applyAvatarToHeader() {
+  const avatarId = getStoredAvatarId();
+  const cfg = AVATAR_CONFIGS[avatarId] || AVATAR_CONFIGS.classic;
+
+  const avatarEmojiEl = document.getElementById('userAvatarEmoji');
+  const avatarTagEl = document.getElementById('userAvatarTag');
+  const avatarRoot = document.getElementById('userAvatar');
+
+  if (!avatarEmojiEl || !avatarTagEl || !avatarRoot) return;
+
+  avatarEmojiEl.textContent = cfg.emoji;
+  avatarRoot.dataset.avatarId = avatarId;
+
+  if (cfg.tag && cfg.tag.trim() !== '') {
+    avatarTagEl.textContent = cfg.tag;
+    avatarTagEl.style.display = 'inline-flex';
+  } else {
+    avatarTagEl.textContent = '';
+    avatarTagEl.style.display = 'none';
+  }
+
+  // marcar seleccionado en el grid si existe
+  markSelectedAvatarInGrid(avatarId);
+}
+
+function markSelectedAvatarInGrid(avatarId) {
+  const grid = document.getElementById('avatarGrid');
+  if (!grid) return;
+
+  const options = grid.querySelectorAll('.avatar-option');
+  options.forEach(btn => {
+    const id = btn.getAttribute('data-avatar-id');
+    if (id === avatarId) {
+      btn.classList.add('selected');
+    } else {
+      btn.classList.remove('selected');
+    }
+  });
+}
+
+function setupAvatarSelector() {
+  const grid = document.getElementById('avatarGrid');
+  if (!grid) return;
+
+  const options = grid.querySelectorAll('.avatar-option');
+  const currentId = getStoredAvatarId();
+  markSelectedAvatarInGrid(currentId);
+
+  options.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.getAttribute('data-avatar-id');
+      const isProAvatar = btn.classList.contains('avatar-pro');
+
+      if (isProAvatar && !isProEnabledForUI()) {
+        showToast('Este avatar es PRO. Activa el modo PRO para usarlo.');
+        return;
+      }
+
+      storeAvatarId(id);
+      applyAvatarToHeader();
+      showToast('Avatar actualizado');
+    });
+  });
+}
 function showToast(message) {
   const t = document.getElementById("toast");
   if (!t) return;
@@ -2063,7 +2179,8 @@ function openEditModal(type, data) {
     setupProSystem();
     
     setupPersonalizacion();   // <<< NUEVO
-    
+    applyAvatarToHeader();
+    setupAvatarSelector();
     // Render inicial
     renderAll();
     log(">>> renderAll() ejecutado <<<");
