@@ -100,7 +100,7 @@
           <div class="grid-2">
             <div>
               <div class="field-group">
-                <label>Juan (€ / mes)</label>
+<label id="labelIngresoPrincipal">Juan (€ / mes)</label>
                 <input type="number" id="ingJuan" step="0.01" inputmode="decimal" min="0" placeholder="0.00" />
               </div>
               <div class="field-group">
@@ -480,7 +480,52 @@
           </div>
         </section>
         <!-- FIN BLOQUE PRO -->
-        
+                <!-- PERSONALIZACIÓN BÁSICA -->
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">🎨 Personalización básica</div>
+              <div class="card-subtitle">
+                Ajusta el nombre del ingreso principal y el aspecto general de la app.
+              </div>
+            </div>
+            <div class="card-tag">Perfil</div>
+          </div>
+
+          <div class="field-group">
+            <label for="personalNombrePrincipal">Nombre del ingreso principal</label>
+            <input
+              type="text"
+              id="personalNombrePrincipal"
+              placeholder="Ej: Mi sueldo, Nómina, Tu nombre..."
+              autocomplete="off"
+            />
+            <div class="helper-text">
+              Solo cambia el nombre que ves en la pantalla de ingresos. No afecta al cálculo.
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label>Tema de la aplicación</label>
+            <div class="chips-row" id="temaChips">
+              <!-- Temas FREE -->
+              <button type="button" class="chip chip-selectable" data-tema="default">Clásico</button>
+              <button type="button" class="chip chip-selectable" data-tema="warm">Cálido</button>
+              <button type="button" class="chip chip-selectable" data-tema="dark">Oscuro suave</button>
+              <!-- Temas PRO -->
+              <button type="button" class="chip chip-selectable chip-pro" data-tema="ocean">🌊 Ocean (PRO)</button>
+              <button type="button" class="chip chip-selectable chip-pro" data-tema="forest">🌲 Forest (PRO)</button>
+            </div>
+            <div class="helper-text">
+              Los temas con etiqueta PRO solo se pueden usar si tienes activado Economía Familiar PRO.
+            </div>
+          </div>
+
+          <div class="field-group">
+            <button class="btn btn-primary" id="btnGuardarPersonalizacion">💾 Guardar personalización</button>
+          </div>
+        </section>
+        <!-- FIN PERSONALIZACIÓN BÁSICA -->
         <section class="card">
           <div class="card-header">
             <div>
