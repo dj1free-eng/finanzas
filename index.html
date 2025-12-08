@@ -446,6 +446,41 @@
 
       <!-- CONFIG -->
       <section class="tab-section" data-tab="config">
+       
+                <!-- BLOQUE PRO -->
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">⭐ Economía Familiar PRO</div>
+              <div class="card-subtitle">
+                Activa tu código PRO para desbloquear funciones avanzadas en este dispositivo.
+              </div>
+            </div>
+            <div class="card-tag" id="proStatusTag">FREE</div>
+          </div>
+
+          <div class="field-group">
+            <label for="proCodeInput">Código PRO</label>
+            <input
+              type="text"
+              id="proCodeInput"
+              placeholder="Ej: DJ1FREE-DEV o FAMILIA-2025"
+              autocomplete="off"
+            />
+            <div class="helper-text">
+              El código se guarda solo en este dispositivo. Podrás borrarlo desde “Borrar todos los datos”.
+            </div>
+          </div>
+
+          <div class="field-group">
+            <button class="btn btn-primary" id="btnProActivate">Activar PRO</button>
+            <div id="proStatusMessage" style="margin-top:8px;font-size:0.85rem;color:var(--muted);">
+              Estado actual: <strong>Versión gratuita</strong>.
+            </div>
+          </div>
+        </section>
+        <!-- FIN BLOQUE PRO -->
+        
         <section class="card">
           <div class="card-header">
             <div>
