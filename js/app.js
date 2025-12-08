@@ -1232,7 +1232,31 @@ updateResumenYChips();
     const btnImportFile = document.getElementById('btnImportJsonFile');
     const textArea = document.getElementById('importJsonText');
     const btnImportText = document.getElementById('btnImportJsonText');
+    // Detectar si ya hay datos en el estado actual
+    function hayDatosExistentes() {
+      try {
+        const ib = state.ingresosBase || {};
+        const hayIngresosBase = !!(
+          (typeof ib.juan !== 'undefined' && Number(ib.juan) > 0) ||
+          (typeof ib.saray !== 'undefined' && Number(ib.saray) > 0) ||
+          (typeof ib.otros !== 'undefined' && Number(ib.otros) > 0)
+        );
 
+        const hayFijos   = Array.isArray(state.fijos) && state.fijos.length > 0;
+        const haySobres  = Array.isArray(state.sobres) && state.sobres.length > 0;
+        const hayHuchas  = Array.isArray(state.huchas) && state.huchas.length > 0;
+        const hayIngPunt = Array.isArray(state.ingresosPuntuales) && state.ingresosPuntuales.length > 0;
+        const hayGastos  = Array.isArray(state.gastos) && state.gastos.length > 0;
+
+        const notasObj = state.notasPorMes;
+        const hayNotas = notasObj && typeof notasObj === 'object' && Object.keys(notasObj).length > 0;
+
+        return hayIngresosBase || hayFijos || haySobres || hayHuchas || hayIngPunt || hayGastos || hayNotas;
+      } catch (e) {
+        console.error(e);
+        return false;
+      }
+    }
     if (btnExport) {
       btnExport.addEventListener('click', () => {
         const dataStr = JSON.stringify(state, null, 2);
@@ -1257,39 +1281,70 @@ updateResumenYChips();
           showToast('Selecciona un archivo JSON primero.');
           return;
         }
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-          try {
-            const data = JSON.parse(ev.target.result);
-            applyBackupPayload(data);
-            saveState();
-            renderAll();
-            showToast('Datos importados correctamente.');
-          } catch (e) {
-            console.error(e);
-            showToast('Error al leer el JSON.');
-          }
+
+        const doImportFromFile = () => {
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            try {
+              const data = JSON.parse(ev.target.result);
+              applyBackupPayload(data);
+              saveState();
+              renderAll();
+              showToast('Datos importados correctamente.');
+            } catch (e) {
+              console.error(e);
+              showToast('Error al leer el JSON.');
+            } finally {
+              // Limpia el input de archivo para poder volver a elegir el mismo si quieres
+              fileInput.value = '';
+            }
+          };
+          reader.readAsText(file, 'utf-8');
         };
-        reader.readAsText(file, 'utf-8');
+
+        if (hayDatosExistentes()) {
+          openConfirm(
+            'Ya tienes datos guardados. ¿Quieres sobrescribirlos con el archivo importado?',
+            () => {
+              doImportFromFile();
+            }
+          );
+        } else {
+          doImportFromFile();
+        }
       });
     }
 
-    if (btnImportText && textArea) {
+        if (btnImportText && textArea) {
       btnImportText.addEventListener('click', () => {
         const content = textArea.value.trim();
         if (!content) {
           showToast('Pega el contenido JSON primero.');
           return;
         }
-        try {
-          const data = JSON.parse(content);
-          applyBackupPayload(data);
-          saveState();
-          renderAll();
-          showToast('Datos importados correctamente.');
-        } catch (e) {
-          console.error(e);
-          showToast('El texto no es un JSON válido.');
+
+        const doImportFromText = () => {
+          try {
+            const data = JSON.parse(content);
+            applyBackupPayload(data);
+            saveState();
+            renderAll();
+            showToast('Datos importados correctamente.');
+          } catch (e) {
+            console.error(e);
+            showToast('El texto no es un JSON válido.');
+          }
+        };
+
+        if (hayDatosExistentes()) {
+          openConfirm(
+            'Ya tienes datos guardados. ¿Quieres sobrescribirlos con el JSON pegado?',
+            () => {
+              doImportFromText();
+            }
+          );
+        } else {
+          doImportFromText();
         }
       });
     }
