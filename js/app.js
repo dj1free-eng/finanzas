@@ -1706,16 +1706,22 @@ function setupReset() {
     openConfirm(
       'Se borrarán todos los datos de la app en este dispositivo. ¿Seguro?',
       () => {
-        state = {
+                state = {
           ingresosBase: { juan: 0, saray: 0, otros: 0 },
           fijos: [],
           sobres: [],
           huchas: [],
           ingresosPuntuales: [],
           gastos: [],
-          notasPorMes: {}
+          notasPorMes: {},
+          personalizacion: {
+            nombreIngresoPrincipal: 'Ingreso principal',
+            tema: 'default'
+          }
         };
         saveState();
+        applyIngresoPrincipalLabel();
+        applyTheme();
         renderAll();
         showToast('Datos eliminados. Empezamos de cero.');
       }
@@ -2055,7 +2061,9 @@ function openEditModal(type, data) {
 
     // Sistema PRO
     setupProSystem();
-
+    
+    setupPersonalizacion();   // <<< NUEVO
+    
     // Render inicial
     renderAll();
     log(">>> renderAll() ejecutado <<<");
