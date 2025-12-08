@@ -68,18 +68,40 @@ header {
   align-items: center; 
   gap: 0.75rem; 
 }
-.title-icon {
-  width: 48px; 
-  height: 48px; 
-  border-radius: 16px; 
+
+.user-avatar {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.user-avatar-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  display: flex; 
-  align-items: center; 
+  display: flex;
+  align-items: center;
   justify-content: center;
-  font-size: 1.5rem; 
-  color: white;
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
 }
+
+.user-avatar-emoji {
+  font-size: 1.6rem;
+  color: #ffffff;
+}
+
+.user-avatar-tag {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.15rem 0.4rem;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.06);
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
 .title-text { 
   display: flex; 
   flex-direction: column; 
@@ -1161,4 +1183,86 @@ body[data-theme="forest"] {
   --text: #022c22;
   --muted: #6b7280;
   --border: #bbf7d0;
+}
+/* === AVATARES PERFIL === */
+
+.avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .avatar-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.avatar-option {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #f9fafb;
+  padding: 0.75rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.avatar-option:hover {
+  background: #ffffff;
+  border-color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.avatar-option.selected {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.25);
+  background: #ffffff;
+}
+
+.avatar-circle {
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.avatar-emoji {
+  font-size: 1.6rem;
+}
+
+.avatar-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.avatar-pro .avatar-circle {
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+}
+
+.avatar-lock {
+  position: absolute;
+  bottom: -0.25rem;
+  right: -0.25rem;
+  font-size: 0.6rem;
+  font-weight: 700;
+  background: #ef4444;
+  color: #ffffff;
+  padding: 0.1rem 0.25rem;
+  border-radius: 999px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+}
+
+.avatar-option.avatar-pro:not(.selected) {
+  opacity: 0.9;
 }
