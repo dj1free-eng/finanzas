@@ -1912,9 +1912,10 @@ function openEditModal(type, data) {
 
   // ----- Init -----
   document.addEventListener('DOMContentLoaded', () => {
-    
+
     log(">>> DOMContentLoaded DISPARADO <<<");  
     loadState();
+    loadProState(); // nuevo: cargamos estado PRO
 
     const now = new Date();
     currentYear = now.getFullYear();
@@ -1922,6 +1923,8 @@ function openEditModal(type, data) {
 
     log("Año actual:", currentYear, "Mes actual:", currentMonth);
     log(">>> Ejecutando setup inicial <<<");
+
+    // Navegación y mes actual
     setupTabs();
     setupMonthPicker();
     updateMonthDisplay();
@@ -1930,11 +1933,13 @@ function openEditModal(type, data) {
     if (btnPrevMonth) {
       btnPrevMonth.addEventListener('click', () => changeMonth(-1));
     }
+
     const btnNextMonth = document.getElementById('btnNextMonth');
     if (btnNextMonth) {
       btnNextMonth.addEventListener('click', () => changeMonth(1));
     }
 
+    // Secciones principales
     setupIngresosBase();
     setupIngresosPuntuales();
     setupFijos();
@@ -1948,16 +1953,25 @@ function openEditModal(type, data) {
     setupEditModalEvents();
     setupConfirmModalEvents();
 
+    // Sistema PRO
+    setupProSystem();
+
+    // Render inicial
     renderAll();
     log(">>> renderAll() ejecutado <<<");
-    // Botón informes fijos
-const btnInf = document.getElementById("btnInformeFijos");
-if (btnInf) btnInf.addEventListener("click", generarInformeFijos);
 
-// Botón cerrar informe
-const btnCloseInf = document.getElementById("btnCerrarInformes");
-if (btnCloseInf) btnCloseInf.addEventListener("click", () => {
-  document.getElementById("modalInformes").classList.remove("active");
-});
+    // Botón informes fijos
+    const btnInf = document.getElementById('btnInformeFijos');
+    if (btnInf) {
+      btnInf.addEventListener('click', generarInformeFijos);
+    }
+
+    // Botón cerrar informe
+    const btnCloseInf = document.getElementById('btnCerrarInformes');
+    if (btnCloseInf) {
+      btnCloseInf.addEventListener('click', () => {
+        document.getElementById('modalInformes').classList.remove('active');
+      });
+    }
   });
 })();
