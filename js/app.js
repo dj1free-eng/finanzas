@@ -139,14 +139,25 @@ function showToast(message) {
 
   // ----- Modal confirmación -----
   let pendingConfirm = null;
-  function openConfirm(message, onOk) {
-    const overlay = document.getElementById('confirmModal');
-    const msgEl = document.getElementById('confirmMessage');
-    if (!overlay || !msgEl) return;
-    msgEl.textContent = message || '¿Seguro que quieres eliminar este elemento?';
-    pendingConfirm = typeof onOk === 'function' ? onOk : null;
-    overlay.classList.add('active');
-  }
+  
+  function openConfirm(message, onOk, actionLabel) {
+  const overlay = document.getElementById('confirmModal');
+  const msgEl = document.getElementById('confirmMessage');
+  const okBtn = document.getElementById('confirmOk');
+
+  if (!overlay || !msgEl || !okBtn) return;
+
+  // Mensaje del modal
+  msgEl.textContent = message || '¿Seguro que quieres eliminar este elemento?';
+
+  // Texto del botón de acción (por defecto "Eliminar")
+  okBtn.textContent = actionLabel || 'Eliminar';
+
+  // Guardamos la callback pendiente
+  pendingConfirm = typeof onOk === 'function' ? onOk : null;
+
+  overlay.classList.add('active');
+}
   function closeConfirm() {
     const overlay = document.getElementById('confirmModal');
     if (overlay) overlay.classList.remove('active');
@@ -1302,16 +1313,15 @@ updateResumenYChips();
           reader.readAsText(file, 'utf-8');
         };
 
-        if (hayDatosExistentes()) {
-          openConfirm(
-            'Ya tienes datos guardados. ¿Quieres sobrescribirlos con el archivo importado?',
-            () => {
-              doImportFromFile();
-            }
-          );
-        } else {
-          doImportFromFile();
-        }
+if (hayDatosExistentes()) {
+  openConfirm(
+    'Ya tienes datos guardados. ¿Quieres sobrescribirlos con el archivo importado?',
+    () => { doImportFromFile(); },
+    'Sobrescribir datos'
+  );
+} else {
+  doImportFromFile();
+}
       });
     }
 
@@ -1337,15 +1347,14 @@ updateResumenYChips();
         };
 
         if (hayDatosExistentes()) {
-          openConfirm(
-            'Ya tienes datos guardados. ¿Quieres sobrescribirlos con el JSON pegado?',
-            () => {
-              doImportFromText();
-            }
-          );
-        } else {
-          doImportFromText();
-        }
+  openConfirm(
+    'Ya tienes datos guardados. ¿Quieres sobrescribirlos con el JSON pegado?',
+    () => { doImportFromText(); },
+    'Sobrescribir datos'
+  );
+} else {
+  doImportFromText();
+}
       });
     }
   }
