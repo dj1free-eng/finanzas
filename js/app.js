@@ -183,6 +183,25 @@ function parseNumberSafe(value) {
   ];
 
   let currentYear, currentMonth; // month 0-11
+
+  // ----- Intro de logo FLUJO FÁCIL -----
+function setupIntroOverlay() {
+  const overlay = document.getElementById('introOverlay');
+  if (!overlay) return;
+
+  // Tiempo total de intro (en ms)
+  const INTRO_DURATION = 2400;
+
+  // Por si el usuario toca, le dejamos saltarla con un tap
+  overlay.addEventListener('click', () => {
+    overlay.classList.add('intro-hidden');
+  });
+
+  setTimeout(() => {
+    overlay.classList.add('intro-hidden');
+  }, INTRO_DURATION);
+}
+  
   // ----- Personalización: helper interno -----
   function ensurePersonalizacion() {
     if (!state.personalizacion || typeof state.personalizacion !== 'object') {
@@ -2211,6 +2230,11 @@ function openEditModal(type, data) {
     setupPersonalizacion();   // <<< NUEVO
     applyAvatarToHeader();
     setupAvatarSelector();
+  
+  // Intro de logo
+    setupIntroOverlay();
+    
+      
     // Render inicial
     renderAll();
     log(">>> renderAll() ejecutado <<<");
