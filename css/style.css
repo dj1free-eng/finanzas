@@ -58,7 +58,7 @@ header {
   position: relative;
   overflow: visible; /* importante para que la cinta no se recorte */
 }
-/* Cinta diagonal FREE / PRO en la cabecera */
+/* --- Cinta FREE / PRO en la cabecera --- */
 
 .header-badge-free,
 .header-badge-pro {
@@ -66,47 +66,34 @@ header {
   overflow: visible;
 }
 
-/* Base de la cinta */
+/* Base común: pensada para móvil, sin salirse demasiado */
 .header-badge-free::before,
 .header-badge-pro::before {
+  content: '';
   position: absolute;
-  top: -6px;        /* un poco por encima, pero sin irse demasiado arriba */
-  right: -40px;     /* ligeramente hacia fuera a la derecha */
-  width: 140px;
+  top: 6px;          /* dentro del header, no pegado al borde superior de la pantalla */
+  right: -30px;      /* ligeramente fuera a la derecha, pero visible */
+  width: 120px;
   padding: 6px 0;
   text-align: center;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 800;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   transform: rotate(45deg);
   transform-origin: center;
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
-  z-index: 10;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.18);
+  z-index: 60;       /* por encima del propio header */
 }
 
-/* Versión FREE (gris) */
+/* FREE gris */
 .header-badge-free::before {
   content: 'FREE';
   background: linear-gradient(135deg, #e5e7eb, #d1d5db);
   color: #111827;
 }
 
-/* Versión PRO (dorado) */
-.header-badge-pro::before {
-  content: 'PRO';
-  background: linear-gradient(135deg, #fbbf24, #f59e0b);
-  color: #78350f;
-}
-
-/* Versión FREE (gris) */
-.header-badge-free::before {
-  content: 'FREE';
-  background: linear-gradient(135deg, #e5e7eb, #d1d5db);
-  color: #111827;
-}
-
-/* Versión PRO (dorado) */
+/* PRO dorado */
 .header-badge-pro::before {
   content: 'PRO';
   background: linear-gradient(135deg, #fbbf24, #f59e0b);
