@@ -55,28 +55,48 @@ header {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  position: relative;
+  overflow: visible; /* importante para que la cinta no se recorte */
 }
 /* Cinta diagonal FREE / PRO en la cabecera */
+
 .header-badge-free,
 .header-badge-pro {
   position: relative;
+  overflow: visible;
 }
 
+/* Base de la cinta */
 .header-badge-free::before,
 .header-badge-pro::before {
   position: absolute;
-  top: -18px;
-  right: -70px;
-  transform: rotate(45deg);
-  width: 170px;
-  text-align: center;
+  top: -6px;        /* un poco por encima, pero sin irse demasiado arriba */
+  right: -40px;     /* ligeramente hacia fuera a la derecha */
+  width: 140px;
   padding: 6px 0;
-  font-size: 0.8rem;
+  text-align: center;
+  font-size: 0.75rem;
   font-weight: 800;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
-  z-index: 2;
+  transform: rotate(45deg);
+  transform-origin: center;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
+  z-index: 10;
+}
+
+/* Versión FREE (gris) */
+.header-badge-free::before {
+  content: 'FREE';
+  background: linear-gradient(135deg, #e5e7eb, #d1d5db);
+  color: #111827;
+}
+
+/* Versión PRO (dorado) */
+.header-badge-pro::before {
+  content: 'PRO';
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  color: #78350f;
 }
 
 /* Versión FREE (gris) */
