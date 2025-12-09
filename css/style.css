@@ -73,11 +73,11 @@ header {
   position: absolute;
   top: 6px;
   right: -30px;
-  width: 120px;
+  width: 130px;
   height: 32px;              /* nuevo: asegura área uniforme */
   line-height: 32px;         /* nuevo: centra verticalmente el texto */
   text-align: center;
-  font-size: 0.75rem;
+  font-size: 0.9rem;
   font-weight: 800;
   letter-spacing: 0.16em;
   text-transform: uppercase;
