@@ -1,4 +1,3 @@
-
 (() => {
   'use strict';
   // Consola interna
@@ -42,7 +41,7 @@ function parseNumberSafe(value) {
 }
   const STORAGE_KEY = 'ecoApp_v11c_state';
 
-    // ----- PRO + cupones -----
+      // ----- PRO + cupones -----
   const PRO_STORAGE_KEY = 'ecoApp_v11c_pro';
 
   // Lista de cupones válidos (puedes cambiarlos cuando quieras)
@@ -80,6 +79,20 @@ function parseNumberSafe(value) {
 
   function isProActive() {
     return !!(proState && proState.active);
+  }
+
+  // Cinta FREE / PRO en la cabecera
+  function updateHeaderPlanBadge() {
+    const header = document.getElementById('headerInner');
+    if (!header) return;
+
+    header.classList.remove('header-badge-free', 'header-badge-pro');
+
+    if (isProActive()) {
+      header.classList.add('header-badge-pro');
+    } else {
+      header.classList.add('header-badge-free');
+    }
   }
 
   function findCoupon(code) {
@@ -128,13 +141,15 @@ function parseNumberSafe(value) {
         input.value = '';
       }
     }
+
+    // Actualizar cinta de cabecera cada vez que redibujamos el estado PRO
+    updateHeaderPlanBadge();
   }
 
   function setupProSystem() {
     const input = document.getElementById('proCodeInput');
     const btn = document.getElementById('btnProActivate');
 
-    // Si el HTML aún no existe (por lo que sea), salimos silenciosamente
     if (!btn) {
       return;
     }
@@ -161,7 +176,7 @@ function parseNumberSafe(value) {
       showToast('Versión PRO activada en este dispositivo.');
     });
 
-    // Pintar estado inicial
+    // Pintar estado inicial (FREE / PRO) y cinta de cabecera
     updateProUI();
   }
     let state = {
@@ -183,7 +198,7 @@ function parseNumberSafe(value) {
   ];
 
   let currentYear, currentMonth; // month 0-11
-
+  
 // ----- Intro de logo FLUJO FÁCIL -----
 function setupIntroOverlay() {
   const overlay = document.getElementById('introOverlay');
