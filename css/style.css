@@ -1266,3 +1266,13 @@ body[data-theme="forest"] {
 .avatar-option.avatar-pro:not(.selected) {
   opacity: 0.9;
 }
+.avatar-current-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.avatar-circle-preview {
+  width: 40px;
+  height: 40px;
+}
