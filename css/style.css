@@ -35,7 +35,10 @@ body {
   margin: 0 auto; 
   padding: 0 1rem; 
 }
-
+/* Evita que la página se desplace mientras se muestra la intro */
+body.no-scroll {
+  overflow: hidden;
+}
 header {
   position: fixed; 
   top: 0; 
