@@ -185,7 +185,7 @@ function setupIntroOverlay() {
   const overlay = document.getElementById('introOverlay');
   if (!overlay) return;
 
-  const INTRO_DURATION = 2400; // milisegundos
+  const INTRO_DURATION = 2000; // milisegundos
   let finished = false;
 
   function finishIntro() {
@@ -200,16 +200,23 @@ function setupIntroOverlay() {
       if (overlay && overlay.parentNode) {
         overlay.parentNode.removeChild(overlay);
       }
-    }, 600);
+    }, 400);
   }
 
   // Permitir saltar la intro con un toque
   overlay.addEventListener('click', finishIntro);
 
-  // Cuando la página cargue, esperamos el tiempo de intro y la cerramos
-  window.addEventListener('load', () => {
-    setTimeout(finishIntro, INTRO_DURATION);
-  });
+  // Antes esperábamos al evento 'load', pero en modo app / algunos navegadores
+  // puede no dispararse como esperamos. Aquí arrancamos directamente el temporizador
+  // cuando el DOM ya está listo (setupIntroOverlay se llama en DOMContentLoaded).
+  setTimeout(finishIntro, INTRO_DURATION);
+
+  // Failsafe: si por lo que sea sigue sin cerrarse, la quitamos a los 6 segundos sí o sí.
+  window.setTimeout(() => {
+    if (!finished) {
+      finishIntro();
+    }
+  }, 6000);
 }
   // ----- Personalización: helper interno -----
   function ensurePersonalizacion() {
