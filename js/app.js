@@ -2527,6 +2527,38 @@ function openEditModal(type, data) {
         }
       });
     }
+    // ----- Informe de huchas: eventos -----
+    const btnInfHuchas = document.getElementById('btnInformeHuchas');
+    const modalInfHuchas = document.getElementById('modalInformeHuchas');
+    const btnInfHuchasClose = document.getElementById('informeHuchasClose');
+    const btnInfHuchasOk = document.getElementById('informeHuchasOk');
 
+    if (btnInfHuchas && modalInfHuchas) {
+      const cerrarInformeHuchas = () => {
+        modalInfHuchas.classList.remove('active');
+      };
+
+      // Al pulsar el botón, generamos el informe y mostramos el modal
+      btnInfHuchas.addEventListener('click', () => {
+        generarInformeHuchas();
+      });
+
+      // Botón de cerrar (X)
+      if (btnInfHuchasClose) {
+        btnInfHuchasClose.addEventListener('click', cerrarInformeHuchas);
+      }
+
+      // Botón "Entendido"
+      if (btnInfHuchasOk) {
+        btnInfHuchasOk.addEventListener('click', cerrarInformeHuchas);
+      }
+
+      // Cerrar tocando fuera de la tarjeta
+      modalInfHuchas.addEventListener('click', (e) => {
+        if (e.target === modalInfHuchas) {
+          cerrarInformeHuchas();
+        }
+      });
+    }
   });
 })();
