@@ -743,7 +743,134 @@
 
     <button id="btnCerrarInformes" class="btn btn-secondary">Cerrar</button>
   </div>
-</div>  <script src="js/app.js"></script>
+</div> 
+    <!-- Modal selección de avatar -->
+  <div class="modal-overlay" id="avatarModal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">Elige tu avatar</div>
+        <button class="modal-close" id="avatarModalClose">✕</button>
+      </div>
+
+      <div class="avatar-grid" id="avatarGridModal">
+        <!-- FREE -->
+        <button type="button" class="avatar-option" data-avatar-id="classic">
+          <div class="avatar-circle">
+            <span class="avatar-emoji">💰</span>
+          </div>
+          <span class="avatar-label">Clásico</span>
+        </button>
+
+        <button type="button" class="avatar-option" data-avatar-id="minimal">
+          <div class="avatar-circle">
+            <span class="avatar-emoji">😀</span>
+          </div>
+          <span class="avatar-label">Minimal</span>
+        </button>
+
+        <button type="button" class="avatar-option" data-avatar-id="focus">
+          <div class="avatar-circle">
+            <span class="avatar-emoji">🚀</span>
+          </div>
+          <span class="avatar-label">Focus</span>
+        </button>
+
+        <!-- PRO -->
+        <button type="button" class="avatar-option avatar-pro" data-avatar-id="ocean">
+          <div class="avatar-circle">
+            <span class="avatar-emoji">🌊</span>
+            <span class="avatar-lock">PRO</span>
+          </div>
+          <span class="avatar-label">Ocean</span>
+        </button>
+
+        <button type="button" class="avatar-option avatar-pro" data-avatar-id="forest">
+          <div class="avatar-circle">
+            <span class="avatar-emoji">🌲</span>
+            <span class="avatar-lock">PRO</span>
+          </div>
+          <span class="avatar-label">Forest</span>
+        </button>
+
+        <button type="button" class="avatar-option avatar-pro" data-avatar-id="robot">
+          <div class="avatar-circle">
+            <span class="avatar-emoji">🤖</span>
+            <span class="avatar-lock">PRO</span>
+          </div>
+          <span class="avatar-label">Robot</span>
+        </button>
+
+        <button type="button" class="avatar-option avatar-pro" data-avatar-id="piggy">
+          <div class="avatar-circle">
+            <span class="avatar-emoji">🐷</span>
+            <span class="avatar-lock">PRO</span>
+          </div>
+          <span class="avatar-label">Hucha</span>
+        </button>
+
+        <button type="button" class="avatar-option avatar-pro" data-avatar-id="music">
+          <div class="avatar-circle">
+            <span class="avatar-emoji">🎧</span>
+            <span class="avatar-lock">PRO</span>
+          </div>
+          <span class="avatar-label">Música</span>
+        </button>
+
+        <button type="button" class="avatar-option avatar-pro" data-avatar-id="business">
+          <div class="avatar-circle">
+            <span class="avatar-emoji">💼</span>
+            <span class="avatar-lock">PRO</span>
+          </div>
+          <span class="avatar-label">Profesional</span>
+        </button>
+
+        <button type="button" class="avatar-option avatar-pro" data-avatar-id="gamer">
+          <div class="avatar-circle">
+            <span class="avatar-emoji">🕹️</span>
+            <span class="avatar-lock">PRO</span>
+          </div>
+          <span class="avatar-label">Gamer</span>
+        </button>
+
+        <button type="button" class="avatar-option avatar-pro" data-avatar-id="traveler">
+          <div class="avatar-circle">
+            <span class="avatar-emoji">🧭</span>
+            <span class="avatar-lock">PRO</span>
+          </div>
+          <span class="avatar-label">Traveler</span>
+        </button>
+
+        <button type="button" class="avatar-option avatar-pro" data-avatar-id="volcano">
+          <div class="avatar-circle">
+            <span class="avatar-emoji">🌋</span>
+            <span class="avatar-lock">PRO</span>
+          </div>
+          <span class="avatar-label">Volcán</span>
+        </button>
+
+        <button type="button" class="avatar-option avatar-pro" data-avatar-id="gold">
+          <div class="avatar-circle">
+            <span class="avatar-emoji">⭐</span>
+            <span class="avatar-lock">PRO</span>
+          </div>
+          <span class="avatar-label">Oro</span>
+        </button>
+
+        <button type="button" class="avatar-option avatar-pro" data-avatar-id="spectrum">
+          <div class="avatar-circle">
+            <span class="avatar-emoji">🌈</span>
+            <span class="avatar-lock">PRO</span>
+          </div>
+          <span class="avatar-label">Spectrum</span>
+        </button>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="avatarModalCancel">Cerrar</button>
+      </div>
+    </div>
+  </div>
+  <script src="js/app.js"></script>
   <script src="js/swipe.js"></script>
 </body>
 </html>
