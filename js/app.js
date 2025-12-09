@@ -1,34 +1,15 @@
 (() => {
   'use strict';
-  // Consola interna
-function log(msg) {
-  try {
-    const panel = document.getElementById('internalConsole');
-    if (panel) {
-      const time = new Date().toISOString().slice(11,19);
-      panel.innerHTML += "[" + time + "] " + msg + "<br>";
-      panel.scrollTop = panel.scrollHeight;
-    }
-  } catch (e) {}
-  console.log(msg);
-}
 
-window.log = log;
-
-// Activar / desactivar consola
-document.addEventListener("DOMContentLoaded", () => {
-  
-  
-  const toggle = document.getElementById("consoleToggle");
-  const panel = document.getElementById("internalConsole");
-
-  if (toggle) {
-    toggle.addEventListener("click", () => {
-      panel.style.display = panel.style.display === "none" ? "block" : "none";
-    });
+  // Log simple: solo usa la consola del navegador
+  function log(...args) {
+    console.log(...args);
   }
-});
-log(">>> app.js INICIADO <<<");
+
+  window.log = log;
+
+  log(">>> app.js INICIADO <<<");
+
   // ----- Helpers -----
   
   // ---- Helpers numéricos seguros ----
