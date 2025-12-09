@@ -1296,14 +1296,18 @@ body[data-theme="forest"] {
 }
 
 .intro-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;     /* centra logo y textos en el mismo eje */
+  justify-content: center;
   text-align: center;
-  color: #ffffff;
+  gap: 0.6rem;             /* separación perfecta entre elementos */
 }
 
 .intro-logo-circle {
   width: 140px;
   height: 140px;
-  border-radius: 32px;
+  border-radius: 24px;
   background: #ffffff;
   display: flex;
   align-items: center;
