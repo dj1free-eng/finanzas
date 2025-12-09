@@ -1281,10 +1281,10 @@ body[data-theme="forest"] {
 .intro-overlay {
   position: fixed;
   inset: 0;
-  background: #f5f7fb; /* fondo claro */
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: #f5f7fb;
+  display: grid;
+  place-items: center;   /* centra horizontal y verticalmente */
+  padding: 0;            /* evita desplazamientos laterales */
   z-index: 9999;
   transition: opacity 0.5s ease, transform 0.5s ease;
 }
