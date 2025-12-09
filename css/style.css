@@ -71,19 +71,20 @@ header {
 .header-badge-pro::before {
   content: '';
   position: absolute;
-  top: 6px;          /* dentro del header, no pegado al borde superior de la pantalla */
-  right: -30px;      /* ligeramente fuera a la derecha, pero visible */
+  top: 6px;
+  right: -30px;
   width: 120px;
-  padding: 6px 0;
+  height: 32px;              /* nuevo: asegura área uniforme */
+  line-height: 32px;         /* nuevo: centra verticalmente el texto */
   text-align: center;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 800;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  transform: rotate(45deg);
+  transform: rotate(45deg) translateY(-2px); /* ajuste fino */
   transform-origin: center;
   box-shadow: 0 4px 10px rgba(0,0,0,0.18);
-  z-index: 60;       /* por encima del propio header */
+  z-index: 60;
 }
 
 /* FREE gris */
