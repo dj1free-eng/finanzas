@@ -200,7 +200,7 @@ function setupIntroOverlay() {
   const INTRO_DURATION = 2400; // milisegundos
 
   function finishIntro() {
-    // Marcamos la app como lista (fade-in)
+    // Mostramos la app con el fade-in
     if (appRoot) {
       appRoot.classList.add('app-ready');
     }
@@ -219,8 +219,14 @@ function setupIntroOverlay() {
   // Permitir al usuario saltar la intro con un toque
   overlay.addEventListener('click', finishIntro);
 
-  // Cuando la página haya cargado, lanzamos el timer de la intro
+  // Cuando la página haya cargado:
   window.addEventListener('load', () => {
+    // 1) Reseteamos el scroll mientras la intro SIGUE tapando todo
+    try {
+      window.scrollTo(0, 0);
+    } catch (e) {}
+
+    // 2) Después de la duración de la intro, la cerramos con animación
     setTimeout(finishIntro, INTRO_DURATION);
   });
 }
