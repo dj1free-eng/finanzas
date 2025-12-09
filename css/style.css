@@ -77,7 +77,7 @@ header {
   height: 32px;              /* nuevo: asegura área uniforme */
   line-height: 32px;         /* nuevo: centra verticalmente el texto */
   text-align: center;
-  font-size: 0.9rem;
+  font-size: 1.1rem;
   font-weight: 800;
   letter-spacing: 0.16em;
   text-transform: uppercase;
