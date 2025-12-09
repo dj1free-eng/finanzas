@@ -468,6 +468,15 @@
             </div>
             <div class="card-tag">Listado</div>
           </div>
+
+          <!-- Botón nuevo: informe de huchas -->
+          <div class="field-group" style="margin-bottom: 0.75rem;">
+            <button class="btn btn-outline" id="btnInformeHuchas">
+              Ver informe de huchas
+            </button>
+          </div>
+          <!-- Fin botón nuevo -->
+
           <div id="huchasLista" class="pill-list"></div>
         </section>
       </section>
@@ -734,6 +743,21 @@
 
       <div class="modal-footer">
         <button class="btn btn-primary" id="informeMensualOk">Entendido</button>
+      </div>
+    </div>
+  </div>
+        <!-- Modal Informe de Huchas -->
+  <div id="modalInformeHuchas" class="modal-overlay">
+    <div class="modal informes-card">
+      <div class="modal-header">
+        <div class="modal-title">Informe de huchas</div>
+        <button class="modal-close" id="informeHuchasClose">✕</button>
+      </div>
+
+      <div id="informeHuchasContenido" class="informes-contenido"></div>
+
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="informeHuchasOk">Entendido</button>
       </div>
     </div>
   </div>
