@@ -187,75 +187,30 @@ function parseNumberSafe(value) {
 // ----- Intro de logo FLUJO FÁCIL -----
 function setupIntroOverlay() {
   const overlay = document.getElementById('introOverlay');
-  const appRoot = document.getElementById('appRoot');
-  const body = document.body;
-
-  // Si no hay overlay por cualquier motivo, mostramos directamente la app
-  if (!overlay) {
-    if (appRoot) {
-      appRoot.classList.add('app-ready');
-    }
-    return;
-  }
+  if (!overlay) return;
 
   const INTRO_DURATION = 2400; // milisegundos
   let finished = false;
-
-  // Bloqueamos el scroll mientras la intro está activa
-  if (body) {
-    body.classList.add('no-scroll');
-  }
-
-  // Forzar estar siempre en la parte superior mientras dure la intro
-  let ensureTopCount = 0;
-  const ensureTopInterval = setInterval(() => {
-    ensureTopCount++;
-    try {
-      window.scrollTo(0, 0);
-      document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
-    } catch (e) {}
-    if (ensureTopCount > 20 || finished) {
-      clearInterval(ensureTopInterval);
-    }
-  }, 80); // unas cuantas veces durante ~1,6s
 
   function finishIntro() {
     if (finished) return;
     finished = true;
 
-    // Último asegurón de scroll arriba
-    try {
-      window.scrollTo(0, 0);
-      document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
-    } catch (e) {}
+    // Desvanecemos la intro
+    overlay.classList.add('intro-hidden');
 
-    // Quitamos bloqueo de scroll
-    if (body) {
-      body.classList.remove('no-scroll');
-    }
-
-    // Mostramos la app con el fade-in
-    if (appRoot) {
-      appRoot.classList.add('app-ready');
-    }
-
-    // Ocultamos y eliminamos la capa de intro
-    if (!overlay.classList.contains('intro-hidden')) {
-      overlay.classList.add('intro-hidden');
-      setTimeout(() => {
-        if (overlay && overlay.parentNode) {
-          overlay.parentNode.removeChild(overlay);
-        }
-      }, 600);
-    }
+    // Y la quitamos del DOM después de la transición
+    setTimeout(() => {
+      if (overlay && overlay.parentNode) {
+        overlay.parentNode.removeChild(overlay);
+      }
+    }, 600);
   }
 
-  // Permitir al usuario saltar la intro con un toque
+  // Permitir saltar la intro con un toque
   overlay.addEventListener('click', finishIntro);
 
-  // Cuando la página haya cargado, programamos el fin de la intro
+  // Cuando la página cargue, esperamos el tiempo de intro y la cerramos
   window.addEventListener('load', () => {
     setTimeout(finishIntro, INTRO_DURATION);
   });
