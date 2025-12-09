@@ -329,7 +329,7 @@ const AVATAR_LOCALSTORAGE_KEY = 'economiaFamiliar_avatarId_v1';
 
 const AVATAR_CONFIGS = {
   // FREE
-  classic:  { emoji: '💰', tag: 'EF' },
+  classic:  { emoji: '💰', tag: '' },
   minimal:  { emoji: '😀', tag: '' },
   focus:    { emoji: '🚀', tag: '' },
 
@@ -343,8 +343,8 @@ const AVATAR_CONFIGS = {
   gamer:    { emoji: '🕹️', tag: '' },
   traveler: { emoji: '🧭', tag: '' },
   volcano:  { emoji: '🌋', tag: '' },
-  gold:     { emoji: '⭐', tag: 'PRO' },
-  spectrum: { emoji: '🌈', tag: 'PRO' }
+  gold:     { emoji: '⭐', tag: '' },
+  spectrum: { emoji: '🌈', tag: '' }
 };
 
 function isProEnabledForUI() {
@@ -384,26 +384,34 @@ function applyAvatarToHeader() {
   const avatarEmojiEl = document.getElementById('userAvatarEmoji');
   const avatarTagEl = document.getElementById('userAvatarTag');
   const avatarRoot = document.getElementById('userAvatar');
+  const avatarCurrentEmoji = document.getElementById('avatarCurrentEmoji');
 
-  if (!avatarEmojiEl || !avatarTagEl || !avatarRoot) return;
-
-  avatarEmojiEl.textContent = cfg.emoji;
-  avatarRoot.dataset.avatarId = avatarId;
-
-  if (cfg.tag && cfg.tag.trim() !== '') {
-    avatarTagEl.textContent = cfg.tag;
-    avatarTagEl.style.display = 'inline-flex';
-  } else {
-    avatarTagEl.textContent = '';
-    avatarTagEl.style.display = 'none';
+  if (avatarEmojiEl) {
+    avatarEmojiEl.textContent = cfg.emoji;
+  }
+  if (avatarRoot) {
+    avatarRoot.dataset.avatarId = avatarId;
   }
 
-  // marcar seleccionado en el grid si existe
+  if (avatarTagEl) {
+    if (cfg.tag && cfg.tag.trim() !== '') {
+      avatarTagEl.textContent = cfg.tag;
+      avatarTagEl.style.display = 'inline-flex';
+    } else {
+      avatarTagEl.textContent = '';
+      avatarTagEl.style.display = 'none';
+    }
+  }
+
+  if (avatarCurrentEmoji) {
+    avatarCurrentEmoji.textContent = cfg.emoji;
+  }
+
   markSelectedAvatarInGrid(avatarId);
 }
 
 function markSelectedAvatarInGrid(avatarId) {
-  const grid = document.getElementById('avatarGrid');
+  const grid = document.getElementById('avatarGridModal');
   if (!grid) return;
 
   const options = grid.querySelectorAll('.avatar-option');
@@ -418,8 +426,29 @@ function markSelectedAvatarInGrid(avatarId) {
 }
 
 function setupAvatarSelector() {
-  const grid = document.getElementById('avatarGrid');
-  if (!grid) return;
+  const grid = document.getElementById('avatarGridModal');
+  const modal = document.getElementById('avatarModal');
+  const btnOpen = document.getElementById('btnOpenAvatarModal');
+  const btnClose = document.getElementById('avatarModalClose');
+  const btnCancel = document.getElementById('avatarModalCancel');
+
+  if (btnOpen && modal) {
+    btnOpen.addEventListener('click', () => {
+      modal.classList.add('active');
+      const currentId = getStoredAvatarId();
+      markSelectedAvatarInGrid(currentId);
+    });
+  }
+
+  [btnClose, btnCancel].forEach(btn => {
+    if (btn && modal) {
+      btn.addEventListener('click', () => {
+        modal.classList.remove('active');
+      });
+    }
+  });
+
+  if (!grid || !modal) return;
 
   const options = grid.querySelectorAll('.avatar-option');
   const currentId = getStoredAvatarId();
@@ -438,6 +467,7 @@ function setupAvatarSelector() {
       storeAvatarId(id);
       applyAvatarToHeader();
       showToast('Avatar actualizado');
+      modal.classList.remove('active');
     });
   });
 }
