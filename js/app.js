@@ -184,24 +184,34 @@ function parseNumberSafe(value) {
 
   let currentYear, currentMonth; // month 0-11
 
-  // ----- Intro de logo FLUJO FÁCIL -----
+// ----- Intro de logo FLUJO FÁCIL -----
 function setupIntroOverlay() {
   const overlay = document.getElementById('introOverlay');
   if (!overlay) return;
 
-  // Tiempo total de intro (en ms)
-  const INTRO_DURATION = 2400;
+  const INTRO_DURATION = 2400; // milisegundos
 
-  // Por si el usuario toca, le dejamos saltarla con un tap
-  overlay.addEventListener('click', () => {
-    overlay.classList.add('intro-hidden');
+  function hideIntro() {
+    if (!overlay.classList.contains('intro-hidden')) {
+      overlay.classList.add('intro-hidden');
+      // Tras la animación, eliminamos el nodo para que no estorbe nunca
+      setTimeout(() => {
+        if (overlay && overlay.parentNode) {
+          overlay.parentNode.removeChild(overlay);
+        }
+      }, 600);
+    }
+  }
+
+  // Permitir al usuario saltar la intro con un toque
+  overlay.addEventListener('click', hideIntro);
+
+  // En Safari a veces tarda en disparar cosas,
+  // así que esperamos a que la página cargue y luego contamos el tiempo
+  window.addEventListener('load', () => {
+    setTimeout(hideIntro, INTRO_DURATION);
   });
-
-  setTimeout(() => {
-    overlay.classList.add('intro-hidden');
-  }, INTRO_DURATION);
 }
-  
   // ----- Personalización: helper interno -----
   function ensurePersonalizacion() {
     if (!state.personalizacion || typeof state.personalizacion !== 'object') {
