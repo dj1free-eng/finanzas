@@ -449,7 +449,7 @@
         </section>
       </section>
 
-      <!-- CONFIG -->
+            <!-- CONFIG -->
       <section class="tab-section" data-tab="config">
        
                 <!-- BLOQUE PRO -->
@@ -485,18 +485,19 @@
           </div>
         </section>
         <!-- FIN BLOQUE PRO -->
-                <!-- PERSONALIZACIÓN BÁSICA -->
+        <!-- PERSONALIZACIÓN COMPLETA -->
         <section class="card">
           <div class="card-header">
             <div>
-              <div class="card-title">🎨 Personalización básica</div>
+              <div class="card-title">🎨 Personalización</div>
               <div class="card-subtitle">
-                Ajusta el nombre del ingreso principal y el aspecto general de la app.
+                Ajusta el nombre del ingreso principal, el tema visual y el avatar de la cabecera.
               </div>
             </div>
             <div class="card-tag">Perfil</div>
           </div>
 
+          <!-- Nombre ingreso principal -->
           <div class="field-group">
             <label for="personalNombrePrincipal">Nombre del ingreso principal</label>
             <input
@@ -510,6 +511,7 @@
             </div>
           </div>
 
+          <!-- Tema de la app -->
           <div class="field-group">
             <label>Tema de la aplicación</label>
             <div class="chips-row" id="temaChips">
@@ -526,11 +528,28 @@
             </div>
           </div>
 
+          <!-- Avatar -->
+          <div class="field-group">
+            <label>Avatar de la cabecera</label>
+            <div class="avatar-current-row">
+              <div class="avatar-circle avatar-circle-preview">
+                <span class="avatar-emoji" id="avatarCurrentEmoji">💰</span>
+              </div>
+              <button type="button" class="btn btn-outline" id="btnOpenAvatarModal">
+                Seleccionar avatar
+              </button>
+            </div>
+            <div class="helper-text">
+              El avatar se guarda en este dispositivo y se muestra en la parte superior de la app.
+            </div>
+          </div>
+
+          <!-- Botón guardar -->
           <div class="field-group">
             <button class="btn btn-primary" id="btnGuardarPersonalizacion">💾 Guardar personalización</button>
           </div>
         </section>
-        <!-- FIN PERSONALIZACIÓN BÁSICA -->
+        <!-- FIN PERSONALIZACIÓN COMPLETA -->
         <section class="card">
           <div class="card-header">
             <div>
@@ -603,32 +622,7 @@
             </div>
           </div>
         </section>
-        <section class="card">
-          <div class="card-header">
-            <div>
-              <div class="card-title">🎭 Avatar y estilo</div>
-              <div class="card-subtitle">
-                Personaliza el icono que aparece en la cabecera de la app.
-              </div>
-            </div>
-            <div class="card-tag">Perfil</div>
-          </div>
 
-          <div class="field-group">
-            <label>Avatar actual</label>
-            <div class="avatar-current-row">
-              <div class="avatar-circle avatar-circle-preview">
-                <span class="avatar-emoji" id="avatarCurrentEmoji">💰</span>
-              </div>
-              <button type="button" class="btn btn-outline" id="btnOpenAvatarModal">
-                Seleccionar avatar
-              </button>
-            </div>
-            <div class="helper-text">
-              Al seleccionar un avatar en la ventana emergente se aplicará al momento y se cerrará sola.
-            </div>
-          </div>
-        </section>
         <section class="card">
           <div class="card-header">
             <div>
