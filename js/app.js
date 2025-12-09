@@ -917,84 +917,113 @@ function generarInformeMensual() {
   overlay.classList.add('active');
 }
   // ----- Informe básico de huchas -----
-function generarInformeHuchas() {
-  const overlay = document.getElementById('modalInformeHuchas');
-  const cont = document.getElementById('informeHuchasContenido');
-  if (!overlay || !cont) return;
+  function generarInformeHuchas() {
+    const overlay = document.getElementById('modalInformeHuchas');
+    const cont = document.getElementById('informeHuchasContenido');
+    if (!overlay || !cont) return;
 
-  const huchas = state.huchas || [];
+    const huchas = state.huchas || [];
 
-  const totalHuchas = huchas.length;
-  const totalSaldo = huchas.reduce((s, h) => s + (Number(h.saldo) || 0), 0);
-  const totalObjetivo = huchas.reduce((s, h) => s + (Number(h.objetivo) || 0), 0);
+    const totalHuchas = huchas.length;
+    const totalSaldo = huchas.reduce((s, h) => s + (Number(h.saldo) || 0), 0);
+    const totalObjetivo = huchas.reduce((s, h) => s + (Number(h.objetivo) || 0), 0);
 
-  const pctGlobal = totalObjetivo > 0 ? Math.min(100, (totalSaldo / totalObjetivo) * 100) : 0;
+    const pctGlobal = totalObjetivo > 0
+      ? Math.min(100, (totalSaldo / totalObjetivo) * 100)
+      : 0;
 
-  let html = '';
+    let html = '';
 
-  if (totalHuchas === 0) {
-    html += `
-      <div class="cat-block">
-        <h3>Sin huchas todavía</h3>
-        <p style="font-size:0.9rem; color:var(--muted);">
-          Crea tu primera hucha en la pestaña <strong>Huchas</strong> para empezar a ahorrar para objetivos concretos.
-        </p>
-      </div>
-    `;
-  } else {
-    html += `
-      <div class="cat-block">
-        <h3>Resumen general</h3>
-        <div class="cat-total">
-          Número de huchas: <strong>${totalHuchas}</strong>
-        </div>
-        <div class="cat-total" style="margin-top:0.25rem;">
-          Saldo acumulado: <strong>${formatCurrency(totalSaldo)}</strong>
-        </div>
-    `;
-
-    if (totalObjetivo > 0) {
+    if (totalHuchas === 0) {
       html += `
-        <div class="cat-total" style="margin-top:0.25rem;">
-          Objetivo total: <strong>${formatCurrency(totalObjetivo)}</strong>
+        <div class="cat-block">
+          <h3>Sin huchas todavía</h3>
+          <p style="font-size:0.9rem; color:var(--muted);">
+            Crea tu primera hucha en la pestaña <strong>Huchas</strong> para empezar a ahorrar para objetivos concretos.
+          </p>
         </div>
-        <div class="cat-total" style="margin-top:0.5rem;">
-          Progreso global:
-          <strong>${pctGlobal.toFixed(1)}%</strong>
+      `;
+    } else {
+      // Resumen general
+      html += `
+        <div class="cat-block">
+          <h3>Resumen general</h3>
+          <div class="cat-total">
+            Número de huchas: <strong>${totalHuchas}</strong>
+          </div>
+          <div class="cat-total" style="margin-top:0.25rem;">
+            Saldo acumulado: <strong>${formatCurrency(totalSaldo)}</strong>
+          </div>
+      `;
+
+      if (totalObjetivo > 0) {
+        html += `
+          <div class="cat-total" style="margin-top:0.25rem;">
+            Objetivo total: <strong>${formatCurrency(totalObjetivo)}</strong>
+          </div>
+          <div class="cat-total" style="margin-top:0.5rem;">
+            Progreso global:
+            <strong>${pctGlobal.toFixed(1)}%</strong>
+          </div>
+          <div class="bar-container">
+            <div class="bar" style="width:${pctGlobal}%;"></div>
+          </div>
+        `;
+      }
+
+      html += `
         </div>
-        <div class="bar-container">
-          <div class="bar" style="width:${pctGlobal}%;"></div>
+      `;
+
+      // Detalle por hucha
+      html += `
+        <div class="cat-block">
+          <h3>Detalle por hucha</h3>
+      `;
+
+      huchas.forEach(h => {
+        const saldo = Number(h.saldo) || 0;
+        const objetivo = Number(h.objetivo) || 0;
+        let pct = 0;
+        if (objetivo > 0) {
+          pct = Math.min(100, (saldo / objetivo) * 100);
+        }
+
+        if (objetivo > 0) {
+          html += `
+            <div class="cat-total" style="margin-top:0.5rem;">
+              <div style="font-weight:600;">${h.nombre || 'Hucha sin nombre'}</div>
+              <div style="font-size:0.9rem; color:var(--muted); margin-top:0.1rem;">
+                Saldo: <strong>${formatCurrency(saldo)}</strong>
+                &nbsp;·&nbsp; Objetivo: <strong>${formatCurrency(objetivo)}</strong>
+                &nbsp;·&nbsp; Progreso: <strong>${pct.toFixed(1)}%</strong>
+              </div>
+              <div class="bar-container">
+                <div class="bar" style="width:${pct}%;"></div>
+              </div>
+            </div>
+          `;
+        } else {
+          html += `
+            <div class="cat-total" style="margin-top:0.5rem;">
+              <div style="font-weight:600;">${h.nombre || 'Hucha sin nombre'}</div>
+              <div style="font-size:0.9rem; color:var(--muted); margin-top:0.1rem;">
+                Saldo: <strong>${formatCurrency(saldo)}</strong>
+                &nbsp;·&nbsp; <span style="font-style:italic;">Sin objetivo definido</span>
+              </div>
+            </div>
+          `;
+        }
+      });
+
+      html += `
         </div>
       `;
     }
 
-    html += `</div>`;
-
-    html += `
-      <div class="cat-block">
-        <h3>Detalle por hucha</h3>
-    `;
-
-    huchas.forEach(h => {
-      const saldo = Number(h.saldo) || 0;
-      const objetivo = Number(h.objetivo) || 0;
-      let pct = 0;
-      if (objetivo > 0) {
-        pct = Math.min(100, (saldo / objetivo) * 100);
-      }
-
-      html += `
-        <div class="cat-total" style="margin-top:0.5rem;">
-          <div style="font-weight:600;">${h.nombre || 'Hucha sin nombre'}</div>
-          <div style="font-size:0.9rem; color:var(--muted); margin-top:0.1rem;">
-            Saldo: <strong>${formatCurrency(saldo)}</strong>
-      `;
-
-      if (objetivo > 0) {
-        html += `
-            &nbsp;·&nbsp; Objetivo: <strong>${formatCurrency(objetivo)}</strong>
-            &nbsp;·&nbsp; Progreso: <strong>${pct.toFixed(1)}%</strong>
-          </div>
+    cont.innerHTML = html;
+    overlay.classList.add('active');
+  }
 // ----- Ingresos base -----
 function setupIngresosBase() {
   const ingJuan = document.getElementById('ingJuan');
