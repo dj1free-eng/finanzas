@@ -1021,17 +1021,28 @@ function setupFijos() {
   const catHidden = document.getElementById('fijoCategoria');
   const chipsWrap = document.getElementById('fijoCategoriaChips');
 
-  // Gestión de selección de chips
+  // Gestión de selección / deselección de chips
   if (chipsWrap && catHidden) {
     chipsWrap.addEventListener('click', (ev) => {
       const btn = ev.target.closest('.chip');
       if (!btn) return;
-      const value = btn.dataset.cat || '';
-      catHidden.value = value;
 
-      chipsWrap.querySelectorAll('.chip').forEach(ch => {
-        ch.classList.toggle('chip-selected', ch === btn);
-      });
+      const value = btn.dataset.cat || '';
+      const yaSeleccionada = btn.classList.contains('chip-selected');
+
+      if (yaSeleccionada) {
+        // Si ya estaba seleccionada, la desmarcamos y vaciamos la categoría
+        catHidden.value = '';
+        chipsWrap.querySelectorAll('.chip').forEach(ch => {
+          ch.classList.remove('chip-selected');
+        });
+      } else {
+        // Si no lo estaba, la marcamos y desmarcamos las demás
+        catHidden.value = value;
+        chipsWrap.querySelectorAll('.chip').forEach(ch => {
+          ch.classList.toggle('chip-selected', ch === btn);
+        });
+      }
     });
   }
 
@@ -2032,17 +2043,29 @@ function openEditModal(type, data) {
 
   // chips en fijos
   if (type === 'fijo') {
-    const chipsWrap = document.getElementById('editCategoriaChips');
+        const chipsWrap = document.getElementById('editCategoriaChips');
     const catHidden = document.getElementById('editCategoria');
     if (chipsWrap && catHidden) {
       chipsWrap.addEventListener('click', (ev) => {
         const btn = ev.target.closest('.chip');
         if (!btn) return;
+
         const value = btn.dataset.cat || '';
-        catHidden.value = value;
-        chipsWrap.querySelectorAll('.chip').forEach(ch => {
-          ch.classList.toggle('chip-selected', ch === btn);
-        });
+        const yaSeleccionada = btn.classList.contains('chip-selected');
+
+        if (yaSeleccionada) {
+          // Si ya estaba seleccionada, desmarcamos y dejamos sin categoría
+          catHidden.value = '';
+          chipsWrap.querySelectorAll('.chip').forEach(ch => {
+            ch.classList.remove('chip-selected');
+          });
+        } else {
+          // Si no lo estaba, seleccionamos solo esta
+          catHidden.value = value;
+          chipsWrap.querySelectorAll('.chip').forEach(ch => {
+            ch.classList.toggle('chip-selected', ch === btn);
+          });
+        }
       });
     }
   }
