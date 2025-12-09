@@ -187,14 +187,27 @@ function parseNumberSafe(value) {
 // ----- Intro de logo FLUJO FÁCIL -----
 function setupIntroOverlay() {
   const overlay = document.getElementById('introOverlay');
-  if (!overlay) return;
+  const appRoot = document.getElementById('appRoot');
+
+  // Si no hay overlay por cualquier motivo, mostramos directamente la app
+  if (!overlay) {
+    if (appRoot) {
+      appRoot.classList.add('app-ready');
+    }
+    return;
+  }
 
   const INTRO_DURATION = 2400; // milisegundos
 
-  function hideIntro() {
+  function finishIntro() {
+    // Marcamos la app como lista (fade-in)
+    if (appRoot) {
+      appRoot.classList.add('app-ready');
+    }
+
+    // Ocultamos y eliminamos la capa de intro
     if (!overlay.classList.contains('intro-hidden')) {
       overlay.classList.add('intro-hidden');
-      // Tras la animación, eliminamos el nodo para que no estorbe nunca
       setTimeout(() => {
         if (overlay && overlay.parentNode) {
           overlay.parentNode.removeChild(overlay);
@@ -204,12 +217,11 @@ function setupIntroOverlay() {
   }
 
   // Permitir al usuario saltar la intro con un toque
-  overlay.addEventListener('click', hideIntro);
+  overlay.addEventListener('click', finishIntro);
 
-  // En Safari a veces tarda en disparar cosas,
-  // así que esperamos a que la página cargue y luego contamos el tiempo
+  // Cuando la página haya cargado, lanzamos el timer de la intro
   window.addEventListener('load', () => {
-    setTimeout(hideIntro, INTRO_DURATION);
+    setTimeout(finishIntro, INTRO_DURATION);
   });
 }
   // ----- Personalización: helper interno -----
