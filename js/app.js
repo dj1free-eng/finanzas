@@ -188,18 +188,41 @@ function parseNumberSafe(value) {
 function setupIntroOverlay() {
   const overlay = document.getElementById('introOverlay');
   const appRoot = document.getElementById('appRoot');
+  const body = document.body;
+
+  // Bloqueamos el scroll mientras la intro está activa
+  if (body) {
+    body.classList.add('no-scroll');
+  }
 
   // Si no hay overlay por cualquier motivo, mostramos directamente la app
   if (!overlay) {
     if (appRoot) {
       appRoot.classList.add('app-ready');
     }
+    if (body) {
+      body.classList.remove('no-scroll');
+    }
     return;
   }
 
   const INTRO_DURATION = 2400; // milisegundos
+  let finished = false;
 
   function finishIntro() {
+    if (finished) return;
+    finished = true;
+
+    // Nos aseguramos de estar en la parte superior ANTES de mostrar nada
+    try {
+      window.scrollTo(0, 0);
+    } catch (e) {}
+
+    // Quitamos bloqueo de scroll
+    if (body) {
+      body.classList.remove('no-scroll');
+    }
+
     // Mostramos la app con el fade-in
     if (appRoot) {
       appRoot.classList.add('app-ready');
@@ -219,14 +242,8 @@ function setupIntroOverlay() {
   // Permitir al usuario saltar la intro con un toque
   overlay.addEventListener('click', finishIntro);
 
-  // Cuando la página haya cargado:
+  // Cuando la página haya cargado, programamos el fin de la intro
   window.addEventListener('load', () => {
-    // 1) Reseteamos el scroll mientras la intro SIGUE tapando todo
-    try {
-      window.scrollTo(0, 0);
-    } catch (e) {}
-
-    // 2) Después de la duración de la intro, la cerramos con animación
     setTimeout(finishIntro, INTRO_DURATION);
   });
 }
