@@ -821,6 +821,94 @@ function generarInformeFijos() {
   cont.innerHTML = html;
   overlay.classList.add("active");
 }
+  // ----- Informe mensual básico -----
+function generarInformeMensual() {
+  const overlay = document.getElementById('modalInformeMensual');
+  const cont = document.getElementById('informeMensualContenido');
+  if (!overlay || !cont) return;
+
+  // Cálculos (mismo criterio que updateResumenYChips)
+  const ingresosBaseTotal = getIngresosBaseTotal();
+  const ingresosPuntualesMes = getIngresosPuntualesMes(currentYear, currentMonth)
+    .reduce((s, i) => s + (Number(i.importe) || 0), 0);
+  const ingresosTotales = ingresosBaseTotal + ingresosPuntualesMes;
+
+  const gastosMes = getGastosMes(currentYear, currentMonth);
+  const totalGastosVar = gastosMes.reduce((s, g) => s + (Number(g.importe) || 0), 0);
+  const totalFijos = getTotalFijos();
+  const totalGastos = totalFijos + totalGastosVar;
+  const balance = ingresosTotales - totalGastos;
+
+  const totalHuchas = state.huchas.reduce((s, h) => s + (Number(h.saldo) || 0), 0);
+
+  const mesLabel = monthNames[currentMonth] + ' ' + currentYear;
+
+  // Para barras: porcentaje dentro de ingresos totales (limitado al 100%)
+  const pct = (valor) => {
+    if (ingresosTotales <= 0) return 0;
+    return Math.min(100, (valor / ingresosTotales) * 100);
+  };
+
+  let html = '';
+
+  html += `
+    <div style="margin-bottom: 0.75rem; font-size: 0.9rem; color: var(--muted);">
+      Mes actual: <strong>${mesLabel}</strong>
+    </div>
+
+    <div class="cat-block">
+      <h3>Ingresos del mes</h3>
+      <div class="cat-total">Ingresos base: <strong>${formatCurrency(ingresosBaseTotal)}</strong></div>
+      <div class="bar-container">
+        <div class="bar" style="width: ${pct(ingresosBaseTotal)}%;"></div>
+      </div>
+
+      <div class="cat-total" style="margin-top: 0.5rem;">Ingresos puntuales: <strong>${formatCurrency(ingresosPuntualesMes)}</strong></div>
+      <div class="bar-container">
+        <div class="bar" style="width: ${pct(ingresosPuntualesMes)}%;"></div>
+      </div>
+
+      <div class="cat-total" style="margin-top: 0.6rem; font-size: 1rem;">
+        Total ingresos: <strong>${formatCurrency(ingresosTotales)}</strong>
+      </div>
+    </div>
+
+    <div class="cat-block">
+      <h3>Gastos del mes</h3>
+      <div class="cat-total">Gastos fijos: <strong>${formatCurrency(totalFijos)}</strong></div>
+      <div class="bar-container">
+        <div class="bar" style="width: ${pct(totalFijos)}%;"></div>
+      </div>
+
+      <div class="cat-total" style="margin-top: 0.5rem;">Gastos variables: <strong>${formatCurrency(totalGastosVar)}</strong></div>
+      <div class="bar-container">
+        <div class="bar" style="width: ${pct(totalGastosVar)}%;"></div>
+      </div>
+
+      <div class="cat-total" style="margin-top: 0.6rem; font-size: 1rem;">
+        Total gastos: <strong>${formatCurrency(totalGastos)}</strong>
+      </div>
+    </div>
+
+    <div class="cat-block">
+      <h3>Balance y ahorro</h3>
+      <div class="cat-total">
+        Balance del mes:
+        <strong style="color: ${balance >= 0 ? '#10b981' : '#ef4444'};">
+          ${formatCurrency(balance)}
+        </strong>
+      </div>
+
+      <div class="cat-total" style="margin-top: 0.5rem;">
+        Saldo acumulado en huchas:
+        <strong>${formatCurrency(totalHuchas)}</strong>
+      </div>
+    </div>
+  `;
+
+  cont.innerHTML = html;
+  overlay.classList.add('active');
+}
 // ----- Ingresos base -----
 function setupIngresosBase() {
   const ingJuan = document.getElementById('ingJuan');
@@ -2228,7 +2316,7 @@ function openEditModal(type, data) {
 
     log(">>> DOMContentLoaded DISPARADO <<<");  
     loadState();
-    loadProState(); // nuevo: cargamos estado PRO
+    loadProState(); // cargamos estado PRO
 
     const now = new Date();
     currentYear = now.getFullYear();
@@ -2269,30 +2357,61 @@ function openEditModal(type, data) {
     // Sistema PRO
     setupProSystem();
     
-    setupPersonalizacion();   // <<< NUEVO
+    // Personalización
+    setupPersonalizacion();
     applyAvatarToHeader();
     setupAvatarSelector();
   
-  // Intro de logo
+    // Intro de logo
     setupIntroOverlay();
     
-      
     // Render inicial
     renderAll();
     log(">>> renderAll() ejecutado <<<");
 
-    // Botón informes fijos
+    // ----- Informe de gastos fijos -----
     const btnInf = document.getElementById('btnInformeFijos');
     if (btnInf) {
       btnInf.addEventListener('click', generarInformeFijos);
     }
 
-    // Botón cerrar informe
     const btnCloseInf = document.getElementById('btnCerrarInformes');
     if (btnCloseInf) {
       btnCloseInf.addEventListener('click', () => {
-        document.getElementById('modalInformes').classList.remove('active');
+        const modal = document.getElementById('modalInformes');
+        if (modal) modal.classList.remove('active');
       });
     }
+
+    // ----- Informe mensual: eventos -----
+    const btnInfMensual = document.getElementById('btnInformeMensual');
+    const modalInfMensual = document.getElementById('modalInformeMensual');
+    const btnInfMensualClose = document.getElementById('informeMensualClose');
+    const btnInfMensualOk = document.getElementById('informeMensualOk');
+
+    if (btnInfMensual && modalInfMensual) {
+      const cerrarInformeMensual = () => {
+        modalInfMensual.classList.remove('active');
+      };
+
+      btnInfMensual.addEventListener('click', () => {
+        generarInformeMensual();
+      });
+
+      if (btnInfMensualClose) {
+        btnInfMensualClose.addEventListener('click', cerrarInformeMensual);
+      }
+      if (btnInfMensualOk) {
+        btnInfMensualOk.addEventListener('click', cerrarInformeMensual);
+      }
+
+      // Cerrar tocando fuera de la tarjeta
+      modalInfMensual.addEventListener('click', (e) => {
+        if (e.target === modalInfMensual) {
+          cerrarInformeMensual();
+        }
+      });
+    }
+
   });
 })();
