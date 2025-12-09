@@ -190,18 +190,10 @@ function setupIntroOverlay() {
   const appRoot = document.getElementById('appRoot');
   const body = document.body;
 
-  // Bloqueamos el scroll mientras la intro está activa
-  if (body) {
-    body.classList.add('no-scroll');
-  }
-
   // Si no hay overlay por cualquier motivo, mostramos directamente la app
   if (!overlay) {
     if (appRoot) {
       appRoot.classList.add('app-ready');
-    }
-    if (body) {
-      body.classList.remove('no-scroll');
     }
     return;
   }
@@ -209,13 +201,34 @@ function setupIntroOverlay() {
   const INTRO_DURATION = 2400; // milisegundos
   let finished = false;
 
+  // Bloqueamos el scroll mientras la intro está activa
+  if (body) {
+    body.classList.add('no-scroll');
+  }
+
+  // Forzar estar siempre en la parte superior mientras dure la intro
+  let ensureTopCount = 0;
+  const ensureTopInterval = setInterval(() => {
+    ensureTopCount++;
+    try {
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    } catch (e) {}
+    if (ensureTopCount > 20 || finished) {
+      clearInterval(ensureTopInterval);
+    }
+  }, 80); // unas cuantas veces durante ~1,6s
+
   function finishIntro() {
     if (finished) return;
     finished = true;
 
-    // Nos aseguramos de estar en la parte superior ANTES de mostrar nada
+    // Último asegurón de scroll arriba
     try {
       window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
     } catch (e) {}
 
     // Quitamos bloqueo de scroll
