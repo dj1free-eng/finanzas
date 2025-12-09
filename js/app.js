@@ -1319,6 +1319,11 @@ cont.querySelectorAll('button[data-action="del"]').forEach(btn => {
 
     if (btnAdd) {
       btnAdd.addEventListener('click', () => {
+        // Bloqueo para versión FREE
+if (!isProActive() && state.sobres.length >= 2) {
+    showToast("Versión FREE: máximo 2 sobres. Activa PRO para usar ilimitados.");
+    return;
+}
         const nombre = nombreEl && nombreEl.value.trim();
         const presupuesto = Number(impEl && impEl.value);
         if (!nombre) {
@@ -1474,6 +1479,11 @@ const btnMov = document.getElementById('btnHuchaMovimiento');
 const regIngresoEl = document.getElementById('huchaRegistrarIngreso');
         if (btnAdd) {
       btnAdd.addEventListener('click', () => {
+        // Bloqueo para versión FREE
+if (!isProActive() && state.huchas.length >= 1) {
+    showToast("Versión FREE: solo 1 hucha. Activa PRO para crear más.");
+    return;
+}
         const nombre = nombreEl && nombreEl.value.trim();
         const objetivo = Number(objEl && objEl.value) || 0;
         const saldoInicial = Number(saldoEl && saldoEl.value) || 0;
