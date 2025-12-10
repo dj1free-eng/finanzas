@@ -1083,46 +1083,10 @@ function handleProReportExport(action, title, containerId) {
         }
         h1 {
           font-size: 1.3rem;
-          margin: 0 0 12px 0;
-        }
-        .print-header {
-          display: flex;
-          align-items: center;
-          gap: 12px;
           margin-bottom: 12px;
-          padding-bottom: 8px;
-          border-bottom: 1px solid #e5e7eb;
-        }
-        .print-logo-circle {
-          width: 40px;
-          height: 40px;
-          border-radius: 12px;
-          overflow: hidden;
-          box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-          flex-shrink: 0;
-        }
-        .print-logo-circle img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-        }
-        .print-header-text {
-          display: flex;
-          flex-direction: column;
-        }
-        .print-app-name {
-          font-size: 0.95rem;
-          font-weight: 700;
-          letter-spacing: 0.06em;
-          text-transform: uppercase;
-        }
-        .print-app-subtitle {
-          font-size: 0.8rem;
-          color: #6b7280;
         }
         .informe-print {
           font-size: 0.9rem;
-          margin-top: 4px;
         }
         .cat-block {
           margin-bottom: 12px;
@@ -1137,6 +1101,40 @@ function handleProReportExport(action, title, containerId) {
         .bar {
           height: 100%;
           background: #6366f1;
+        }
+
+        /* 🔒 Límite global para imágenes dentro del informe */
+        .informe-print img {
+          max-width: 40px;
+          max-height: 40px;
+          height: auto;
+          width: auto;
+          display: inline-block;
+        }
+
+        /* Por si usamos el wrapper redondo de logos */
+        .expense-merchant-logo-wrap {
+          width: 32px;
+          height: 32px;
+          border-radius: 999px;
+          border: 1px solid #e5e7eb;
+          background: #ffffff;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+          vertical-align: middle;
+          margin-right: 6px;
+        }
+        .expense-merchant-logo-wrap img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+        }
+        .expense-merchant-initial {
+          font-weight: 600;
+          font-size: 0.9rem;
+          color: #4f46e5;
         }
       </style>
     </head>
