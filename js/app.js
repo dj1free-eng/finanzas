@@ -1022,7 +1022,8 @@ function buildPlainTextReport(title, containerId, htmlFallback) {
   return stripHtmlToPlainText(htmlFallback || '');
 }
 
-function handleProReportExport(action, title, containerId) {  if (!isProActive || !isProActive()) {
+function handleProReportExport(action, title, containerId) {  
+    if (!isProActive || !isProActive()) {
     showToast('Solo usuarios PRO pueden compartir o imprimir informes. Activa PRO en Config.');
 
     // Cambiamos a la pestaña de Configuración
@@ -1030,31 +1031,17 @@ function handleProReportExport(action, title, containerId) {  if (!isProActive |
       activateTab('config');
     }
 
-    // Después de un pequeño delay, hacemos scroll controlado
+    // Después de un pequeño delay, subimos ARRIBA DEL TODO
     setTimeout(() => {
-      const anchor =
-        document.getElementById('proStatusTag') ||
-        document.getElementById('proCodeInput');
-
-      let targetTop = 0;
-
-      if (anchor) {
-        const rect = anchor.getBoundingClientRect();
-        // posición vertical absoluta en la página
-        targetTop = rect.top + window.pageYOffset - 16; // pequeño margen superior
-        if (targetTop < 0) targetTop = 0;
-      }
-
       window.scrollTo({
-        top: targetTop,
-        left: 0,          // 🔒 bloqueamos el scroll horizontal
+        top: 0,
+        left: 0,
         behavior: 'smooth'
       });
     }, 150);
 
     return;
   }
-
   const cont = document.getElementById(containerId);
   if (!cont) {
     showToast('No se ha encontrado el contenido del informe.');
