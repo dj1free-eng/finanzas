@@ -381,7 +381,489 @@ const AVATAR_CONFIGS = {
   gold:     { emoji: '⭐', tag: '' },
   spectrum: { emoji: '🌈', tag: '' }
 };
+// ---- Logotipos de comercios / conceptos en gastos variables ----
+// TODOS los logos van en: /assets/logos/<nombre>.svg
 
+const MERCHANT_LOGOS = [
+  // ===== SUPERMERCADOS =====
+  {
+    id: 'mercadona',
+    label: 'Mercadona',
+    keywords: ['mercadona'],
+    logo: 'assets/logos/mercadona.svg'
+  },
+  {
+    id: 'hiperdino',
+    label: 'Hiperdino',
+    keywords: ['hiperdino', 'superdino', 'hiper dino', 'super dino'],
+    logo: 'assets/logos/hiperdino.svg'
+  },
+  {
+    id: 'carrefour',
+    label: 'Carrefour',
+    keywords: ['carrefour'],
+    logo: 'assets/logos/carrefour.svg'
+  },
+  {
+    id: 'lidl',
+    label: 'Lidl',
+    keywords: ['lidl'],
+    logo: 'assets/logos/lidl.svg'
+  },
+  {
+    id: 'aldi',
+    label: 'Aldi',
+    keywords: ['aldi'],
+    logo: 'assets/logos/aldi.svg'
+  },
+  {
+    id: 'spar',
+    label: 'Spar',
+    keywords: ['spar'],
+    logo: 'assets/logos/spar.svg'
+  },
+  {
+    id: 'dia',
+    label: 'DIA',
+    keywords: ['dia'],
+    logo: 'assets/logos/dia.svg'
+  },
+  {
+    id: 'alcampo',
+    label: 'Alcampo',
+    keywords: ['alcampo'],
+    logo: 'assets/logos/alcampo.svg'
+  },
+
+  // ===== GASOLINERAS / COCHE =====
+  {
+    id: 'repsol',
+    label: 'Repsol',
+    keywords: ['repsol'],
+    logo: 'assets/logos/repsol.svg'
+  },
+  {
+    id: 'cepsa',
+    label: 'Cepsa',
+    keywords: ['cepsa'],
+    logo: 'assets/logos/cepsa.svg'
+  },
+  {
+    id: 'bp',
+    label: 'BP',
+    keywords: ['bp'],
+    logo: 'assets/logos/bp.svg'
+  },
+  {
+    id: 'disa',
+    label: 'Disa',
+    keywords: ['disa'],
+    logo: 'assets/logos/disa.svg'
+  },
+  {
+    id: 'shell',
+    label: 'Shell',
+    keywords: ['shell'],
+    logo: 'assets/logos/shell.svg'
+  },
+  {
+    id: 'avia',
+    label: 'Avia',
+    keywords: ['avia'],
+    logo: 'assets/logos/avia.svg'
+  },
+  {
+    id: 'saras',
+    label: 'Saras',
+    keywords: ['saras'],
+    logo: 'assets/logos/saras.svg'
+  },
+  {
+    id: 'coche',
+    label: 'Coche / taller',
+    keywords: ['coche', 'taller', 'mecanico', 'neumatico', 'itv'],
+    logo: 'assets/logos/coche.svg'
+  },
+  {
+    id: 'gasolina',
+    label: 'Gasolina',
+    keywords: ['gasolina', 'combustible', 'gasoil'],
+    logo: 'assets/logos/gasolina.svg'
+  },
+
+  // ===== HOGAR / BRICOLAJE / ELECTRÓNICA =====
+  {
+    id: 'ikea',
+    label: 'IKEA',
+    keywords: ['ikea'],
+    logo: 'assets/logos/ikea.svg'
+  },
+  {
+    id: 'leroymerlin',
+    label: 'Leroy Merlin',
+    keywords: ['leroy', 'leroy merlin'],
+    logo: 'assets/logos/leroymerlin.svg'
+  },
+  {
+    id: 'conforama',
+    label: 'Conforama',
+    keywords: ['conforama'],
+    logo: 'assets/logos/conforama.svg'
+  },
+  {
+    id: 'mediamarkt',
+    label: 'MediaMarkt',
+    keywords: ['mediamarkt', 'media markt'],
+    logo: 'assets/logos/mediamarkt.svg'
+  },
+  {
+    id: 'worten',
+    label: 'Worten',
+    keywords: ['worten'],
+    logo: 'assets/logos/worten.svg'
+  },
+  {
+    id: 'bricomart',
+    label: 'Bricomart / Obramat',
+    keywords: ['bricomart', 'obrarmat', 'obrabrat', 'obrabmat', 'obrabat', 'obrabramat', 'obrabrat'],
+    logo: 'assets/logos/bricomart.svg'
+  },
+
+  // ===== BANCOS / FINANZAS =====
+  {
+    id: 'caixabank',
+    label: 'CaixaBank',
+    keywords: ['caixabank', 'la caixa', 'caixa'],
+    logo: 'assets/logos/caixabank.svg'
+  },
+  {
+    id: 'bbva',
+    label: 'BBVA',
+    keywords: ['bbva'],
+    logo: 'assets/logos/bbva.svg'
+  },
+  {
+    id: 'santander',
+    label: 'Santander',
+    keywords: ['santander'],
+    logo: 'assets/logos/santander.svg'
+  },
+  {
+    id: 'bankinter',
+    label: 'Bankinter',
+    keywords: ['bankinter'],
+    logo: 'assets/logos/bankinter.svg'
+  },
+  {
+    id: 'ing',
+    label: 'ING',
+    keywords: ['ing'],
+    logo: 'assets/logos/ing.svg'
+  },
+  {
+    id: 'unicaja',
+    label: 'Unicaja',
+    keywords: ['unicaja'],
+    logo: 'assets/logos/unicaja.svg'
+  },
+
+  // ===== OPERADORES / FIBRA / MÓVIL =====
+  {
+    id: 'movistar',
+    label: 'Movistar',
+    keywords: ['movistar', 'telefonica'],
+    logo: 'assets/logos/movistar.svg'
+  },
+  {
+    id: 'vodafone',
+    label: 'Vodafone',
+    keywords: ['vodafone'],
+    logo: 'assets/logos/vodafone.svg'
+  },
+  {
+    id: 'orange',
+    label: 'Orange',
+    keywords: ['orange'],
+    logo: 'assets/logos/orange.svg'
+  },
+  {
+    id: 'yoigo',
+    label: 'Yoigo',
+    keywords: ['yoigo'],
+    logo: 'assets/logos/yoigo.svg'
+  },
+  {
+    id: 'digi',
+    label: 'Digi',
+    keywords: ['digi'],
+    logo: 'assets/logos/digi.svg'
+  },
+  {
+    id: 'masmovil',
+    label: 'Masmovil',
+    keywords: ['masmovil', 'mas movil'],
+    logo: 'assets/logos/masmovil.svg'
+  },
+  {
+    id: 'simyo',
+    label: 'Simyo',
+    keywords: ['simyo'],
+    logo: 'assets/logos/simyo.svg'
+  },
+
+  // ===== ONLINE / E-COMMERCE =====
+  {
+    id: 'amazon',
+    label: 'Amazon',
+    keywords: ['amazon'],
+    logo: 'assets/logos/amazon.svg'
+  },
+  {
+    id: 'aliexpress',
+    label: 'AliExpress',
+    keywords: ['aliexpress', 'ali express'],
+    logo: 'assets/logos/aliexpress.svg'
+  },
+  {
+    id: 'temu',
+    label: 'Temu',
+    keywords: ['temu'],
+    logo: 'assets/logos/temu.svg'
+  },
+  {
+    id: 'shein',
+    label: 'Shein',
+    keywords: ['shein'],
+    logo: 'assets/logos/shein.svg'
+  },
+
+  // ===== COMIDA RÁPIDA / RESTAURACIÓN =====
+  {
+    id: 'mcdonalds',
+    label: 'McDonald\'s',
+    keywords: ['mcdonald', 'mc donald', 'mcdonalds'],
+    logo: 'assets/logos/mcdonalds.svg'
+  },
+  {
+    id: 'burguerking',
+    label: 'Burger King',
+    keywords: ['burgerking', 'burger king', 'burguer king'],
+    logo: 'assets/logos/burguerking.svg'
+  },
+  {
+    id: 'kfc',
+    label: 'KFC',
+    keywords: ['kfc'],
+    logo: 'assets/logos/kfc.svg'
+  },
+  {
+    id: 'telepizza',
+    label: 'Telepizza',
+    keywords: ['telepizza'],
+    logo: 'assets/logos/telepizza.svg'
+  },
+  {
+    id: 'dominos',
+    label: 'Domino\'s Pizza',
+    keywords: ['dominos', 'domino', 'domino s'],
+    logo: 'assets/logos/dominos.svg'
+  },
+  {
+    id: '100montaditos',
+    label: '100 Montaditos',
+    keywords: ['100montaditos', '100 montaditos'],
+    logo: 'assets/logos/100montaditos.svg'
+  },
+  {
+    id: 'starbucks',
+    label: 'Starbucks',
+    keywords: ['starbucks'],
+    logo: 'assets/logos/starbucks.svg'
+  },
+  {
+    id: 'restaurante',
+    label: 'Restaurante',
+    keywords: ['restaurante', 'guachinche', 'bar', 'tasca', 'guachi'],
+    logo: 'assets/logos/restaurante.svg'
+  },
+
+  // ===== TRANSPORTE / SEGUROS / TENERIFE =====
+  {
+    id: 'titsa',
+    label: 'TITSA',
+    keywords: ['titsa'],
+    logo: 'assets/logos/titsa.svg'
+  },
+  {
+    id: 'mapfre',
+    label: 'Mapfre',
+    keywords: ['mapfre'],
+    logo: 'assets/logos/mapfre.svg'
+  },
+  {
+    id: 'mutua',
+    label: 'Mutua Madrileña',
+    keywords: ['mutua'],
+    logo: 'assets/logos/mutua.svg'
+  },
+  {
+    id: 'reale',
+    label: 'Reale Seguros',
+    keywords: ['reale'],
+    logo: 'assets/logos/reale.svg'
+  },
+
+  // ===== PLATAFORMAS / ENTRETENIMIENTO =====
+  {
+    id: 'netflix',
+    label: 'Netflix',
+    keywords: ['netflix'],
+    logo: 'assets/logos/netflix.svg'
+  },
+  {
+    id: 'spotify',
+    label: 'Spotify',
+    keywords: ['spotify'],
+    logo: 'assets/logos/spotify.svg'
+  },
+  {
+    id: 'hbo',
+    label: 'HBO',
+    keywords: ['hbo', 'hbomax', 'hbo max'],
+    logo: 'assets/logos/hbo.svg'
+  },
+  {
+    id: 'disneyplus',
+    label: 'Disney+',
+    keywords: ['disneyplus', 'disney plus', 'disney+'],
+    logo: 'assets/logos/disneyplus.svg'
+  },
+  {
+    id: 'amazonprimevideo',
+    label: 'Prime Video',
+    keywords: ['primevideo', 'prime video', 'amazon prime'],
+    logo: 'assets/logos/amazonprimevideo.svg'
+  },
+
+  // ===== HOGAR: LUZ / AGUA =====
+  {
+    id: 'endesa',
+    label: 'Endesa',
+    keywords: ['endesa'],
+    logo: 'assets/logos/endesa.svg'
+  },
+  {
+    id: 'iberdrola',
+    label: 'Iberdrola',
+    keywords: ['iberdrola'],
+    logo: 'assets/logos/iberdrola.svg'
+  },
+  {
+    id: 'aguas',
+    label: 'Aguas',
+    keywords: ['agua', 'aguas', 'canalgestion', 'canal gestion'],
+    logo: 'assets/logos/aguas.svg'
+  },
+
+  // ===== SALUD / FARMACIA =====
+  {
+    id: 'farmacia',
+    label: 'Farmacia',
+    keywords: ['farmacia', 'parafarmacia'],
+    logo: 'assets/logos/farmacia.svg'
+  },
+  {
+    id: 'sanitas',
+    label: 'Sanitas',
+    keywords: ['sanitas'],
+    logo: 'assets/logos/sanitas.svg'
+  },
+  {
+    id: 'asisa',
+    label: 'Asisa',
+    keywords: ['asisa'],
+    logo: 'assets/logos/asisa.svg'
+  },
+  {
+    id: 'adeslas',
+    label: 'Adeslas',
+    keywords: ['adeslas'],
+    logo: 'assets/logos/adeslas.svg'
+  },
+  {
+    id: 'quiron',
+    label: 'Quirón',
+    keywords: ['quiron', 'quiron salud', 'quironsalud'],
+    logo: 'assets/logos/quiron.svg'
+  },
+
+  // ===== SERVICIOS LOCALES / COLEGIOS / VARIOS =====
+  {
+    id: 'colegio',
+    label: 'Colegio',
+    keywords: ['colegio', 'escuela', 'instituto', 'ampa'],
+    logo: 'assets/logos/colegio.svg'
+  },
+  {
+    id: 'online',
+    label: 'Compra online',
+    keywords: ['compra online', 'online'],
+    logo: 'assets/logos/online.svg'
+  },
+  {
+    id: 'suscripcion',
+    label: 'Suscripción',
+    keywords: ['suscripcion', 'subscription', 'sub'],
+    logo: 'assets/logos/suscripcion.svg'
+  },
+  {
+    id: 'ropa',
+    label: 'Ropa',
+    keywords: ['zara', 'pull and bear', 'pull&bear', 'bershka', 'hm', 'h&m', 'stradivarius', 'lefties'],
+    logo: 'assets/logos/ropa.svg'
+  },
+  {
+    id: 'alimentacion',
+    label: 'Alimentación',
+    keywords: ['alimentacion', 'comida', 'super', 'supermercado'],
+    logo: 'assets/logos/alimentacion.svg'
+  }
+];
+
+// Devuelve info de comercio (logo + etiqueta) según categoría y descripción
+function getMerchantInfo(categoriaRaw, descRaw) {
+  const categoria = (categoriaRaw || '').toLowerCase();
+  const desc = (descRaw || '').toLowerCase();
+
+  for (const cfg of MERCHANT_LOGOS) {
+    const kws = cfg.keywords || [];
+    const match = kws.some(kw =>
+      categoria.includes(kw.toLowerCase()) ||
+      desc.includes(kw.toLowerCase())
+    );
+    if (match) {
+      return {
+        logoUrl: cfg.logo || null,
+        label: cfg.label || cfg.id
+      };
+    }
+  }
+
+  // Si no hay logo configurado, devolvemos solo una etiqueta genérica
+  const base =
+    categoria ||
+    (descRaw || '').split(' ')[0] ||
+    '';
+
+  const label = base
+    ? base.charAt(0).toUpperCase() + base.slice(1)
+    : 'Gasto';
+
+  return {
+    logoUrl: null,
+    label
+  };
+}
 function isProEnabledForUI() {
   try {
     if (typeof isProActive === 'function') {
