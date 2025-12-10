@@ -783,6 +783,53 @@ main {
   gap: 0.5rem;
   flex-shrink: 0;
 }
+/* Logo / etiqueta de comercio en gastos variables */
+.expense-merchant {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 0;
+  margin-top: 4px;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.expense-merchant-logo {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #f3f4f6;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.expense-merchant-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.expense-merchant-label {
+  max-width: 140px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Cuando no hay logo, usamos una pastilla con texto */
+.expense-merchant-fallback {
+  background: #f3f4f6;
+  border-radius: 999px;
+  padding: 2px 6px;
+}
+
+.expense-merchant-fallback-text {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: #4b5563;
+}
 .amount-neg { 
   color: var(--danger); 
   font-weight: 700; 
