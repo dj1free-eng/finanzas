@@ -601,10 +601,46 @@ function handleProReportExport(action, title, containerId) {
           }
           h1 {
             font-size: 1.3rem;
+            margin: 0 0 12px 0;
+          }
+          .print-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
             margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e5e7eb;
+          }
+          .print-logo-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            flex-shrink: 0;
+          }
+          .print-logo-circle img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          }
+          .print-header-text {
+            display: flex;
+            flex-direction: column;
+          }
+          .print-app-name {
+            font-size: 0.95rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+          }
+          .print-app-subtitle {
+            font-size: 0.8rem;
+            color: #6b7280;
           }
           .informe-print {
             font-size: 0.9rem;
+            margin-top: 4px;
           }
           .cat-block {
             margin-bottom: 12px;
@@ -623,6 +659,15 @@ function handleProReportExport(action, title, containerId) {
         </style>
       </head>
       <body>
+        <div class="print-header">
+          <div class="print-logo-circle">
+            <img src="apple-touch-icon.png" alt="Flujo Fácil" />
+          </div>
+          <div class="print-header-text">
+            <div class="print-app-name">FLUJO FÁCIL</div>
+            <div class="print-app-subtitle">Tu dinero, bajo control</div>
+          </div>
+        </div>
         <h1>${title}</h1>
         <div class="informe-print">
           ${html}
