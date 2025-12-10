@@ -1493,6 +1493,36 @@ body[data-theme="forest"] {
   opacity: 1;
   transform: none;
 }
+/* === LOGOS DE COMERCIOS (Sistema nuevo) ====================== */
+
+.expense-merchant-logo-wrap {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  margin-right: 8px;
+}
+
+.expense-merchant-logo-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.expense-merchant-initial {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
 /* Animación: viene del fondo, rebota y se queda */
 @keyframes intro-logo-zoom {
   0% {
@@ -1520,4 +1550,5 @@ body[data-theme="forest"] {
     opacity: 1;
     transform: translateY(0);
   }
+  
 }
