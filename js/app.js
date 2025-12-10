@@ -399,6 +399,147 @@ function stripHtmlToPlainText(html) {
   return text.trim();
 }
 
+// Genera una versión en texto plano bonita según el tipo de informe
+function buildPlainTextReport(title, containerId, htmlFallback) {
+  let lines = [];
+
+  // ---- Informe de HUCHAS ----
+  if (containerId === 'informeHuchasContenido') {
+    const huchas = state.huchas || [];
+    lines.push(title.toUpperCase());
+    lines.push('');
+
+    if (!huchas.length) {
+      lines.push('No tienes ninguna hucha creada.');
+      return lines.join('\n');
+    }
+
+    const totalHuchas = huchas.length;
+    const totalSaldo = huchas.reduce((s, h) => s + (Number(h.saldo) || 0), 0);
+    const totalObjetivo = huchas.reduce((s, h) => s + (Number(h.objetivo) || 0), 0);
+    const pctGlobal = totalObjetivo > 0 ? Math.min(100, (totalSaldo / totalObjetivo) * 100) : 0;
+
+    lines.push('Resumen general');
+    lines.push(`- Número de huchas: ${totalHuchas}`);
+    lines.push(`- Saldo acumulado: ${formatCurrency(totalSaldo)}`);
+    if (totalObjetivo > 0) {
+      lines.push(`- Objetivo total: ${formatCurrency(totalObjetivo)}`);
+      lines.push(`- Progreso global: ${pctGlobal.toFixed(1)} %`);
+    }
+    lines.push('');
+    lines.push('Detalle por hucha:');
+
+    huchas.forEach(h => {
+      const saldo = Number(h.saldo) || 0;
+      const objetivo = Number(h.objetivo) || 0;
+      const nombre = h.nombre || 'Hucha sin nombre';
+
+      lines.push(`• ${nombre}`);
+      if (objetivo > 0) {
+        const pct = Math.min(100, (saldo / objetivo) * 100);
+        lines.push(`   - Saldo: ${formatCurrency(saldo)}`);
+        lines.push(`   - Objetivo: ${formatCurrency(objetivo)}`);
+        lines.push(`   - Progreso: ${pct.toFixed(1)} %`);
+      } else {
+        lines.push(`   - Saldo: ${formatCurrency(saldo)}`);
+        lines.push('   - Sin objetivo definido');
+      }
+      lines.push('');
+    });
+
+    return lines.join('\n');
+  }
+
+  // ---- Informe MENSUAL ----
+  if (containerId === 'informeMensualContenido') {
+    const ingresosBaseTotal = getIngresosBaseTotal();
+    const ingresosPuntualesMes = getIngresosPuntualesMes(currentYear, currentMonth)
+      .reduce((s, i) => s + (Number(i.importe) || 0), 0);
+    const ingresosTotales = ingresosBaseTotal + ingresosPuntualesMes;
+
+    const gastosMes = getGastosMes(currentYear, currentMonth);
+    const totalGastosVar = gastosMes.reduce((s, g) => s + (Number(g.importe) || 0), 0);
+    const totalFijos = getTotalFijos();
+    const totalGastos = totalFijos + totalGastosVar;
+    const balance = ingresosTotales - totalGastos;
+    const totalHuchas = (state.huchas || []).reduce((s, h) => s + (Number(h.saldo) || 0), 0);
+
+    const mesLabel = monthNames[currentMonth] + ' ' + currentYear;
+
+    lines.push(`${title.toUpperCase()} - ${mesLabel}`);
+    lines.push('');
+    lines.push('INGRESOS');
+    lines.push(`- Ingresos base: ${formatCurrency(ingresosBaseTotal)}`);
+    lines.push(`- Ingresos puntuales: ${formatCurrency(ingresosPuntualesMes)}`);
+    lines.push(`- Total ingresos: ${formatCurrency(ingresosTotales)}`);
+    lines.push('');
+    lines.push('GASTOS');
+    lines.push(`- Gastos fijos: ${formatCurrency(totalFijos)}`);
+    lines.push(`- Gastos variables: ${formatCurrency(totalGastosVar)}`);
+    lines.push(`- Total gastos: ${formatCurrency(totalGastos)}`);
+    lines.push('');
+    lines.push('BALANCE Y AHORRO');
+    lines.push(`- Balance del mes: ${formatCurrency(balance)}`);
+    lines.push(`- Saldo acumulado en huchas: ${formatCurrency(totalHuchas)}`);
+
+    return lines.join('\n');
+  }
+
+  // ---- Informe de GASTOS FIJOS ----
+  if (containerId === 'informesContenido') {
+    const categorias = ['Suministros', 'Préstamos', 'Suscripciones', 'Varios'];
+    const resumen = {};
+    categorias.forEach(cat => {
+      resumen[cat] = { total: 0, items: [] };
+    });
+
+    (state.fijos || []).forEach(f => {
+      const cat = f.categoria || 'Varios';
+      if (!resumen[cat]) {
+        resumen[cat] = { total: 0, items: [] };
+      }
+      resumen[cat].total += Number(f.importe) || 0;
+      resumen[cat].items.push(f);
+    });
+
+    const totalGlobal = Object.values(resumen).reduce((s, r) => s + r.total, 0);
+
+    lines.push(title.toUpperCase());
+    lines.push('');
+
+    if (!totalGlobal) {
+      lines.push('No tienes gastos fijos configurados.');
+      return lines.join('\n');
+    }
+
+    lines.push('Totales por categoría:');
+    categorias.forEach(cat => {
+      const r = resumen[cat];
+      if (!r || r.total === 0) return;
+      lines.push(`- ${cat}: ${formatCurrency(r.total)}`);
+    });
+    lines.push('');
+    lines.push(`TOTAL GENERAL: ${formatCurrency(totalGlobal)}`);
+    lines.push('');
+    lines.push('Detalle por categoría:');
+
+    categorias.forEach(cat => {
+      const r = resumen[cat];
+      if (!r || !r.items.length) return;
+      lines.push('');
+      lines.push(cat.toUpperCase());
+      r.items.forEach(i => {
+        lines.push(`• ${i.nombre || 'Sin nombre'}: ${formatCurrency(i.importe)}`);
+      });
+    });
+
+    return lines.join('\n');
+  }
+
+  // Fallback genérico: por si algún día usamos esta función con otro informe
+  return stripHtmlToPlainText(htmlFallback || '');
+}
+
 function handleProReportExport(action, title, containerId) {
   if (!isProActive || !isProActive()) {
     showToast('Solo usuarios PRO pueden compartir o imprimir informes. Activa PRO en Config.');
@@ -421,7 +562,7 @@ function handleProReportExport(action, title, containerId) {
   }
 
   if (action === 'share') {
-    const text = stripHtmlToPlainText(html);
+    const text = buildPlainTextReport(title, containerId, html);
 
     if (navigator.share) {
       navigator.share({
