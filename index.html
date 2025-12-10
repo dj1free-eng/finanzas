@@ -722,15 +722,19 @@
   </nav>
 
   <!-- Modal Informes Fijos -->
-<div id="modalInformes" class="modal-overlay">
-  <div class="modal-card informes-card">
-    <h2>Informe de Gastos Fijos</h2>
+  <div id="modalInformes" class="modal-overlay">
+    <div class="modal-card informes-card">
+      <h2>Informe de Gastos Fijos</h2>
 
-    <div id="informesContenido" class="informes-contenido"></div>
+      <div id="informesContenido" class="informes-contenido"></div>
 
-    <button id="btnCerrarInformes" class="btn btn-secondary">Cerrar</button>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="informeFijosShare">Compartir (PRO)</button>
+        <button class="btn btn-outline" id="informeFijosPrint">Imprimir (PRO)</button>
+        <button id="btnCerrarInformes" class="btn btn-primary">Entendido</button>
+      </div>
+    </div>
   </div>
-</div> 
         <!-- Modal Informe Mensual -->
   <div id="modalInformeMensual" class="modal-overlay">
     <div class="modal informes-card">
@@ -742,6 +746,8 @@
       <div id="informeMensualContenido" class="informes-contenido"></div>
 
       <div class="modal-footer">
+        <button class="btn btn-outline" id="informeMensualShare">Compartir (PRO)</button>
+        <button class="btn btn-outline" id="informeMensualPrint">Imprimir (PRO)</button>
         <button class="btn btn-primary" id="informeMensualOk">Entendido</button>
       </div>
     </div>
@@ -757,6 +763,8 @@
       <div id="informeHuchasContenido" class="informes-contenido"></div>
 
       <div class="modal-footer">
+        <button class="btn btn-outline" id="informeHuchasShare">Compartir (PRO)</button>
+        <button class="btn btn-outline" id="informeHuchasPrint">Imprimir (PRO)</button>
         <button class="btn btn-primary" id="informeHuchasOk">Entendido</button>
       </div>
     </div>
