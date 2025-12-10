@@ -319,18 +319,23 @@
           </div>
         </section>
 
-        <section class="card">
-          <div class="card-header">
-            <div>
-              <div class="card-title">📊 Gastos del mes</div>
-              <div class="card-subtitle">
-                Todos los gastos registrados en el mes seleccionado.
-              </div>
-            </div>
-            <div class="card-tag">Listado</div>
-          </div>
-          <div id="gastosLista" class="expense-list"></div>
-        </section>
+<section class="card">
+  <div class="card-header">
+    <div>
+      <div class="card-title">📊 Gastos del mes</div>
+      <div class="card-subtitle">
+        Todos los gastos registrados en el mes seleccionado.
+      </div>
+    </div>
+    <div class="card-tag">Listado</div>
+  </div>
+
+  <button id="btnInformeGastos" class="btn btn-primary" style="margin-bottom: 12px;">
+    Ver informe
+  </button>
+
+  <div id="gastosLista" class="expense-list"></div>
+</section>
       </section>
 
       <!-- SOBRES -->
@@ -749,6 +754,23 @@
         <button class="btn btn-outline" id="informeMensualShare">Compartir (PRO)</button>
         <button class="btn btn-outline" id="informeMensualPrint">Imprimir (PRO)</button>
         <button class="btn btn-primary" id="informeMensualOk">Entendido</button>
+      </div>
+    </div>
+  </div>
+              <!-- Modal Informe de Gastos Variables -->
+  <div id="modalInformeGastos" class="modal-overlay">
+    <div class="modal informes-card">
+      <div class="modal-header">
+        <div class="modal-title">Informe de gastos variables</div>
+        <button class="modal-close" id="informeGastosClose">✕</button>
+      </div>
+
+      <div id="informeGastosContenido" class="informes-contenido"></div>
+
+      <div class="modal-footer">
+        <button class="btn btn-ghost" id="informeGastosShare">Compartir</button>
+        <button class="btn btn-ghost" id="informeGastosPrint">Imprimir</button>
+        <button class="btn btn-primary" id="informeGastosOk">Entendido</button>
       </div>
     </div>
   </div>
