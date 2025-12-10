@@ -1025,9 +1025,33 @@ function buildPlainTextReport(title, containerId, htmlFallback) {
 function handleProReportExport(action, title, containerId) {
   if (!isProActive || !isProActive()) {
     showToast('Solo usuarios PRO pueden compartir o imprimir informes. Activa PRO en Config.');
+
+    // Cambiamos a la pestaña de Configuración
     if (typeof activateTab === 'function') {
       activateTab('config');
     }
+
+    // Después de un pequeño delay, hacemos scroll hasta la tarjeta PRO
+    setTimeout(() => {
+      // Intentamos anclar en algún elemento propio de la tarjeta PRO
+      const anchor =
+        document.getElementById('proStatusTag') ||
+        document.getElementById('proCodeInput');
+
+      if (anchor && typeof anchor.scrollIntoView === 'function') {
+        anchor.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      } else {
+        // Fallback: subir al principio de la página
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      }
+    }, 150);
+
     return;
   }
 
