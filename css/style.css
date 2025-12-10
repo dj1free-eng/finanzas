@@ -1190,6 +1190,56 @@ main {
   font-size: 13px;
   color: var(--muted);
 }
+/* Informe de gastos variables: bloques por comercio */
+.merchant-list {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.merchant-block {
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: #f9fafb;
+  border: 1px solid var(--border);
+}
+
+.merchant-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 4px;
+}
+
+.merchant-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.merchant-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.merchant-total {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.merchant-items {
+  margin-top: 4px;
+  padding-left: 4px;
+  border-left: 2px solid #e5e7eb;
+}
+
+.merchant-item-line {
+  font-size: 0.8rem;
+  color: var(--text);
+  margin-bottom: 2px;
+}
 .hucha-actions-single {
   display: flex;
   width: 100%;
