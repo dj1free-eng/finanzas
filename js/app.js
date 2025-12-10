@@ -2591,15 +2591,30 @@ function openEditModal(type, data) {
 
     // ----- Informe de gastos fijos -----
     const btnInf = document.getElementById('btnInformeFijos');
+    const btnCloseInf = document.getElementById('btnCerrarInformes');
+    const btnInfFijosShare = document.getElementById('informeFijosShare');
+    const btnInfFijosPrint = document.getElementById('informeFijosPrint');
+
     if (btnInf) {
       btnInf.addEventListener('click', generarInformeFijos);
     }
 
-    const btnCloseInf = document.getElementById('btnCerrarInformes');
     if (btnCloseInf) {
       btnCloseInf.addEventListener('click', () => {
         const modal = document.getElementById('modalInformes');
         if (modal) modal.classList.remove('active');
+      });
+    }
+
+    if (btnInfFijosShare) {
+      btnInfFijosShare.addEventListener('click', () => {
+        handleProReportExport('share', 'Informe de gastos fijos', 'informesContenido');
+      });
+    }
+
+    if (btnInfFijosPrint) {
+      btnInfFijosPrint.addEventListener('click', () => {
+        handleProReportExport('print', 'Informe de gastos fijos', 'informesContenido');
       });
     }
 
@@ -2608,6 +2623,8 @@ function openEditModal(type, data) {
     const modalInfMensual = document.getElementById('modalInformeMensual');
     const btnInfMensualClose = document.getElementById('informeMensualClose');
     const btnInfMensualOk = document.getElementById('informeMensualOk');
+    const btnInfMensualShare = document.getElementById('informeMensualShare');
+    const btnInfMensualPrint = document.getElementById('informeMensualPrint');
 
     if (btnInfMensual && modalInfMensual) {
       const cerrarInformeMensual = () => {
@@ -2625,6 +2642,18 @@ function openEditModal(type, data) {
         btnInfMensualOk.addEventListener('click', cerrarInformeMensual);
       }
 
+      if (btnInfMensualShare) {
+        btnInfMensualShare.addEventListener('click', () => {
+          handleProReportExport('share', 'Informe mensual Flujo Fácil', 'informeMensualContenido');
+        });
+      }
+
+      if (btnInfMensualPrint) {
+        btnInfMensualPrint.addEventListener('click', () => {
+          handleProReportExport('print', 'Informe mensual Flujo Fácil', 'informeMensualContenido');
+        });
+      }
+
       // Cerrar tocando fuera de la tarjeta
       modalInfMensual.addEventListener('click', (e) => {
         if (e.target === modalInfMensual) {
@@ -2632,30 +2661,41 @@ function openEditModal(type, data) {
         }
       });
     }
+
     // ----- Informe de huchas: eventos -----
     const btnInfHuchas = document.getElementById('btnInformeHuchas');
     const modalInfHuchas = document.getElementById('modalInformeHuchas');
     const btnInfHuchasClose = document.getElementById('informeHuchasClose');
     const btnInfHuchasOk = document.getElementById('informeHuchasOk');
+    const btnInfHuchasShare = document.getElementById('informeHuchasShare');
+    const btnInfHuchasPrint = document.getElementById('informeHuchasPrint');
 
     if (btnInfHuchas && modalInfHuchas) {
       const cerrarInformeHuchas = () => {
         modalInfHuchas.classList.remove('active');
       };
 
-      // Al pulsar el botón, generamos el informe y mostramos el modal
       btnInfHuchas.addEventListener('click', () => {
         generarInformeHuchas();
       });
 
-      // Botón de cerrar (X)
       if (btnInfHuchasClose) {
         btnInfHuchasClose.addEventListener('click', cerrarInformeHuchas);
       }
-
-      // Botón "Entendido"
       if (btnInfHuchasOk) {
         btnInfHuchasOk.addEventListener('click', cerrarInformeHuchas);
+      }
+
+      if (btnInfHuchasShare) {
+        btnInfHuchasShare.addEventListener('click', () => {
+          handleProReportExport('share', 'Informe de huchas', 'informeHuchasContenido');
+        });
+      }
+
+      if (btnInfHuchasPrint) {
+        btnInfHuchasPrint.addEventListener('click', () => {
+          handleProReportExport('print', 'Informe de huchas', 'informeHuchasContenido');
+        });
       }
 
       // Cerrar tocando fuera de la tarjeta
