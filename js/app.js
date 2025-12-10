@@ -22,14 +22,12 @@ function parseNumberSafe(value) {
 }
   const STORAGE_KEY = 'ecoApp_v11c_state';
 
-      // ----- PRO + cupones -----
+  // ----- PRO: sistema algorítmico de códigos -----
   const PRO_STORAGE_KEY = 'ecoApp_v11c_pro';
 
-  // Lista de cupones válidos (puedes cambiarlos cuando quieras)
-  const PRO_COUPONS = [
-    { code: 'DJ1FREE-DEV', label: 'Cupón desarrollador' },
-    { code: 'FAMILIA-2025', label: 'Cupón familiar' }
-  ];
+  // No cambies estos valores una vez publicada la app.
+  const PRO_CODE_PREFIX = 'FF';  // de Flujo Fácil
+  const PRO_CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // sin 0, O, I, 1
 
   let proState = {
     active: false,
@@ -62,7 +60,7 @@ function parseNumberSafe(value) {
     return !!(proState && proState.active);
   }
 
-  // Cinta FREE / PRO en la cabecera
+  // Cinta FREE / PRO en la cabecera (SE MANTIENE)
   function updateHeaderPlanBadge() {
     const header = document.getElementById('headerInner');
     if (!header) return;
@@ -76,10 +74,68 @@ function parseNumberSafe(value) {
     }
   }
 
-  function findCoupon(code) {
-    if (!code) return null;
-    const normalized = String(code).trim().toUpperCase();
-    return PRO_COUPONS.find(c => c.code.toUpperCase() === normalized) || null;
+  // ---------- LÓGICA DEL CÓDIGO ALGORÍTMICO ----------
+
+  // Normaliza un código introducido por el usuario
+  function normalizeProCode(input) {
+    if (!input) return '';
+    return String(input)
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, ''); // quita guiones, espacios, etc.
+  }
+
+  // Calcula el checksum de un payload de 8 caracteres
+  function computeProChecksum(payload) {
+    if (!payload || payload.length !== 8) return null;
+
+    const alphabet = PRO_CODE_ALPHABET;
+    const base = alphabet.length;
+    const idx = [];
+
+    for (let i = 0; i < payload.length; i++) {
+      const c = payload[i];
+      const pos = alphabet.indexOf(c);
+      if (pos === -1) return null;
+      idx.push(pos);
+    }
+
+    // Primer carácter del checksum: suma de índices + 7
+    let sum = 0;
+    idx.forEach(v => { sum += v; });
+    const idx1 = (sum + 7) % base;
+
+    // Segundo carácter: combinación de algunas posiciones
+    const idx2 = (idx[0] * 3 + idx[3] * 5 + idx[7] * 7) % base;
+
+    return alphabet[idx1] + alphabet[idx2];
+  }
+
+  // Valida un código PRO. Devuelve info si es válido, null si no.
+  function validateProCode(rawCode) {
+    const normalized = normalizeProCode(rawCode);
+    // Esperamos: FF + 8 payload + 2 checksum = 12 caracteres
+    if (!normalized.startsWith(PRO_CODE_PREFIX)) return null;
+    if (normalized.length !== 12) return null;
+
+    const body = normalized.slice(PRO_CODE_PREFIX.length); // 10 chars
+    const payload = body.slice(0, 8);
+    const checksum = body.slice(8); // 2 chars
+
+    const expected = computeProChecksum(payload);
+    if (!expected || checksum !== expected) return null;
+
+    return {
+      normalized,
+      payload
+    };
+  }
+
+  // Formato bonito con guiones para mostrar al usuario
+  function formatProCodeForDisplay(code) {
+    if (!code) return '';
+    const raw = normalizeProCode(code);
+    if (raw.length !== 12) return raw;
+    return raw.slice(0, 4) + '-' + raw.slice(4, 8) + '-' + raw.slice(8, 12);
   }
 
   function updateProUI() {
@@ -99,14 +155,16 @@ function parseNumberSafe(value) {
         ? new Date(proState.activatedAt).toLocaleString('es-ES')
         : 'fecha desconocida';
 
+      const codeDisplay = formatProCodeForDisplay(code);
+
       msg.innerHTML = `
         Estado actual: <strong>PRO activado</strong>.<br>
-        Código: <strong>${code}</strong><br>
+        Código: <strong>${codeDisplay}</strong><br>
         Activado el: <strong>${fecha}</strong>
       `;
 
       if (input) {
-        input.value = code;
+        input.value = codeDisplay;
       }
     } else {
       tag.textContent = 'FREE';
@@ -143,14 +201,14 @@ function parseNumberSafe(value) {
         return;
       }
 
-      const coupon = findCoupon(rawCode);
-      if (!coupon) {
+      const result = validateProCode(rawCode);
+      if (!result) {
         showToast('Código PRO no válido.');
         return;
       }
 
       proState.active = true;
-      proState.code = coupon.code;
+      proState.code = result.normalized;
       proState.activatedAt = new Date().toISOString();
       saveProState();
       updateProUI();
