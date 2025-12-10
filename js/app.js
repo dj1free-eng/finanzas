@@ -2119,6 +2119,24 @@ function setupFijos() {
       ? g.desc.trim()
       : 'Sin descripción';
 
+        // Info de comercio (logo + etiqueta) basada en categoría y descripción
+    const merchant = getMerchantInfo(g.categoria || '', descText);
+
+    const merchantHtml = merchant.logoUrl
+      ? `
+        <div class="expense-merchant">
+          <div class="expense-merchant-logo">
+            <img src="${merchant.logoUrl}" alt="${merchant.label}" loading="lazy" />
+          </div>
+          <div class="expense-merchant-label">${merchant.label}</div>
+        </div>
+      `
+      : `
+        <div class="expense-merchant expense-merchant-fallback">
+          <span class="expense-merchant-fallback-text">${merchant.label}</span>
+        </div>
+      `;
+
     item.innerHTML = `
       <div class="expense-main">
         <div class="expense-line1">
@@ -2126,6 +2144,7 @@ function setupFijos() {
         </div>
         <div class="expense-line2">
           ${g.fecha || ''} · ${descText}
+          ${merchantHtml}
         </div>
       </div>
       <div class="expense-actions">
