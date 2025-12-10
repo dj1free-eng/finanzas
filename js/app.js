@@ -1622,6 +1622,152 @@ function generarInformeFijos() {
   cont.innerHTML = html;
   overlay.classList.add("active");
 }
+  // ----- Informe de gastos variables -----
+function generarInformeGastosVariables() {
+  const overlay = document.getElementById('modalInformeGastos');
+  const cont = document.getElementById('informeGastosContenido');
+  if (!overlay || !cont) return;
+
+  const gastosMes = getGastosMes(currentYear, currentMonth);
+  if (!Array.isArray(gastosMes) || !gastosMes.length) {
+    cont.innerHTML = `
+      <div class="cat-block">
+        <h3>Sin gastos este mes</h3>
+        <p style="font-size:0.9rem; color:var(--muted);">
+          Registra algunos gastos en la pestaña <strong>Gastos</strong> para ver el informe detallado.
+        </p>
+      </div>
+    `;
+    overlay.classList.add('active');
+    return;
+  }
+
+  const totalGlobal = gastosMes.reduce(
+    (s, g) => s + (Number(g.importe) || 0),
+    0
+  );
+  const mesLabel = monthNames[currentMonth] + ' ' + currentYear;
+
+  const pct = (valor) => {
+    if (totalGlobal <= 0) return 0;
+    return Math.min(100, (valor / totalGlobal) * 100);
+  };
+
+  // 1) Agrupamos por categoría
+  const porCategoria = {};
+  gastosMes.forEach(g => {
+    const cat = (g.categoria || 'Sin categoría').trim() || 'Sin categoría';
+    if (!porCategoria[cat]) {
+      porCategoria[cat] = {
+        total: 0,
+        items: []
+      };
+    }
+    const imp = Number(g.importe) || 0;
+    porCategoria[cat].total += imp;
+    porCategoria[cat].items.push(g);
+  });
+
+  let html = `
+    <div style="margin-bottom: 0.75rem; font-size: 0.9rem; color: var(--muted);">
+      Mes actual: <strong>${mesLabel}</strong><br>
+      Total gastos variables del mes: <strong>${formatCurrency(totalGlobal)}</strong>
+    </div>
+  `;
+
+  // 2) Por cada categoría, agrupamos por comercio (usando logos)
+  Object.keys(porCategoria)
+    .sort((a, b) => a.localeCompare(b, 'es'))
+    .forEach(cat => {
+      const dataCat = porCategoria[cat];
+      const totalCat = dataCat.total;
+      const itemsCat = dataCat.items;
+
+      // Agrupación por comerciante
+      const porMerchant = {};
+      itemsCat.forEach(g => {
+        const info = getMerchantInfo(g.categoria || '', g.desc || '');
+        const key = info.label || 'Otros';
+        if (!porMerchant[key]) {
+          porMerchant[key] = {
+            label: info.label || key,
+            logoUrl: info.logoUrl || null,
+            total: 0,
+            movimientos: 0,
+            items: []
+          };
+        }
+        const imp = Number(g.importe) || 0;
+        porMerchant[key].total += imp;
+        porMerchant[key].movimientos += 1;
+        porMerchant[key].items.push(g);
+      });
+
+      html += `
+        <div class="cat-block">
+          <h3>${cat}</h3>
+          <div class="cat-total">
+            Total categoría: <strong>${formatCurrency(totalCat)}</strong>
+            · ${itemsCat.length} movimiento${itemsCat.length === 1 ? '' : 's'}
+          </div>
+          <div class="bar-container">
+            <div class="bar" style="width:${pct(totalCat)}%;"></div>
+          </div>
+          <div class="merchant-list">
+      `;
+
+      Object.values(porMerchant)
+        .sort((a, b) => b.total - a.total)
+        .forEach(m => {
+          const inicial = m.label ? m.label.charAt(0).toUpperCase() : '?';
+          const logoHtml = m.logoUrl
+            ? `<img src="${m.logoUrl}" alt="${m.label}" />`
+            : `<span class="expense-merchant-initial">${inicial}</span>`;
+
+          html += `
+            <div class="merchant-block">
+              <div class="merchant-header">
+                <div class="expense-merchant-logo-wrap">
+                  ${logoHtml}
+                </div>
+                <div class="merchant-header-text">
+                  <div class="merchant-name">${m.label}</div>
+                  <div class="merchant-total">
+                    Total: ${formatCurrency(m.total)}
+                    · ${m.movimientos} movimiento${m.movimientos === 1 ? '' : 's'}
+                  </div>
+                </div>
+              </div>
+              <div class="merchant-items">
+          `;
+
+          m.items
+            .sort((a, b) => (a.fecha || '').localeCompare(b.fecha || ''))
+            .forEach(g => {
+              const descText = (g.desc && g.desc.trim()) ? g.desc.trim() : 'Sin descripción';
+              html += `
+                <div class="merchant-item-line">
+                  ${g.fecha || ''} · ${descText} ·
+                  <strong>${formatCurrency(g.importe)}</strong>
+                </div>
+              `;
+            });
+
+          html += `
+              </div>
+            </div>
+          `;
+        });
+
+      html += `
+          </div>
+        </div>
+      `;
+    });
+
+  cont.innerHTML = html;
+  overlay.classList.add('active');
+}
   // ----- Informe mensual básico -----
 function generarInformeMensual() {
   const overlay = document.getElementById('modalInformeMensual');
@@ -3325,7 +3471,56 @@ function openEditModal(type, data) {
         handleProReportExport('print', 'Informe de gastos fijos', 'informesContenido');
       });
     }
+    // ----- Informe de gastos variables: eventos -----
+    const btnInfGastos = document.getElementById('btnInformeGastos');
+    const modalInfGastos = document.getElementById('modalInformeGastos');
+    const btnInfGastosClose = document.getElementById('informeGastosClose');
+    const btnInfGastosOk = document.getElementById('informeGastosOk');
+    const btnInfGastosShare = document.getElementById('informeGastosShare');
+    const btnInfGastosPrint = document.getElementById('informeGastosPrint');
 
+    if (btnInfGastos && modalInfGastos) {
+      const cerrarInformeGastos = () => {
+        modalInfGastos.classList.remove('active');
+      };
+
+      btnInfGastos.addEventListener('click', () => {
+        generarInformeGastosVariables();
+      });
+
+      if (btnInfGastosClose) {
+        btnInfGastosClose.addEventListener('click', cerrarInformeGastos);
+      }
+      if (btnInfGastosOk) {
+        btnInfGastosOk.addEventListener('click', cerrarInformeGastos);
+      }
+
+      if (btnInfGastosShare) {
+        btnInfGastosShare.addEventListener('click', () => {
+          handleProReportExport(
+            'share',
+            'Informe de gastos variables',
+            'informeGastosContenido'
+          );
+        });
+      }
+
+      if (btnInfGastosPrint) {
+        btnInfGastosPrint.addEventListener('click', () => {
+          handleProReportExport(
+            'print',
+            'Informe de gastos variables',
+            'informeGastosContenido'
+          );
+        });
+      }
+
+      modalInfGastos.addEventListener('click', (e) => {
+        if (e.target === modalInfGastos) {
+          cerrarInformeGastos();
+        }
+      });
+    }
     // ----- Informe mensual: eventos -----
     const btnInfMensual = document.getElementById('btnInformeMensual');
     const modalInfMensual = document.getElementById('modalInformeMensual');
