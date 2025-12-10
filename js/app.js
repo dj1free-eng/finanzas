@@ -1022,8 +1022,7 @@ function buildPlainTextReport(title, containerId, htmlFallback) {
   return stripHtmlToPlainText(htmlFallback || '');
 }
 
-function handleProReportExport(action, title, containerId) {
-  if (!isProActive || !isProActive()) {
+function handleProReportExport(action, title, containerId) {  if (!isProActive || !isProActive()) {
     showToast('Solo usuarios PRO pueden compartir o imprimir informes. Activa PRO en Config.');
 
     // Cambiamos a la pestaña de Configuración
@@ -1031,25 +1030,26 @@ function handleProReportExport(action, title, containerId) {
       activateTab('config');
     }
 
-    // Después de un pequeño delay, hacemos scroll hasta la tarjeta PRO
+    // Después de un pequeño delay, hacemos scroll controlado
     setTimeout(() => {
-      // Intentamos anclar en algún elemento propio de la tarjeta PRO
       const anchor =
         document.getElementById('proStatusTag') ||
         document.getElementById('proCodeInput');
 
-      if (anchor && typeof anchor.scrollIntoView === 'function') {
-        anchor.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start'
-        });
-      } else {
-        // Fallback: subir al principio de la página
-        window.scrollTo({
-          top: 0,
-          behavior: 'smooth'
-        });
+      let targetTop = 0;
+
+      if (anchor) {
+        const rect = anchor.getBoundingClientRect();
+        // posición vertical absoluta en la página
+        targetTop = rect.top + window.pageYOffset - 16; // pequeño margen superior
+        if (targetTop < 0) targetTop = 0;
       }
+
+      window.scrollTo({
+        top: targetTop,
+        left: 0,          // 🔒 bloqueamos el scroll horizontal
+        behavior: 'smooth'
+      });
     }, 150);
 
     return;
