@@ -392,7 +392,112 @@ function isProEnabledForUI() {
   }
   return false;
 }
+function stripHtmlToPlainText(html) {
+  const tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  const text = tmp.textContent || tmp.innerText || '';
+  return text.trim();
+}
 
+function handleProReportExport(action, title, containerId) {
+  if (!isProActive || !isProActive()) {
+    showToast('Solo usuarios PRO pueden compartir o imprimir informes. Activa PRO en Config.');
+    if (typeof activateTab === 'function') {
+      activateTab('config');
+    }
+    return;
+  }
+
+  const cont = document.getElementById(containerId);
+  if (!cont) {
+    showToast('No se ha encontrado el contenido del informe.');
+    return;
+  }
+
+  const html = cont.innerHTML || '';
+  if (!html.trim()) {
+    showToast('El informe está vacío.');
+    return;
+  }
+
+  if (action === 'share') {
+    const text = stripHtmlToPlainText(html);
+
+    if (navigator.share) {
+      navigator.share({
+        title,
+        text
+      }).catch(() => {
+        // usuario canceló, no pasa nada
+      });
+    } else if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text)
+        .then(() => showToast('Informe copiado al portapapeles.'))
+        .catch(() => showToast('No se pudo copiar el informe.'));
+    } else {
+      showToast('Tu navegador no permite compartir directamente este informe.');
+    }
+  } else if (action === 'print') {
+    const win = window.open('', '_blank');
+    if (!win) {
+      showToast('No se pudo abrir la ventana de impresión.');
+      return;
+    }
+
+    win.document.open();
+    win.document.write(`
+      <!DOCTYPE html>
+      <html lang="es">
+      <head>
+        <meta charset="utf-8">
+        <title>${title}</title>
+        <style>
+          body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            padding: 16px;
+            color: #111827;
+            background: #ffffff;
+          }
+          h1 {
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+          }
+          .informe-print {
+            font-size: 0.9rem;
+          }
+          .cat-block {
+            margin-bottom: 12px;
+          }
+          .bar-container {
+            width: 100%;
+            height: 10px;
+            background: #e5e7eb;
+            border-radius: 999px;
+            overflow: hidden;
+          }
+          .bar {
+            height: 100%;
+            background: #6366f1;
+          }
+        </style>
+      </head>
+      <body>
+        <h1>${title}</h1>
+        <div class="informe-print">
+          ${html}
+        </div>
+      </body>
+      </html>
+    `);
+    win.document.close();
+    win.focus();
+    try {
+      win.print();
+    } catch (e) {
+      // ignoramos
+    }
+  }
+}
 function getStoredAvatarId() {
   try {
     const raw = localStorage.getItem(AVATAR_LOCALSTORAGE_KEY);
