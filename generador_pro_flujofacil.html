@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Generador códigos PRO · Flujo Fácil</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      padding: 16px;
+      background: #f3f4f6;
+      color: #111827;
+    }
+    .card {
+      max-width: 480px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(15,23,42,0.15);
+      padding: 20px;
+    }
+    h1 {
+      font-size: 1.3rem;
+      margin-bottom: 8px;
+    }
+    p {
+      font-size: 0.9rem;
+      margin-bottom: 12px;
+    }
+    button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      border: none;
+      padding: 10px 20px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: #ffffff;
+      cursor: pointer;
+    }
+    button:active {
+      transform: scale(0.97);
+    }
+    .code-output {
+      margin-top: 16px;
+      padding: 12px 14px;
+      background: #111827;
+      color: #f9fafb;
+      font-family: "SF Mono", Menlo, Monaco, Consolas, monospace;
+      font-size: 1.1rem;
+      border-radius: 10px;
+      text-align: center;
+      letter-spacing: 0.08em;
+    }
+    .hint {
+      margin-top: 8px;
+      font-size: 0.8rem;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Generador PRO · Flujo Fácil</h1>
+    <p>
+      Usa este archivo solo tú. Cada vez que pulses
+      <strong>Generar código PRO</strong> se creará un código válido
+      que la app aceptará en la sección <em>Config → Código PRO</em>.
+    </p>
+
+    <button id="btnGen">Generar código PRO</button>
+
+    <div id="codeBox" class="code-output" style="display:none;"></div>
+    <div id="hintBox" class="hint"></div>
+  </div>
+
+  <script>
+    const PRO_CODE_PREFIX = 'FF';
+    const PRO_CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+
+    function computeProChecksum(payload) {
+      if (!payload || payload.length !== 8) return null;
+      const alphabet = PRO_CODE_ALPHABET;
+      const base = alphabet.length;
+      const idx = [];
+
+      for (let i = 0; i < payload.length; i++) {
+        const c = payload[i];
+        const pos = alphabet.indexOf(c);
+        if (pos === -1) return null;
+        idx.push(pos);
+      }
+
+      let sum = 0;
+      idx.forEach(v => { sum += v; });
+      const idx1 = (sum + 7) % base;
+      const idx2 = (idx[0] * 3 + idx[3] * 5 + idx[7] * 7) % base;
+
+      return alphabet[idx1] + alphabet[idx2];
+    }
+
+    function generatePayload() {
+      const alphabet = PRO_CODE_ALPHABET;
+      let out = '';
+      for (let i = 0; i < 8; i++) {
+        const r = Math.floor(Math.random() * alphabet.length);
+        out += alphabet[r];
+      }
+      return out;
+    }
+
+    function formatProCode(code12) {
+      // Esperamos FF + 8 + 2 = 12 chars
+      if (!code12 || code12.length !== 12) return code12;
+      return code12.slice(0,4) + '-' + code12.slice(4,8) + '-' + code12.slice(8,12);
+    }
+
+    function generateProCode() {
+      while (true) {
+        const payload = generatePayload();
+        const checksum = computeProChecksum(payload);
+        if (!checksum) continue;
+        const base = PRO_CODE_PREFIX + payload + checksum; // 12 chars
+        return {
+          raw: base,
+          display: formatProCode(base),
+          payload
+        };
+      }
+    }
+
+    const btn = document.getElementById('btnGen');
+    const codeBox = document.getElementById('codeBox');
+    const hintBox = document.getElementById('hintBox');
+
+    btn.addEventListener('click', () => {
+      const c = generateProCode();
+      codeBox.textContent = c.display;
+      codeBox.style.display = 'block';
+      hintBox.textContent = 'Copia este código y envíaselo al usuario tras confirmar el pago.';
+    });
+  </script>
+</body>
+</html>
