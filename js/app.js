@@ -3646,7 +3646,7 @@ function openEditModal(type, data) {
       });
     }
 
-    // ----- Informe de huchas: eventos -----
+        // ----- Informe de huchas: eventos -----
     const btnInfHuchas = document.getElementById('btnInformeHuchas');
     const modalInfHuchas = document.getElementById('modalInformeHuchas');
     const btnInfHuchasClose = document.getElementById('informeHuchasClose');
@@ -3682,11 +3682,12 @@ function openEditModal(type, data) {
         });
       }
 
-      // Cerrar tocando fuera de la tarjeta      
-        modalInfHuchas.addEventListener('click', (e) => {
+      // Cerrar tocando fuera de la tarjeta
+      modalInfHuchas.addEventListener('click', (e) => {
         if (e.target === modalInfHuchas) {
           cerrarInformeHuchas();
         }
       });
-  });
-})();
+    } // <- cierre del if (btnInfHuchas && modalInfHuchas)
+  });   // <- cierre de document.addEventListener('DOMContentLoaded', ...)
+})();    // <- cierre de la IIFE principal
