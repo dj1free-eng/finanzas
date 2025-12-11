@@ -1080,8 +1080,9 @@ function buildPlainTextReport(title, containerId, htmlFallback) {
   return stripHtmlToPlainText(htmlFallback || '');
 }
 
-function handleProReportExport(action, title, containerId) {  
-    if (!isProActive || !isProActive()) {
+function handleProReportExport(action, title, containerId) {
+  // 1) Comprobación PRO
+  if (!isProActive || !isProActive()) {
     showToast('Solo usuarios PRO pueden compartir o imprimir informes. Activa PRO en Config.');
 
     // Cambiamos a la pestaña de Configuración
@@ -1100,18 +1101,21 @@ function handleProReportExport(action, title, containerId) {
 
     return;
   }
+
+  // 2) Localizar el contenedor del informe
   const cont = document.getElementById(containerId);
   if (!cont) {
     showToast('No se ha encontrado el contenido del informe.');
     return;
   }
 
-  const html = cont.innerHTML || '';
+  let html = cont.innerHTML || '';
   if (!html.trim()) {
     showToast('El informe está vacío.');
     return;
   }
 
+  // 3) Compartir (texto plano)
   if (action === 'share') {
     const text = buildPlainTextReport(title, containerId, html);
 
@@ -1129,122 +1133,120 @@ function handleProReportExport(action, title, containerId) {
     } else {
       showToast('Tu navegador no permite compartir directamente este informe.');
     }
-} else if (action === 'print') {
-  const win = window.open('', '_blank');
-  if (!win) {
-    showToast('No se pudo abrir la ventana de impresión.');
-    return;
-  }
 
-  win.document.open();
-  win.document.write(`
-    <!DOCTYPE html>
-    <html lang="es">
-    <head>
-      <meta charset="utf-8">
-      <title>${title}</title>
-      <style>
-        body {
-          font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-          padding: 16px;
-          color: #111827;
-          background: #ffffff;
-        }
-        h1 {
-          font-size: 1.3rem;
-          margin-bottom: 12px;
-        }
-        .informe-print {
-          font-size: 0.9rem;
-        }
-        .cat-block {
-          margin-bottom: 12px;
-        }
-        .bar-container {
-          width: 100%;
-          height: 10px;
-          background: #e5e7eb;
-          border-radius: 999px;
-          overflow: hidden;
-        }
-        .bar {
-          height: 100%;
-          background: #6366f1;
-        }
+  // 4) Imprimir (ventana nueva con HTML limpio y CSS controlado)
+  } else if (action === 'print') {
+    const win = window.open('', '_blank');
+    if (!win) {
+      showToast('No se pudo abrir la ventana de impresión.');
+      return;
+    }
 
-        /* 🔒 Límite global para imágenes dentro del informe */
-        .informe-print img {
-          max-width: 40px;
-          max-height: 40px;
-          height: auto;
-          width: auto;
-          display: inline-block;
-        }
+    win.document.open();
+    win.document.write(`
+      <!DOCTYPE html>
+      <html lang="es">
+      <head>
+        <meta charset="utf-8">
+        <title>${title}</title>
+        <style>
+          body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            padding: 16px;
+            color: #111827;
+            background: #ffffff;
+          }
+          h1 {
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+          }
+          .informe-print {
+            font-size: 0.9rem;
+          }
+          .cat-block {
+            margin-bottom: 12px;
+          }
+          .bar-container {
+            width: 100%;
+            height: 10px;
+            background: #e5e7eb;
+            border-radius: 999px;
+            overflow: hidden;
+          }
+          .bar {
+            height: 100%;
+            background: #6366f1;
+          }
 
-        /* Por si usamos el wrapper redondo de logos */
-        .expense-merchant-logo-wrap {
-          width: 32px;
-          height: 32px;
-          border-radius: 999px;
-          border: 1px solid #e5e7eb;
-          background: #ffffff;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          overflow: hidden;
-          vertical-align: middle;
-          margin-right: 6px;
-        }
-        .expense-merchant-logo-wrap img {
-          width: 100%;
-          height: 100%;
-          object-fit: contain;
-        }
-        .expense-merchant-initial {
-          font-weight: 600;
-          font-size: 0.9rem;
-          color: #4f46e5;
-        }
-        /* Cabecera común de todos los informes impresos */
-.logo-print {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
-}
+          /* Límite global para imágenes dentro del informe */
+          .informe-print img {
+            max-width: 40px;
+            max-height: 40px;
+            height: auto;
+            width: auto;
+            display: inline-block;
+          }
 
-.logo-print img {
-  width: 32px;
-  height: 32px;
-  object-fit: contain;
-}
+          /* Wrapper redondo para logos de comercios (si llega en el HTML) */
+          .expense-merchant-logo-wrap {
+            width: 32px;
+            height: 32px;
+            border-radius: 999px;
+            border: 1px solid #e5e7eb;
+            background: #ffffff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            vertical-align: middle;
+            margin-right: 6px;
+          }
+          .expense-merchant-logo-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+          }
+          .expense-merchant-initial {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #4f46e5;
+          }
 
-.logo-print-title {
-  font-size: 1.05rem;
-  font-weight: 600;
-}
-      </style>
-    </head>
-    <body>
-      <div class="print-header">
-        <div class="print-logo-circle">
+          /* Cabecera del informe impreso */
+          .logo-print {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+          }
+
+          .logo-print img {
+            width: 32px;
+            height: 32px;
+            object-fit: contain;
+          }
+
+          .logo-print-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="logo-print">
           <img src="apple-touch-icon.png" alt="Flujo Fácil" />
+          <div class="logo-print-title">${title}</div>
         </div>
-        <div class="print-header-text">
-          <div class="print-app-name">FLUJO FÁCIL</div>
-          <div class="print-app-subtitle">Tu dinero, bajo control</div>
+        <div class="informe-print">
+          ${html}
         </div>
-      </div>
-      <h1>${title}</h1>
-      <div class="informe-print">
-        ${html}
-      </div>
-    </body>
-    </html>
-  `);
-  win.document.close();
-  win.focus();
-
+      </body>
+      </html>
+    `);
+    win.document.close();
+    win.focus();
+  }
+}
   // ---- CIERRE AUTOMÁTICO DE LA VENTANA DE INFORME ----
   const safeClose = () => {
     try {
