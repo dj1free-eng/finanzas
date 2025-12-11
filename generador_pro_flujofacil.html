@@ -72,8 +72,23 @@
 
     <button id="btnGen">Generar código PRO</button>
 
-    <div id="codeBox" class="code-output" style="display:none;"></div>
-    <div id="hintBox" class="hint"></div>
+<div id="codeBox" class="code-output" style="display:none;"></div>
+
+<button id="btnCopy" style="
+  margin-top: 10px;
+  display:none;
+  width: 100%;
+  border-radius: 999px;
+  border: none;
+  padding: 10px 18px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+">Copiar código</button>
+
+<div id="hintBox" class="hint"></div>
   </div>
 
   <script>
@@ -138,8 +153,22 @@
     btn.addEventListener('click', () => {
       const c = generateProCode();
       codeBox.textContent = c.display;
-      codeBox.style.display = 'block';
-      hintBox.textContent = 'Copia este código y envíaselo al usuario tras confirmar el pago.';
+codeBox.style.display = 'block';
+btnCopy.style.display = 'inline-block';
+hintBox.textContent = 'Código generado correctamente. Puedes copiarlo y enviarlo al usuario.';
+    });
+        const btnCopy = document.getElementById('btnCopy');
+
+    btnCopy.addEventListener('click', () => {
+      const text = codeBox.textContent.trim();
+      if (!text) return;
+
+      navigator.clipboard.writeText(text).then(() => {
+        btnCopy.textContent = 'Copiado!';
+        setTimeout(() => {
+          btnCopy.textContent = 'Copiar código';
+        }, 1000);
+      });
     });
   </script>
 </body>
