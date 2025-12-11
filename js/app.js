@@ -3681,11 +3681,12 @@ function openEditModal(type, data) {
         });
       }
 
-      // Cerrar tocando fuera de la tarjeta
-      modalInfHuchas.addEventListener('click', (e) => {
+      // Cerrar tocando fuera de la tarjeta      
+        modalInfHuchas.addEventListener('click', (e) => {
         if (e.target === modalInfHuchas) {
           cerrarInformeHuchas();
         }
       });
+    }
   });
 })();
