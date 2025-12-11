@@ -1205,6 +1205,24 @@ function handleProReportExport(action, title, containerId) {
           font-size: 0.9rem;
           color: #4f46e5;
         }
+        /* Cabecera común de todos los informes impresos */
+.logo-print {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.logo-print img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.logo-print-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
       </style>
     </head>
     <body>
