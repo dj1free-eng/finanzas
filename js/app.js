@@ -2044,6 +2044,7 @@ function generarInformeMensual() {
     cont.innerHTML = html;
     overlay.classList.add('active');
   }
+    }   // ← NUEVA línea: cierra la función generarInformeHuchas
 // ----- Ingresos base -----
 function setupIngresosBase() {
   const ingJuan = document.getElementById('ingJuan');
