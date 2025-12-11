@@ -1262,7 +1262,8 @@ function handleProReportExport(action, title, containerId) {
       setTimeout(safeClose, 300);
     }
   }
-}nction getStoredAvatarId() {
+}
+  function getStoredAvatarId() {
   try {
     const raw = localStorage.getItem(AVATAR_LOCALSTORAGE_KEY);
     if (!raw) return 'classic';
