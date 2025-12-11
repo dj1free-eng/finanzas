@@ -3687,6 +3687,5 @@ function openEditModal(type, data) {
           cerrarInformeHuchas();
         }
       });
-    }
   });
 })();
