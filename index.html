@@ -918,6 +918,35 @@
     </div>
   </div>
       </div> <!-- cierre appRoot -->
+
+  <!-- Failsafe: la intro NUNCA se queda bloqueada aunque app.js tenga errores -->
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      var overlay = document.getElementById('introOverlay');
+      if (!overlay) return;
+
+      var yaQuitada = false;
+
+      function quitarIntro() {
+        if (yaQuitada) return;
+        yaQuitada = true;
+
+        overlay.classList.add('intro-hidden');
+        setTimeout(function () {
+          if (overlay && overlay.parentNode) {
+            overlay.parentNode.removeChild(overlay);
+          }
+        }, 400);
+      }
+
+      // Permitir saltar la intro con un toque
+      overlay.addEventListener('click', quitarIntro);
+
+      // Failsafe: si a los 3s sigue ahí, la quitamos sí o sí
+      setTimeout(quitarIntro, 3000);
+    });
+  </script>
+
   <script src="js/app.js"></script>
   <script src="js/swipe.js"></script>
 </body>
