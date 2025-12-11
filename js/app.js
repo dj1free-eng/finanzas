@@ -1142,6 +1142,15 @@ function handleProReportExport(action, title, containerId) {
       return;
     }
 
+    // Función de cierre seguro de la ventana
+    const safeClose = () => {
+      try {
+        win.close();
+      } catch (e) {
+        // ignoramos errores al cerrar
+      }
+    };
+
     win.document.open();
     win.document.write(`
       <!DOCTYPE html>
@@ -1245,36 +1254,15 @@ function handleProReportExport(action, title, containerId) {
     `);
     win.document.close();
     win.focus();
-  }
-}
-  // ---- CIERRE AUTOMÁTICO DE LA VENTANA DE INFORME ----
-  const safeClose = () => {
+
     try {
-      win.close();
+      win.print();
     } catch (e) {
-      // si no se puede cerrar, ignoramos
-    }
-  };
-
-  // Si el navegador soporta onafterprint, cerramos justo después de imprimir
-  if ('onafterprint' in win) {
-    win.onafterprint = () => {
+      // si print falla, intentamos cerrar igualmente
       setTimeout(safeClose, 300);
-    };
-  } else {
-    // Fallback: por si no hay onafterprint, cerramos tras unos segundos
-    setTimeout(safeClose, 4000);
+    }
   }
-
-  try {
-    win.print();
-  } catch (e) {
-    // si print falla, intentamos cerrar igualmente
-    setTimeout(safeClose, 300);
-  }
-}
-}
-function getStoredAvatarId() {
+}nction getStoredAvatarId() {
   try {
     const raw = localStorage.getItem(AVATAR_LOCALSTORAGE_KEY);
     if (!raw) return 'classic';
