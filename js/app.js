@@ -2041,10 +2041,14 @@ function generarInformeMensual() {
         }
       });
 
-      html += `
-        </div>
-      `;
-    }
+          // Envolvemos el contenido con la cabecera corporativa, igual que otros informes
+    html = `
+      <div class="logo-print">
+        <img src="assets/logo_flujo_facil.svg" alt="Flujo Fácil" />
+        <div class="logo-print-title">Informe de huchas · Flujo Fácil</div>
+      </div>
+      ${html}
+    `;
 
     cont.innerHTML = html;
     overlay.classList.add('active');
