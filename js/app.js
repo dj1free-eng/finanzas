@@ -2895,7 +2895,194 @@ updateResumenYChips();
       showToast('Notas del mes guardadas.');
     });
   }
+// ----- Importar desde CSV (CaixaBank) -----
+// Formato esperado: Concepto;Fecha;Importe;Saldo
+// Solo importamos cargos (Importe negativo) y los guardamos como gasto categoría "Banco".
+function setupImportCsv() {
+  const fileInput = document.getElementById('csvFile');
+  const btn = document.getElementById('btnImportCsv');
 
+  if (!btn || !fileInput) return;
+
+  // Convierte "dd/mm/yyyy" o "dd-mm-yyyy" a "yyyy-mm-dd"
+  function toIsoDate(fechaStr) {
+    const raw = (fechaStr || '').trim();
+    if (!raw) return '';
+
+    // Si ya viene en ISO, lo dejamos
+    if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
+
+    // dd/mm/yyyy o dd-mm-yyyy
+    const m = raw.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+    if (!m) return '';
+
+    const dd = String(m[1]).padStart(2, '0');
+    const mm = String(m[2]).padStart(2, '0');
+    const yyyy = m[3];
+    return `${yyyy}-${mm}-${dd}`;
+  }
+
+  // Parsea una línea CSV con separador ; (soporta comillas)
+  function splitCsvLine(line) {
+    const out = [];
+    let cur = '';
+    let inQuotes = false;
+
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+
+      if (ch === '"') {
+        // Doble comilla dentro de campo entrecomillado -> "
+        if (inQuotes && line[i + 1] === '"') {
+          cur += '"';
+          i++;
+        } else {
+          inQuotes = !inQuotes;
+        }
+        continue;
+      }
+
+      if (!inQuotes && ch === ';') {
+        out.push(cur);
+        cur = '';
+        continue;
+      }
+
+      cur += ch;
+    }
+    out.push(cur);
+    return out.map(s => (s ?? '').trim());
+  }
+
+  function normalizeText(s) {
+    return (s || '').trim();
+  }
+
+  // Llave simple para evitar duplicados (fecha + importe + desc)
+  function buildKey(fechaIso, importeAbs, desc) {
+    return `${fechaIso}||${Number(importeAbs).toFixed(2)}||${(desc || '').toLowerCase()}`;
+  }
+
+  btn.addEventListener('click', () => {
+    const file = fileInput.files && fileInput.files[0];
+    if (!file) {
+      showToast('Selecciona un CSV primero.');
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = (ev) => {
+      try {
+        const text = String(ev.target.result || '');
+        const lines = text
+          .split(/\r?\n/)
+          .map(l => l.trim())
+          .filter(l => l.length > 0);
+
+        if (!lines.length) {
+          showToast('El CSV está vacío.');
+          return;
+        }
+
+        // Construimos set de duplicados existentes
+        if (!Array.isArray(state.gastos)) state.gastos = [];
+        const existing = new Set();
+        state.gastos.forEach(g => {
+          const k = buildKey(g.fecha || '', Number(g.importe) || 0, g.desc || '');
+          existing.add(k);
+        });
+
+        let imported = 0;
+        let skippedNoCharge = 0;
+        let skippedInvalid = 0;
+        let skippedDup = 0;
+
+        // Detectar si la primera línea es cabecera
+        // (si contiene "concepto" y "importe", la saltamos)
+        let startIndex = 0;
+        const head = lines[0].toLowerCase();
+        if (head.includes('concepto') && head.includes('importe')) {
+          startIndex = 1;
+        }
+
+        for (let i = startIndex; i < lines.length; i++) {
+          const cols = splitCsvLine(lines[i]);
+
+          // Esperamos al menos 3 columnas: concepto, fecha, importe (saldo opcional)
+          if (cols.length < 3) {
+            skippedInvalid++;
+            continue;
+          }
+
+          const concepto = normalizeText(cols[0]);
+          const fechaIso = toIsoDate(cols[1]);
+          const importe = parseNumberSafe(cols[2]); // puede venir con coma
+
+          if (!concepto || !fechaIso || !isFinite(importe)) {
+            skippedInvalid++;
+            continue;
+          }
+
+          // Solo cargos: importe negativo
+          if (!(importe < 0)) {
+            skippedNoCharge++;
+            continue;
+          }
+
+          const importeAbs = Math.abs(importe);
+
+          // Evitar duplicados
+          const key = buildKey(fechaIso, importeAbs, concepto);
+          if (existing.has(key)) {
+            skippedDup++;
+            continue;
+          }
+          existing.add(key);
+
+          const id = Date.now().toString(36) + Math.random().toString(36).slice(2);
+
+          // En tu app, los gastos se guardan como importe positivo (y se muestran con "-")
+          state.gastos.push({
+            id,
+            fecha: fechaIso,
+            categoria: 'Banco',
+            desc: concepto,
+            importe: importeAbs
+          });
+
+          imported++;
+        }
+
+        saveState();
+        renderGastosLista();
+        renderSobresLista();
+        rebuildCategoriasSugerencias();
+        updateResumenYChips();
+
+        showToast(
+          `CSV importado: ${imported} cargo(s).` +
+          (skippedDup ? ` Duplicados: ${skippedDup}.` : '') +
+          (skippedNoCharge ? ` No-cargos: ${skippedNoCharge}.` : '') +
+          (skippedInvalid ? ` Líneas inválidas: ${skippedInvalid}.` : '')
+        );
+
+      } catch (e) {
+        console.error(e);
+        showToast('Error procesando el CSV.');
+      } finally {
+        // para poder reimportar el mismo archivo si quieres
+        fileInput.value = '';
+      }
+    };
+
+    reader.onerror = () => {
+      showToast('No se pudo leer el archivo CSV.');
+    };
+
+    reader.readAsText(file, 'utf-8');
+  });
+}
  // ----- Export / Import JSON -----
   function setupExportImportJson() {
     const btnExport = document.getElementById('btnExportJson');
@@ -3504,7 +3691,7 @@ function openEditModal(type, data) {
     setupHuchas();
     setupNotas();
     setupExportImportJson();
-    //setupImportCsv();
+    setupImportCsv();
     setupReset();
     setupEditModalEvents();
     setupConfirmModalEvents();
