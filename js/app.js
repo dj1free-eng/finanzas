@@ -2338,9 +2338,25 @@ function setupFijos() {
   const unitEl  = document.getElementById('fijoUnit');
   const nextEl  = document.getElementById('fijoNext');
 
-  // Fecha por defecto: hoy (solo si existe el input y está vacío)
+  // Fecha por defecto: depende del MES que estás viendo en la app
   if (nextEl && !nextEl.value) {
-    nextEl.value = new Date().toISOString().slice(0, 10);
+    const todayIso = new Date().toISOString().slice(0, 10);
+
+    // Usamos el mes activo (currentYear/currentMonth) como punto de inicio del fijo
+    if (typeof currentYear === 'number' && typeof currentMonth === 'number') {
+      const y = currentYear;
+      const m = currentMonth + 1; // 0-11 -> 1-12
+      const mm = String(m).padStart(2, '0');
+      const monthIso = `${y}-${mm}-01`;
+
+      const now = new Date();
+      const isCurrentMonth = (now.getFullYear() === currentYear && now.getMonth() === currentMonth);
+
+      nextEl.value = isCurrentMonth ? todayIso : monthIso;
+    } else {
+      // Fallback seguro si no existe navegación mensual
+      nextEl.value = todayIso;
+    }
   }
   // Gestión de selección / deselección de chips
   if (chipsWrap && catHidden) {
