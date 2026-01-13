@@ -1601,9 +1601,99 @@ function setupTabs() {
     });
   }
 
-  function getTotalFijos() {
-    return state.fijos.reduce((s, f) => s + (Number(f.importe) || 0), 0);
+  function daysInMonth(y, m) {
+  return new Date(y, m + 1, 0).getDate();
+}
+
+function parseIsoDate(iso) {
+  if (!iso) return null;
+  const d = new Date(iso + 'T00:00:00');
+  return isNaN(d) ? null : d;
+}
+
+function toIso(d) {
+  return d.toISOString().slice(0, 10);
+}
+
+// Suma meses manteniendo el “día ancla”. Si el mes no tiene ese día, usa el último día del mes.
+function addMonthsKeepDay(date, months, anchorDay) {
+  const y = date.getFullYear();
+  const m = date.getMonth();
+  const targetM = m + months;
+
+  const base = new Date(y, targetM, 1);
+  const maxDay = daysInMonth(base.getFullYear(), base.getMonth());
+  const day = Math.min(anchorDay, maxDay);
+
+  return new Date(base.getFullYear(), base.getMonth(), day);
+}
+
+function addYearsKeepDay(date, years, anchorDay) {
+  return addMonthsKeepDay(date, years * 12, anchorDay);
+}
+
+// Devuelve cuántas veces “cae” este fijo dentro del mes (year, month)
+function occurrencesInMonthForFijo(f, year, month) {
+  const importe = Number(f.importe) || 0;
+  if (!(importe > 0)) return 0;
+
+  const rule = f.regla || { every: 1, unit: 'month' }; // compatibilidad
+  const every = Math.max(1, Number(rule.every) || 1);
+  const unit = rule.unit || 'month';
+
+  // compatibilidad: si no hay next, consideramos que cae 1 vez/mes
+  if (!f.next) {
+    return unit === 'month' && every === 1 ? 1 : 1;
   }
+
+  const start = parseIsoDate(f.next);
+  if (!start) return 0;
+
+  const monthStart = new Date(year, month, 1);
+  const monthEnd = new Date(year, month, daysInMonth(year, month));
+  monthEnd.setHours(23, 59, 59, 999);
+
+  // Si el “próximo” es posterior al mes, no hay ocurrencias
+  if (start > monthEnd) return 0;
+
+  // Ancla para meses/años (día del mes original)
+  const anchorDay = start.getDate();
+
+  let count = 0;
+  let cur = new Date(start.getTime());
+
+  // Avanzamos hasta entrar en el mes objetivo (si start está antes)
+  // Lo hacemos por saltos según unidad para que sea determinista.
+  while (cur < monthStart) {
+    if (unit === 'day') cur = new Date(cur.getFullYear(), cur.getMonth(), cur.getDate() + every);
+    else if (unit === 'week') cur = new Date(cur.getFullYear(), cur.getMonth(), cur.getDate() + (every * 7));
+    else if (unit === 'month') cur = addMonthsKeepDay(cur, every, anchorDay);
+    else if (unit === 'year') cur = addYearsKeepDay(cur, every, anchorDay);
+    else cur = addMonthsKeepDay(cur, every, anchorDay); // fallback seguro
+  }
+
+  // Contar ocurrencias dentro del mes
+  while (cur <= monthEnd) {
+    if (cur >= monthStart && cur <= monthEnd) count++;
+
+    if (unit === 'day') cur = new Date(cur.getFullYear(), cur.getMonth(), cur.getDate() + every);
+    else if (unit === 'week') cur = new Date(cur.getFullYear(), cur.getMonth(), cur.getDate() + (every * 7));
+    else if (unit === 'month') cur = addMonthsKeepDay(cur, every, anchorDay);
+    else if (unit === 'year') cur = addYearsKeepDay(cur, every, anchorDay);
+    else cur = addMonthsKeepDay(cur, every, anchorDay);
+  }
+
+  return count;
+}
+
+// Total de fijos PARA el mes actual (según regla+next)
+function getTotalFijosMes(year, month) {
+  return (state.fijos || []).reduce((sum, f) => {
+    const occ = occurrencesInMonthForFijo(f, year, month);
+    const imp = Number(f.importe) || 0;
+    return sum + (occ * imp);
+  }, 0);
+}
 
   function updateResumenYChips() {
     const mk = getCurrentMonthKey();
@@ -1614,7 +1704,7 @@ function setupTabs() {
 
     const gastosMes = getGastosMes(currentYear, currentMonth);
     const totalGastosVar = gastosMes.reduce((s, g) => s + (Number(g.importe) || 0), 0);
-    const totalFijos = getTotalFijos();
+const totalFijos = getTotalFijosMes(currentYear, currentMonth);
     const totalGastos = totalFijos + totalGastosVar;
     const balance = ingresosTotales - totalGastos;
 
@@ -2191,7 +2281,7 @@ function renderFijosTable() {
   if (!cont) return;
 
   const list = state.fijos || [];
-  const total = getTotalFijos();
+const total = getTotalFijosMes(currentYear, currentMonth);
   if (totalEl) totalEl.textContent = formatCurrency(total);
 
   if (!list.length) {
