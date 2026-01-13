@@ -247,7 +247,26 @@
           <input type="hidden" id="fijoCategoria" />
         </div>
       </div>
+<div class="grid-2">
+  <div class="field-group">
+    <label>Periodicidad</label>
+    <div style="display:flex; gap:8px; align-items:center;">
+      <span>Cada</span>
+      <input type="number" id="fijoEvery" min="1" value="1" style="width:90px;">
+      <select id="fijoUnit">
+        <option value="month" selected>mes(es)</option>
+        <option value="week">semana(s)</option>
+        <option value="day">día(s)</option>
+        <option value="year">año(s)</option>
+      </select>
+    </div>
+  </div>
 
+  <div class="field-group">
+    <label>Próximo cargo</label>
+    <input type="date" id="fijoNext">
+  </div>
+</div>
       <div>
         <div class="field-group">
           <label>Importe mensual (€)</label>
