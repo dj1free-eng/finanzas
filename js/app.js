@@ -2334,7 +2334,14 @@ function setupFijos() {
 
   const catHidden = document.getElementById('fijoCategoria');
   const chipsWrap = document.getElementById('fijoCategoriaChips');
+  const everyEl = document.getElementById('fijoEvery');
+  const unitEl  = document.getElementById('fijoUnit');
+  const nextEl  = document.getElementById('fijoNext');
 
+  // Fecha por defecto: hoy (solo si existe el input y está vacío)
+  if (nextEl && !nextEl.value) {
+    nextEl.value = new Date().toISOString().slice(0, 10);
+  }
   // Gestión de selección / deselección de chips
   if (chipsWrap && catHidden) {
     chipsWrap.addEventListener('click', (ev) => {
@@ -2365,7 +2372,9 @@ function setupFijos() {
       const nombre = nombreEl && nombreEl.value.trim();
       const importe = Number(impEl && impEl.value);
       const categoria = catHidden && catHidden.value ? catHidden.value : '';
-
+      const every = Math.max(1, Number(everyEl && everyEl.value) || 1);
+      const unit  = (unitEl && unitEl.value) ? unitEl.value : 'month';
+      const next  = (nextEl && nextEl.value) ? nextEl.value : new Date().toISOString().slice(0, 10);
       if (!nombre) {
         showToast('Pon un nombre al gasto fijo.');
         return;
@@ -2380,11 +2389,21 @@ function setupFijos() {
       }
 
       const id = Date.now().toString(36) + Math.random().toString(36).slice(2);
-      state.fijos.push({ id, nombre, categoria, importe });
+state.fijos.push({
+  id,
+  nombre,
+  categoria,
+  importe,
+  regla: { every, unit },
+  next
+});
       saveState();
 
       if (nombreEl) nombreEl.value = '';
       if (impEl) impEl.value = '';
+            if (everyEl) everyEl.value = '1';
+      if (unitEl) unitEl.value = 'month';
+      if (nextEl) nextEl.value = new Date().toISOString().slice(0, 10);
       if (catHidden) catHidden.value = '';
       if (chipsWrap) {
         chipsWrap.querySelectorAll('.chip').forEach(ch => ch.classList.remove('chip-selected'));
