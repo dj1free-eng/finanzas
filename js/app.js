@@ -3511,6 +3511,24 @@ function openEditModal(type, data) {
         <label>Importe mensual (€)</label>
         <input type="number" id="editImporte" step="0.01" inputmode="decimal" value="${data.importe}" />
       </div>
+            <div class="field-group">
+        <label>Periodicidad</label>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <span>Cada</span>
+          <input type="number" id="editEvery" min="1" value="${(data.regla && data.regla.every) ? data.regla.every : 1}" style="width:90px;">
+          <select id="editUnit">
+            <option value="month" ${(data.regla && data.regla.unit === 'month') || !data.regla ? 'selected' : ''}>mes(es)</option>
+            <option value="week"  ${(data.regla && data.regla.unit === 'week')  ? 'selected' : ''}>semana(s)</option>
+            <option value="day"   ${(data.regla && data.regla.unit === 'day')   ? 'selected' : ''}>día(s)</option>
+            <option value="year"  ${(data.regla && data.regla.unit === 'year')  ? 'selected' : ''}>año(s)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label>Próximo cargo</label>
+        <input type="date" id="editNext" value="${data.next || ''}" />
+      </div>
     `;
   }
 
